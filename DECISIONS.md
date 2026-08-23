@@ -11,4 +11,7 @@ Format:
 
 ---
 
-*(empty — first entry gets added during v1.0)*
+## [v1.0] Monorepo Structure & Package Management
+**Decided:** pnpm workspaces monorepo containing `apps/api` (NestJS), `apps/web` (Next.js App Router + Tailwind), and `packages/shared` (TypeScript definitions and shared contracts).
+**Why:** Clean boundary separation between edge/heavy execution backend and Next.js HUD interface while sharing common input/output and tool schemas directly.
+

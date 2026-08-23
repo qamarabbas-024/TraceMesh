@@ -1,0 +1,18 @@
+{
+  "name": "tracemesh-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:api": "pnpm --filter @tracemesh/api dev",
+    "dev:web": "pnpm --filter @tracemesh/web dev",
+    "build": "pnpm --recursive --filter \"./apps/*\" --filter \"./packages/*\" build",
+    "lint": "pnpm --recursive lint",
+    "test": "pnpm --recursive test"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  },
+  "packageManager": "pnpm@11.20.0"
+}
