@@ -1,21 +1,22 @@
+import { BackendStatus } from '@/components/BackendStatus';
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8 text-center">
-      <div className="max-w-2xl border border-accent-cyan-dim/40 bg-bg-surface/80 backdrop-blur-md p-8 rounded shadow-[0_0_20px_rgba(34,211,238,0.15)]">
-        <div className="text-xs uppercase tracking-widest text-accent-cyan mb-2 font-mono">
-          System Initialized
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
+      <div className="w-full max-w-xl mb-6">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 text-[11px] uppercase tracking-widest font-mono text-accent-cyan bg-bg-surface border border-accent-cyan-dim/40 rounded mb-3">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+          TraceMesh OSINT Framework v1.4
         </div>
-        <h1 className="text-3xl font-semibold text-text-primary tracking-tight mb-4">
-          TraceMesh OSINT Platform
+        <h1 className="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-2">
+          Intelligence Correlation HUD
         </h1>
-        <p className="text-text-secondary text-sm leading-relaxed mb-6">
-          Multi-domain OSINT aggregation engine and entity graph visualizer.
+        <p className="text-sm text-text-secondary">
+          Decentralized OSINT multi-tool aggregation engine and entity graph visualizer.
         </p>
-        <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono bg-bg-surface-raised border border-accent-cyan-dim/30 text-accent-cyan">
-          <span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
-          Core Monorepo v1.0 Ready
-        </div>
       </div>
+
+      <BackendStatus />
     </main>
   );
 }
