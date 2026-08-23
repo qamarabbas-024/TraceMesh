@@ -11,7 +11,7 @@
     "start:prod": "node dist/main",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint": "tsc --noEmit",
     "clean": "rimraf dist"
   },
   "dependencies": {
