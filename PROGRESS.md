@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.0 — done (Next: v1.1)**
+**CURRENT VERSION: v1.1 — done (Next: v1.2)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -9,7 +9,7 @@ Update the line above at the end of every session. That single line is the sourc
 
 ## Phase 1 — Skeleton (v1.0–v1.6)
 - [x] 1.0 — Init monorepo (pnpm workspaces), NestJS backend + Next.js frontend, shared tsconfig
-- [ ] 1.1 — Docker Compose (Postgres + Redis), `.env.example`, README setup steps
+- [x] 1.1 — Docker Compose (Postgres + Redis), `.env.example`, README setup steps
 - [ ] 1.2 — Prisma schema v1: `User`, `Tool` tables, first migration
 - [ ] 1.3 — Backend health-check endpoint
 - [ ] 1.4 — Frontend blank page confirming backend connection
