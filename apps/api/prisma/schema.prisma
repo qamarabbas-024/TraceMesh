@@ -1,0 +1,80 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  runs      Run[]
+
+  @@map("users")
+}
+
+model Tool {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  displayName       String
+  description       String
+  category          String
+  inputTypes        String[]
+  tier              String   @default("tier1")
+  executionType     String   @default("edge")
+  sourceUrl         String?
+  trackedVersion    String   @default("1.0.0")
+  lastCheckedCommit String?
+  updateAvailable   Boolean  @default(false)
+  license           String?  @default("MIT")
+  maintenanceStatus String   @default("active")
+  inputSchema       Json?
+  outputSchema      Json?
+  isEnabled         Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  runItems          RunItem[]
+
+  @@map("tools")
+}
+
+model Run {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  inputType  String
+  inputValue String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  items      RunItem[]
+
+  @@map("runs")
+}
+
+model RunItem {
+  id         String   @id @default(uuid())
+  runId      String
+  run        Run      @relation(fields: [runId], references: [id], onDelete: Cascade)
+  toolId     String
+  tool       Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  status     String   @default("pending")
+  rawOutput  Json?
+  normalized Json?
+  error      String?
+  durationMs Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("run_items")
+}

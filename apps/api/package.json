@@ -9,6 +9,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "clean": "rimraf dist"
   },
@@ -16,6 +18,7 @@
     "@nestjs/common": "^11.0.11",
     "@nestjs/core": "^11.0.11",
     "@nestjs/platform-express": "^11.0.11",
+    "@prisma/client": "^6.4.1",
     "@tracemesh/shared": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
@@ -26,6 +29,7 @@
     "@nestjs/testing": "^11.0.11",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
+    "prisma": "^6.4.1",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
