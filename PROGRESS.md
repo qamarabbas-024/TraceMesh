@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.7 — done (Next: v1.8)**
+**CURRENT VERSION: v1.8 — done (Next: v1.9)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -18,7 +18,7 @@ Update the line above at the end of every session. That single line is the sourc
 
 ## Phase 2 — Tool Registry, multi-domain from the start (v1.7–v1.13)
 - [x] 1.7 — Extend `Tool` schema: `input_type[]` (email/username/phone/image/domain/ip), category, source repo URL, execution type, input schema, tracked version, license, maintenance-status flag
-- [ ] 1.8 — Seed 3 tools across 3 domains: **Sherlock** (username), **Holehe** (email), **ExifTool** (image) — see TOOLS.md
+- [x] 1.8 — Seed 3 tools across 3 domains: **Sherlock** (username), **Holehe** (email), **ExifTool** (image) — see TOOLS.md
 - [ ] 1.9 — `GET /tools` endpoint
 - [ ] 1.10 — `GET /tools/:id` endpoint
 - [ ] 1.11 — Frontend: input box + auto-detected/selectable input type + matching tool list (flat, checkboxes)
