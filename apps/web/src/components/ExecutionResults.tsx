@@ -79,6 +79,29 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                 CACHED
               </span>
             )}
+            <div className="flex items-center gap-1.5 ml-2">
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportCSV(report))}
+                className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
+                title="Export as CSV table"
+              >
+                CSV
+              </button>
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportJSON(report))}
+                className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
+                title="Export as raw JSON dossier"
+              >
+                JSON
+              </button>
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportPDF(report))}
+                className="px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan text-accent-cyan hover:bg-accent-cyan hover:text-bg-base font-semibold rounded transition-all text-[10px]"
+                title="Export Dossier as PDF"
+              >
+                PDF Report
+              </button>
+            </div>
           </div>
         </div>
 

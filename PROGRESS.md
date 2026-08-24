@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.27 — done (Next: v1.28)**
+**CURRENT VERSION: v1.31 — done (Next: v2.0)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -46,10 +46,10 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 1.27 — Re-open a past result without re-running
 
 ## Phase 5 — Export v1 (v1.28–v1.31)
-- [ ] 1.28 — CSV export of one result
-- [ ] 1.29 — JSON export of one result
-- [ ] 1.30 — Playwright headless PDF proof-of-concept
-- [ ] 1.31 — Wire PDF pipeline to a real aggregated result
+- [x] 1.28 — CSV export of one result
+- [x] 1.29 — JSON export of one result
+- [x] 1.30 — Playwright headless PDF proof-of-concept
+- [x] 1.31 — Wire PDF pipeline to a real aggregated result
 
 **Milestone: v1.31 — feature-complete flat beta.**
 
