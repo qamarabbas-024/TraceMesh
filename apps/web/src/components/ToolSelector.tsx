@@ -13,6 +13,8 @@ import {
   ExternalLink,
   ChevronRight,
   Terminal,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 
 const SUPPORTED_INPUT_TYPES: { type: InputType; label: string }[] = [
@@ -34,6 +36,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
   const [tools, setTools] = useState<ToolDTO[]>([]);
   const [selectedToolIds, setSelectedToolIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [updatingToolId, setUpdatingToolId] = useState<string | null>(null);
 
   // Auto-detect input type unless manually selected
   const detectedType = useMemo(() => {
@@ -41,22 +44,23 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
   }, [inputValue, manualInputType]);
 
   // Fetch tools from API
-  useEffect(() => {
-    async function fetchTools() {
-      setLoading(true);
-      try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-        const res = await fetch(`${apiUrl}/tools`, { cache: 'no-store' });
-        if (res.ok) {
-          const data: ToolDTO[] = await res.json();
-          setTools(data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch tools:', err);
-      } finally {
-        setLoading(false);
+  const fetchTools = async () => {
+    setLoading(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${apiUrl}/tools`, { cache: 'no-store' });
+      if (res.ok) {
+        const data: ToolDTO[] = await res.json();
+        setTools(data);
       }
+    } catch (err) {
+      console.error('Failed to fetch tools:', err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchTools();
   }, []);
 
@@ -91,6 +95,20 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
       setSelectedToolIds(new Set());
     } else {
       setSelectedToolIds(new Set(matchingTools.map((t) => t.id)));
+    }
+  };
+
+  const handleUpdateTool = async (e: React.MouseEvent, toolId: string) => {
+    e.stopPropagation();
+    setUpdatingToolId(toolId);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      await fetch(`${apiUrl}/tools/${toolId}/update`, { method: 'POST' });
+      await fetchTools();
+    } catch (err) {
+      console.error('Failed to update tool:', err);
+    } finally {
+      setUpdatingToolId(null);
     }
   };
 
@@ -212,14 +230,25 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
                 <div
                   key={tool.id}
                   onClick={() => toggleTool(tool.id)}
-                  className={`p-4 rounded border transition-all cursor-pointer select-none text-left flex flex-col justify-between ${
+                  className={`p-4 rounded border transition-all cursor-pointer select-none text-left flex flex-col justify-between relative ${
                     isSelected
                       ? 'bg-bg-surface-raised border-accent-cyan shadow-cyan-glow'
                       : 'bg-bg-surface-raised/40 border-accent-cyan-dim/30 hover:border-accent-cyan-dim'
                   }`}
                 >
+                  {/* Amber dot for update available (DESIGN.md Section 4) */}
+                  {tool.updateAvailable && (
+                    <div
+                      className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-amber/15 border border-accent-amber/60 text-accent-amber text-[9px] font-mono uppercase"
+                      title="Update Available from upstream repository"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse" />
+                      <span>Update</span>
+                    </div>
+                  )}
+
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-2 pr-12">
                       <div className="flex items-center gap-2">
                         {isSelected ? (
                           <CheckSquare className="w-4 h-4 text-accent-cyan shrink-0" />
@@ -247,7 +276,20 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
                   </div>
 
                   <div className="flex items-center justify-between pt-2 border-t border-accent-cyan-dim/10 text-[10px] font-mono text-text-muted">
-                    <span>v{tool.trackedVersion}</span>
+                    <div className="flex items-center gap-2">
+                      <span>v{tool.trackedVersion}</span>
+                      {tool.updateAvailable && (
+                        <button
+                          onClick={(e) => handleUpdateTool(e, tool.id)}
+                          disabled={updatingToolId === tool.id}
+                          className="flex items-center gap-1 text-accent-amber hover:underline"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${updatingToolId === tool.id ? 'animate-spin' : ''}`} />
+                          <span>Re-pull</span>
+                        </button>
+                      )}
+                    </div>
+
                     {tool.sourceUrl && (
                       <span className="flex items-center gap-1 text-accent-cyan-dim hover:text-accent-cyan">
                         <span>Repo</span>

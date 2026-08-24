@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v2.7 — done (Next: v2.8)**
+**CURRENT VERSION: v2.13 — done (Next: v2.14)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -66,12 +66,12 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 2.7 — Keyboard navigation through the HUD interface
 
 ## Phase 7 — Update Checker Engine (v2.8–v2.13)
-- [ ] 2.8 — `lastCheckedCommit` field on `Tool`
-- [ ] 2.9 — Cron job checks one tool's repo for new commit/tag
-- [ ] 2.10 — Store + expose update-available flag
-- [ ] 2.11 — Frontend update-available badge (amber accent, per design system) on tool card
-- [ ] 2.12 — Extend cron to all registered tools
-- [ ] 2.13 — "Update now" action (re-pull + redeploy)
+- [x] 2.8 — `lastCheckedCommit` field on `Tool`
+- [x] 2.9 — Cron job checks one tool's repo for new commit/tag
+- [x] 2.10 — Store + expose update-available flag
+- [x] 2.11 — Frontend update-available badge (amber accent, per design system) on tool card
+- [x] 2.12 — Extend cron to all registered tools
+- [x] 2.13 — "Update now" action (re-pull + redeploy)
 
 ## Phase 8 — Entity Graph Goes Live (v2.14–v2.19)
 *This is where the globe stops being decorative and becomes the actual product visualization.*

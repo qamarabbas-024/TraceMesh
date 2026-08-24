@@ -10,11 +10,15 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ToolsService } from './tools.service';
+import { UpdateCheckerService } from './update-checker.service';
 import { ToolDTO, CreateToolDTO } from '@tracemesh/shared';
 
 @Controller('tools')
 export class ToolsController {
-  constructor(private readonly toolsService: ToolsService) {}
+  constructor(
+    private readonly toolsService: ToolsService,
+    private readonly updateCheckerService: UpdateCheckerService,
+  ) {}
 
   @Get()
   async getTools(
@@ -38,5 +42,23 @@ export class ToolsController {
   @HttpCode(HttpStatus.CREATED)
   async createTool(@Body() createToolDto: CreateToolDTO): Promise<ToolDTO> {
     return this.toolsService.create(createToolDto);
+  }
+
+  @Post(':id/check-update')
+  @HttpCode(HttpStatus.OK)
+  async checkToolUpdate(@Param('id') id: string) {
+    return this.updateCheckerService.checkTool(id);
+  }
+
+  @Post('check-all-updates')
+  @HttpCode(HttpStatus.OK)
+  async checkAllUpdates() {
+    return this.updateCheckerService.checkAll();
+  }
+
+  @Post(':id/update')
+  @HttpCode(HttpStatus.OK)
+  async performUpdate(@Param('id') id: string) {
+    return this.updateCheckerService.updateTool(id);
   }
 }
