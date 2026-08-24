@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "declaration": false,
     "declarationMap": false,
+    "noEmit": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -12,11 +13,9 @@
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
-    "paths": {
-      "@tracemesh/shared": ["../../packages/shared/src/index.ts"]
-    },
-    "incremental": true,
+    "incremental": false,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,

@@ -1,7 +1,7 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { INITIAL_TOOLS } from './tools.constants';
 import { ToolDTO, CreateToolDTO, InputType, ToolTier } from '@tracemesh/shared';
-import { INITIAL_TOOLS } from '../../prisma/seed';
 
 @Injectable()
 export class ToolsService {

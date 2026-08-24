@@ -8,6 +8,10 @@ import { SherlockRunner } from '../runners/sherlock.runner';
 import { ExifToolRunner } from '../runners/exiftool.runner';
 import { PhoneInfogaRunner } from '../runners/phoneinfoga.runner';
 import { DomainReconRunner } from '../runners/domain-recon.runner';
+import { MaigretRunner } from '../runners/maigret.runner';
+import { GHuntRunner } from '../runners/ghunt.runner';
+import { H8mailRunner } from '../runners/h8mail.runner';
+import { SubfinderRunner } from '../runners/subfinder.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -20,6 +24,10 @@ import { DomainReconRunner } from '../runners/domain-recon.runner';
     ExifToolRunner,
     PhoneInfogaRunner,
     DomainReconRunner,
+    MaigretRunner,
+    GHuntRunner,
+    H8mailRunner,
+    SubfinderRunner,
   ],
   exports: [RunsService, AggregationService],
 })

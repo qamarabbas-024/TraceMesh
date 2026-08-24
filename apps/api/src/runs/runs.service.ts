@@ -7,6 +7,10 @@ import { SherlockRunner } from '../runners/sherlock.runner';
 import { ExifToolRunner } from '../runners/exiftool.runner';
 import { PhoneInfogaRunner } from '../runners/phoneinfoga.runner';
 import { DomainReconRunner } from '../runners/domain-recon.runner';
+import { MaigretRunner } from '../runners/maigret.runner';
+import { GHuntRunner } from '../runners/ghunt.runner';
+import { H8mailRunner } from '../runners/h8mail.runner';
+import { SubfinderRunner } from '../runners/subfinder.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -32,12 +36,21 @@ export class RunsService {
     private readonly exifToolRunner: ExifToolRunner,
     private readonly phoneInfogaRunner: PhoneInfogaRunner,
     private readonly domainReconRunner: DomainReconRunner,
+    private readonly maigretRunner: MaigretRunner,
+    private readonly ghuntRunner: GHuntRunner,
+    private readonly h8mailRunner: H8mailRunner,
+    private readonly subfinderRunner: SubfinderRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
     this.runnerMap.set('exiftool', this.exifToolRunner);
     this.runnerMap.set('phoneinfoga', this.phoneInfogaRunner);
     this.runnerMap.set('domainrecon', this.domainReconRunner);
+    this.runnerMap.set('maigret', this.maigretRunner);
+    this.runnerMap.set('whatsmyname', this.sherlockRunner);
+    this.runnerMap.set('ghunt', this.ghuntRunner);
+    this.runnerMap.set('h8mail', this.h8mailRunner);
+    this.runnerMap.set('subfinder', this.subfinderRunner);
   }
 
   async runBatch(req: BatchRunRequest): Promise<AggregatedReport> {
