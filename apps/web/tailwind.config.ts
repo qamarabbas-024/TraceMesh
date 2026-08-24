@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
+    './src/**/*.{js,ts,jsx,tsx,mdx}',
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Background tokens
+        // Background tokens per DESIGN.md
         'bg-base': '#0a0e14',
         'bg-surface': '#111826',
         'bg-surface-raised': '#161f30',

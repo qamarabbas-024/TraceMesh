@@ -7,12 +7,12 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
+    credentials: false,
   });
 
-  const port = process.env.PORT || 3001;
-  await app.listen(port);
-  console.log(`TraceMesh API running on port ${port}`);
+  const port = Number(process.env.PORT) || 3001;
+  await app.listen(port, '0.0.0.0');
+  console.log(`TraceMesh API running on http://localhost:${port} and 0.0.0.0:${port}`);
 }
 
 bootstrap();
