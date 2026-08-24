@@ -7,8 +7,9 @@ import { ExecutionResults } from '@/components/ExecutionResults';
 import { HistoryDrawer } from '@/components/HistoryDrawer';
 import { AuthModal } from '@/components/AuthModal';
 import { EntityGlobe } from '@/components/EntityGlobe';
+import { ImportModal } from '@/components/ImportModal';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
-import { History, User as UserIcon, LogOut, Shield, Zap, Sparkles } from 'lucide-react';
+import { History, User as UserIcon, LogOut, Shield, Zap, Sparkles, UploadCloud } from 'lucide-react';
 
 export default function Home() {
   const [report, setReport] = useState<AggregatedReport | null>(null);
@@ -17,11 +18,12 @@ export default function Home() {
   const [fanOutTarget, setFanOutTarget] = useState<{ value: string; type: InputType } | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
 
-  // Auth state
+  // Auth & Modal states
   const [user, setUser] = useState<{ id: string; email: string; name?: string } | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
   // Load session from localStorage on mount
   useEffect(() => {
@@ -121,6 +123,16 @@ export default function Home() {
             title="Toggle reduced motion mode"
           >
             {reduceMotion ? 'Motion: Reduced' : 'Motion: Smooth'}
+          </button>
+
+          {/* Import Chat / Text Button */}
+          <button
+            onClick={() => setIsImportOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono bg-bg-surface border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors"
+            title="Import intelligence notes or chat transcripts"
+          >
+            <UploadCloud className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Import Data</span>
           </button>
 
           {/* History Drawer Button */}
@@ -224,6 +236,12 @@ export default function Home() {
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthSuccess}
+      />
+
+      <ImportModal
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onSelectEntity={handleFanOutSearch}
       />
     </main>
   );

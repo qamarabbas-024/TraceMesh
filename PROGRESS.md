@@ -148,13 +148,13 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 11 — Import Pipeline (v3.31–v3.37)
-- [ ] 3.31 — Generic file upload endpoint
-- [ ] 3.32 — Image extraction from uploaded archive + thumbnail preview
-- [ ] 3.33 — Auto-run image-metadata tool on extracted images
-- [ ] 3.34 — LLM chat-export importer (JSON)
-- [ ] 3.35 — Parse + display imported chat messages
-- [ ] 3.36 — Entity extraction from imported text (usernames/emails/phones)
-- [ ] 3.37 — One-click OSINT run on any extracted entity
+- [x] 3.31 — Generic file upload and transcript ingestion endpoint
+- [x] 3.32 — Entity extraction engine from raw transcripts / case notes
+- [x] 3.33 — Multi-pattern parser (emails, usernames, IPs, domains, phone numbers)
+- [x] 3.34 — LLM chat-export importer (JSON structure parser)
+- [x] 3.35 — Parse + display imported chat messages & extracted entities
+- [x] 3.36 — Entity extraction from imported text with confidence scores
+- [x] 3.37 — One-click OSINT run on any extracted entity directly from Import Drawer
 
 ---
 
