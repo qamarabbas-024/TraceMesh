@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build shared package
+        run: pnpm --filter @tracemesh/shared build
+
       - name: Generate Prisma Client
         run: pnpm --filter @tracemesh/api prisma:generate
 
