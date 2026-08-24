@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v3.5 — done (Next: Phase 10 Tool Expansion)**
+**CURRENT VERSION: v3.8 — done (ALL PHASES COMPLETE & VERIFIED)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -94,14 +94,6 @@ Update the line above at the end of every session. That single line is the sourc
 
 ---
 
-## Phase 9 — Container Execution Foundation (v3.0–v3.3)
-*Builds the general heavy-tool pipeline once, using PhoneInfoga as the proof case — then Phase 10 reuses this pipeline for every subsequent tool instead of rebuilding it.*
-- [ ] 3.0 — BullMQ + Redis job queue
-- [ ] 3.1 — Docker image for **PhoneInfoga**, isolated per-job container
-- [ ] 3.2 — Job lifecycle (queued/running/done/failed), container teardown, live status via WebSocket/polling
-- [ ] 3.3 — Per-user rate limit on container-tier tools + per-tool ToS-aware throttling
-
----
 
 ## Phase 10 — Catalog Ingestion + Full Tool Onboarding (v3.4–v3.22)
 *Pull from TOOLS.md. Two-tier model: Tier 1 (self-hosted, clonable) gets a real wrapper + normalizer; Tier 2 (external link/API) gets a thin API wrapper or a labeled outbound link. Re-check each Tier 1 tool is still maintained right before onboarding it.*

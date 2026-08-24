@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ToolsService } from './tools.service';
 import { UpdateCheckerService } from './update-checker.service';
+import { CatalogIngestService } from './catalog-ingest.service';
 import { ToolDTO, CreateToolDTO } from '@tracemesh/shared';
 
 @Controller('tools')
@@ -18,6 +19,7 @@ export class ToolsController {
   constructor(
     private readonly toolsService: ToolsService,
     private readonly updateCheckerService: UpdateCheckerService,
+    private readonly catalogIngestService: CatalogIngestService,
   ) {}
 
   @Get()
@@ -42,6 +44,12 @@ export class ToolsController {
   @HttpCode(HttpStatus.CREATED)
   async createTool(@Body() createToolDto: CreateToolDTO): Promise<ToolDTO> {
     return this.toolsService.create(createToolDto);
+  }
+
+  @Post('ingest-catalog')
+  @HttpCode(HttpStatus.OK)
+  async ingestCatalog() {
+    return this.catalogIngestService.ingestCatalog();
   }
 
   @Post(':id/check-update')
