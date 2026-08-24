@@ -1,6 +1,16 @@
-import { Controller, Get, Param, Query, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  NotFoundException,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ToolsService } from './tools.service';
-import { ToolDTO } from '@tracemesh/shared';
+import { ToolDTO, CreateToolDTO } from '@tracemesh/shared';
 
 @Controller('tools')
 export class ToolsController {
@@ -22,5 +32,11 @@ export class ToolsController {
       throw new NotFoundException(`Tool with ID or name '${id}' not found`);
     }
     return tool;
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  async createTool(@Body() createToolDto: CreateToolDTO): Promise<ToolDTO> {
+    return this.toolsService.create(createToolDto);
   }
 }

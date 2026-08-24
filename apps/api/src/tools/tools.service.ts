@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ToolDTO, InputType, ToolTier } from '@tracemesh/shared';
+import { ToolDTO, CreateToolDTO, InputType, ToolTier } from '@tracemesh/shared';
 import { INITIAL_TOOLS } from '../../prisma/seed';
 
 @Injectable()
@@ -8,24 +8,24 @@ export class ToolsService {
   private readonly logger = new Logger(ToolsService.name);
 
   // Fallback in-memory catalog
-  private readonly fallbackTools: ToolDTO[] = INITIAL_TOOLS.map((tool, idx) => ({
+  private fallbackTools: ToolDTO[] = INITIAL_TOOLS.map((tool, idx) => ({
     id: `seed-${idx + 1}-${tool.name}`,
     name: tool.name,
     displayName: tool.displayName,
     description: tool.description,
     category: tool.category,
     inputTypes: tool.inputTypes as InputType[],
-    tier: tool.tier as ToolTier,
-    executionType: tool.executionType as any,
-    sourceUrl: tool.sourceUrl,
-    trackedVersion: tool.trackedVersion,
+    tier: (tool.tier || 'tier1') as ToolTier,
+    executionType: (tool.executionType || 'edge') as any,
+    sourceUrl: tool.sourceUrl || null,
+    trackedVersion: tool.trackedVersion || '1.0.0',
     lastCheckedCommit: null,
     updateAvailable: false,
-    license: tool.license,
-    maintenanceStatus: tool.maintenanceStatus as any,
+    license: tool.license || 'MIT',
+    maintenanceStatus: (tool.maintenanceStatus || 'active') as any,
     inputSchema: null,
     outputSchema: null,
-    isEnabled: tool.isEnabled,
+    isEnabled: tool.isEnabled ?? true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }));
@@ -111,5 +111,90 @@ export class ToolsService {
 
     const fallback = this.fallbackTools.find((t) => t.id === idOrName || t.name === idOrName);
     return fallback || null;
+  }
+
+  async create(dto: CreateToolDTO): Promise<ToolDTO> {
+    if (!dto.name || !dto.displayName || !dto.description || !dto.category || !dto.inputTypes?.length) {
+      throw new BadRequestException('Required fields missing: name, displayName, description, category, inputTypes');
+    }
+
+    const normalizedName = dto.name.toLowerCase().trim();
+
+    try {
+      const created = await this.prisma.tool.upsert({
+        where: { name: normalizedName },
+        update: {
+          displayName: dto.displayName,
+          description: dto.description,
+          category: dto.category,
+          inputTypes: dto.inputTypes,
+          tier: dto.tier || 'tier1',
+          executionType: dto.executionType || 'edge',
+          sourceUrl: dto.sourceUrl || null,
+          trackedVersion: dto.trackedVersion || '1.0.0',
+          license: dto.license || 'MIT',
+          maintenanceStatus: dto.maintenanceStatus || 'active',
+          inputSchema: dto.inputSchema || undefined,
+          outputSchema: dto.outputSchema || undefined,
+          isEnabled: dto.isEnabled ?? true,
+        },
+        create: {
+          name: normalizedName,
+          displayName: dto.displayName,
+          description: dto.description,
+          category: dto.category,
+          inputTypes: dto.inputTypes,
+          tier: dto.tier || 'tier1',
+          executionType: dto.executionType || 'edge',
+          sourceUrl: dto.sourceUrl || null,
+          trackedVersion: dto.trackedVersion || '1.0.0',
+          license: dto.license || 'MIT',
+          maintenanceStatus: dto.maintenanceStatus || 'active',
+          inputSchema: dto.inputSchema || undefined,
+          outputSchema: dto.outputSchema || undefined,
+          isEnabled: dto.isEnabled ?? true,
+        },
+      });
+
+      return {
+        ...created,
+        inputTypes: created.inputTypes as InputType[],
+        tier: created.tier as ToolTier,
+        executionType: created.executionType as any,
+        maintenanceStatus: created.maintenanceStatus as any,
+        inputSchema: created.inputSchema as any,
+        outputSchema: created.outputSchema as any,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.updatedAt.toISOString(),
+      };
+    } catch (e) {
+      this.logger.warn(`Could not write tool to DB, adding to in-memory fallback catalog: ${e}`);
+    }
+
+    // Fallback in-memory registration
+    const newTool: ToolDTO = {
+      id: `custom-${Date.now()}-${normalizedName}`,
+      name: normalizedName,
+      displayName: dto.displayName,
+      description: dto.description,
+      category: dto.category,
+      inputTypes: dto.inputTypes,
+      tier: dto.tier || 'tier1',
+      executionType: dto.executionType || 'edge',
+      sourceUrl: dto.sourceUrl || null,
+      trackedVersion: dto.trackedVersion || '1.0.0',
+      lastCheckedCommit: null,
+      updateAvailable: false,
+      license: dto.license || 'MIT',
+      maintenanceStatus: dto.maintenanceStatus || 'active',
+      inputSchema: dto.inputSchema || null,
+      outputSchema: dto.outputSchema || null,
+      isEnabled: dto.isEnabled ?? true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.fallbackTools = [newTool, ...this.fallbackTools.filter((t) => t.name !== normalizedName)];
+    return newTool;
   }
 }

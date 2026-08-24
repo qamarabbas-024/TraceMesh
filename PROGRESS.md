@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.10 — done (Next: v1.11)**
+**CURRENT VERSION: v1.13 — done (Next: v1.14)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -21,9 +21,9 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 1.8 — Seed 3 tools across 3 domains: **Sherlock** (username), **Holehe** (email), **ExifTool** (image) — see TOOLS.md
 - [x] 1.9 — `GET /tools` endpoint
 - [x] 1.10 — `GET /tools/:id` endpoint
-- [ ] 1.11 — Frontend: input box + auto-detected/selectable input type + matching tool list (flat, checkboxes)
-- [ ] 1.12 — "Select All" + per-tool selection state
-- [ ] 1.13 — Admin `POST /tools` endpoint
+- [x] 1.11 — Frontend: input box + auto-detected/selectable input type + matching tool list (flat, checkboxes)
+- [x] 1.12 — "Select All" + per-tool selection state
+- [x] 1.13 — Admin `POST /tools` endpoint
 
 ## Phase 3 — First real execution + Aggregation Engine v1 (v1.14–v1.22)
 - [ ] 1.14 — Wire Holehe as an edge function (simplest of the three)
