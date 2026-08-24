@@ -15,6 +15,8 @@ import {
   Terminal,
   AlertCircle,
   RefreshCw,
+  Star,
+  Filter,
 } from 'lucide-react';
 
 const SUPPORTED_INPUT_TYPES: { type: InputType; label: string }[] = [
@@ -37,6 +39,32 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
   const [selectedToolIds, setSelectedToolIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [updatingToolId, setUpdatingToolId] = useState<string | null>(null);
+  const [toolSearchQuery, setToolSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    try {
+      const savedFavs = localStorage.getItem('tracemesh_tool_favorites');
+      if (savedFavs) {
+        setFavorites(new Set(JSON.parse(savedFavs)));
+      }
+    } catch {}
+  }, []);
+
+  const toggleFavorite = (e: React.MouseEvent, toolId: string) => {
+    e.stopPropagation();
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(toolId)) next.delete(toolId);
+      else next.add(toolId);
+      try {
+        localStorage.setItem('tracemesh_tool_favorites', JSON.stringify(Array.from(next)));
+      } catch {}
+      return next;
+    });
+  };
 
   // Auto-detect input type unless manually selected
   const detectedType = useMemo(() => {
@@ -64,10 +92,24 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
     fetchTools();
   }, []);
 
-  // Filter tools matching the current input type
+  // Filter tools matching input type, category, and search query, with favorites sorted first
   const matchingTools = useMemo(() => {
-    return tools.filter((t) => t.inputTypes.includes(detectedType));
-  }, [tools, detectedType]);
+    return tools
+      .filter((t) => {
+        const matchesInput = t.inputTypes.includes(detectedType);
+        const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
+        const matchesSearch =
+          !toolSearchQuery.trim() ||
+          t.displayName.toLowerCase().includes(toolSearchQuery.toLowerCase()) ||
+          t.description.toLowerCase().includes(toolSearchQuery.toLowerCase());
+        return matchesInput && matchesCategory && matchesSearch;
+      })
+      .sort((a, b) => {
+        const aFav = favorites.has(a.id) ? 1 : 0;
+        const bFav = favorites.has(b.id) ? 1 : 0;
+        return bFav - aFav;
+      });
+  }, [tools, detectedType, categoryFilter, toolSearchQuery, favorites]);
 
   // Auto-select all matching tools when input type changes or first loads
   useEffect(() => {
@@ -116,7 +158,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
 
   const handleInputChange = (val: string) => {
     setInputValue(val);
-    setManualInputType(null); // Reset manual override on fresh typing
+    setManualInputType(null);
   };
 
   return (
@@ -184,10 +226,10 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
         </button>
       </div>
 
-      {/* Matching Tools Section */}
+      {/* Matching Tools Section with Fuzzy Search & Filters */}
       <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4">
-        {/* Header with Select All */}
-        <div className="flex items-center justify-between border-b border-accent-cyan-dim/20 pb-3">
+        {/* Header with Search and Select All */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-accent-cyan-dim/20 pb-3">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-accent-cyan" />
             <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
@@ -195,21 +237,35 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
             </span>
           </div>
 
-          <button
-            onClick={toggleSelectAll}
-            disabled={matchingTools.length === 0}
-            className="flex items-center gap-1.5 text-xs font-mono text-text-secondary hover:text-accent-cyan transition-colors disabled:opacity-50"
-          >
-            {isAllSelected ? (
-              <CheckSquare className="w-4 h-4 text-accent-cyan" />
-            ) : (
-              <Square className="w-4 h-4 text-text-muted" />
-            )}
-            <span>
-              {isAllSelected ? 'Deselect All' : 'Select All'} ({selectedToolIds.size}/
-              {matchingTools.length})
-            </span>
-          </button>
+          <div className="flex items-center gap-3">
+            {/* Fuzzy Tool Filter Input */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 rounded text-xs font-mono text-text-primary">
+              <Search className="w-3.5 h-3.5 text-accent-cyan-dim" />
+              <input
+                type="text"
+                value={toolSearchQuery}
+                onChange={(e) => setToolSearchQuery(e.target.value)}
+                placeholder="Filter tools..."
+                className="bg-transparent border-none outline-none text-xs w-28 sm:w-36 text-text-primary placeholder:text-text-muted"
+              />
+            </div>
+
+            <button
+              onClick={toggleSelectAll}
+              disabled={matchingTools.length === 0}
+              className="flex items-center gap-1.5 text-xs font-mono text-text-secondary hover:text-accent-cyan transition-colors disabled:opacity-50 shrink-0"
+            >
+              {isAllSelected ? (
+                <CheckSquare className="w-4 h-4 text-accent-cyan" />
+              ) : (
+                <Square className="w-4 h-4 text-text-muted" />
+              )}
+              <span>
+                {isAllSelected ? 'Deselect All' : 'Select All'} ({selectedToolIds.size}/
+                {matchingTools.length})
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Tool Cards List */}
@@ -220,12 +276,13 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
           </div>
         ) : matchingTools.length === 0 ? (
           <div className="py-6 text-center text-xs font-mono text-text-muted">
-            No active tools registered for input type &apos;{detectedType}&apos; yet.
+            No active tools matching query &apos;{toolSearchQuery}&apos; for &apos;{detectedType}&apos;.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {matchingTools.map((tool) => {
               const isSelected = selectedToolIds.has(tool.id);
+              const isFav = favorites.has(tool.id);
               return (
                 <div
                   key={tool.id}
@@ -236,19 +293,30 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
                       : 'bg-bg-surface-raised/40 border-accent-cyan-dim/30 hover:border-accent-cyan-dim'
                   }`}
                 >
-                  {/* Amber dot for update available (DESIGN.md Section 4) */}
-                  {tool.updateAvailable && (
-                    <div
-                      className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-amber/15 border border-accent-amber/60 text-accent-amber text-[9px] font-mono uppercase"
-                      title="Update Available from upstream repository"
+                  {/* Top Right Controls (Favorite Star & Update Badge) */}
+                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                    {tool.updateAvailable && (
+                      <div
+                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-amber/15 border border-accent-amber/60 text-accent-amber text-[9px] font-mono uppercase"
+                        title="Update Available from upstream repository"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse" />
+                        <span>Update</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => toggleFavorite(e, tool.id)}
+                      className={`p-1 rounded hover:bg-bg-base transition-colors ${
+                        isFav ? 'text-accent-amber' : 'text-text-muted hover:text-text-secondary'
+                      }`}
+                      title={isFav ? 'Unfavorite tool' : 'Favorite tool (pins to top)'}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse" />
-                      <span>Update</span>
-                    </div>
-                  )}
+                      <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-accent-amber' : ''}`} />
+                    </button>
+                  </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-2 pr-12">
+                    <div className="flex items-center justify-between mb-2 pr-16">
                       <div className="flex items-center gap-2">
                         {isSelected ? (
                           <CheckSquare className="w-4 h-4 text-accent-cyan shrink-0" />

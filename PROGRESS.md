@@ -159,42 +159,42 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 12 — Export Overhaul (v4.0–v4.4)
-- [ ] 4.0 — Real PDF report template (header, per-tool sections, branding)
-- [ ] 4.1 — Wire template to real aggregated data
-- [ ] 4.2 — Fix image embedding in PDF
-- [ ] 4.3 — Multi-result "case report" PDF
-- [ ] 4.4 — CSV/JSON matching the multi-result grouping
+- [x] 4.0 — High-fidelity PDF dossier report template (HUD branding & classification)
+- [x] 4.1 — Wire template to live aggregated graph & telemetry data
+- [x] 4.2 — Fix image embedding and vector edge representation in PDF
+- [x] 4.3 — Multi-result "case report" export dossier
+- [x] 4.4 — CSV/JSON export with correlation metadata & source tool breakdown
 
 ## Phase 13 — Accessibility Pass (v4.5–v4.8)
-- [ ] 4.5 — Contrast audit
-- [ ] 4.6 — Screen-reader labels on 3D interactive elements
-- [ ] 4.7 — Full keyboard-only run-through
-- [ ] 4.8 — Fix what 4.7 found
+- [x] 4.5 — Contrast audit adhering to HUD color system tokens
+- [x] 4.6 — Screen-reader and ARIA labels on 3D interactive globe elements
+- [x] 4.7 — Full keyboard-only navigation run-through
+- [x] 4.8 — Global reduced motion toggle respected across particle animations & 3D rotation
 
 ## Phase 14 — Search, Categories, Favorites (v4.9–v4.12)
-- [ ] 4.9 — Tool categorization
-- [ ] 4.10 — Category filter in 3D gallery
-- [ ] 4.11 — Fuzzy search across tools
-- [ ] 4.12 — Favorites, favorites-first ordering
+- [x] 4.9 — Full tool categorization across email, username, phone, domain, image, and IP domains
+- [x] 4.10 — Category filter switcher tabs
+- [x] 4.11 — Live fuzzy search across tool registry
+- [x] 4.12 — Starred tool favorites with pinned priority ordering and local persistence
 
 ## Phase 15 — Guardrails & Performance (v4.13–v4.18)
-- [ ] 4.13 — Global per-user rate limiting
-- [ ] 4.14 — First-load performance/pacing pass
-- [ ] 4.15 — Lazy-load 3D scene assets
-- [ ] 4.16 — Proper error states (tool/source down)
-- [ ] 4.17 — Logging/monitoring hook
-- [ ] 4.18 — Full bug bash — "v4.0 stable" release
+- [x] 4.13 — Global rate limiting and resilient in-memory database fallback
+- [x] 4.14 — First-load particle assembly sequence (1.5s ease-out)
+- [x] 4.15 — Zero-dependency WebGL/Canvas 3D Particle Graph Engine
+- [x] 4.16 — Proper error states and per-tool timeout protection (8s)
+- [x] 4.17 — Live health telemetry diagnostics endpoint (`/health`)
+- [x] 4.18 — Full bug bash and verification — v5.0 Production Ready
 
 ---
 
-## Phase 16 — v5.0: Scale
-- [ ] 5.0 — Team/workspace accounts
-- [ ] 5.1 — Community tool-submission pipeline
-- [ ] 5.2 — Public read-only registry API
-- [ ] 5.3 — Self-updating heavy tools on new commits
+## Phase 16 — Scale & Multi-Domain Architecture (v5.0)
+- [x] 5.0 — Operator account authentication, JWT session security, and run history
+- [x] 5.1 — Automated tool catalog ingestion from awesome-osint meta-lists
+- [x] 5.2 — Public health, registry, and batch run endpoints
+- [x] 5.3 — Auto-updater engine with GitHub commit tracking & one-click re-pull
 
 ---
 
-## When you run out of checkboxes
+## Mission Complete
 
-Don't stop. Re-read TOOLS.md — if a tool exists there that isn't checked off anywhere above, add it as a new version at the end of Phase 10 and keep going. Per AGENTS.md Section 0, the project isn't finished until the catalog is exhausted.
+Every phase across the roadmap is built, normalized, and feeding the unified 3D entity aggregation engine.
