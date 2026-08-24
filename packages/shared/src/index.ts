@@ -82,3 +82,38 @@ export interface NormalizedResult {
   error?: string;
   durationMs?: number;
 }
+
+export interface BatchRunRequest {
+  inputValue: string;
+  inputType: InputType;
+  toolIds: string[];
+  bypassCache?: boolean;
+}
+
+export interface AggregatedReport {
+  runId: string;
+  root: {
+    value: string;
+    type: InputType;
+  };
+  entities: DiscoveredEntity[];
+  toolResults: {
+    toolId: string;
+    toolName: string;
+    displayName: string;
+    status: 'success' | 'error' | 'timeout';
+    durationMs: number;
+    summary: string;
+    entitiesCount: number;
+    error?: string;
+  }[];
+  stats: {
+    totalTools: number;
+    successCount: number;
+    errorCount: number;
+    totalEntities: number;
+    durationMs: number;
+    cached: boolean;
+  };
+  createdAt: string;
+}

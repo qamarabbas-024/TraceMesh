@@ -3,18 +3,46 @@
 import { useState } from 'react';
 import { BackendStatus } from '@/components/BackendStatus';
 import { ToolSelector } from '@/components/ToolSelector';
-import type { InputType } from '@tracemesh/shared';
+import { ExecutionResults } from '@/components/ExecutionResults';
+import type { InputType, AggregatedReport } from '@tracemesh/shared';
 
 export default function Home() {
-  const [activeRun, setActiveRun] = useState<{
-    inputValue: string;
-    inputType: InputType;
-    toolIds: string[];
-  } | null>(null);
+  const [report, setReport] = useState<AggregatedReport | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fanOutTarget, setFanOutTarget] = useState<{ value: string; type: InputType } | null>(null);
 
-  const handleRun = (inputValue: string, inputType: InputType, toolIds: string[]) => {
-    setActiveRun({ inputValue, inputType, toolIds });
-    console.log('Initiating parallel OSINT batch run for:', { inputValue, inputType, toolIds });
+  const handleRun = async (inputValue: string, inputType: InputType, toolIds: string[]) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const res = await fetch(`${apiUrl}/run-batch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          inputValue,
+          inputType,
+          toolIds,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: Failed to execute batch query`);
+      }
+
+      const data: AggregatedReport = await res.json();
+      setReport(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Batch execution failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFanOutSearch = (value: string, type: InputType) => {
+    setFanOutTarget({ value, type });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -34,23 +62,25 @@ export default function Home() {
       </header>
 
       {/* Main Tool Selector & Search Bar */}
-      <ToolSelector onRun={handleRun} />
+      <ToolSelector
+        key={fanOutTarget ? `${fanOutTarget.value}-${fanOutTarget.type}` : 'default'}
+        onRun={handleRun}
+      />
 
-      {/* Active Run Telemetry Preview */}
-      {activeRun && (
-        <div className="w-full max-w-3xl border border-accent-cyan bg-bg-surface/90 backdrop-blur-md p-4 rounded shadow-cyan-glow animate-fade-in text-left font-mono text-xs">
-          <div className="flex items-center justify-between border-b border-accent-cyan-dim/30 pb-2 mb-3">
-            <span className="text-accent-cyan uppercase tracking-wider font-semibold">
-              Batch Execution Dispatched
-            </span>
-            <span className="text-text-muted">{new Date().toLocaleTimeString()}</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-text-secondary">
-            <div>Target: <span className="text-text-primary font-bold">{activeRun.inputValue}</span></div>
-            <div>Domain: <span className="text-accent-cyan uppercase">{activeRun.inputType}</span></div>
-            <div>Active Runners: <span className="text-status-success">{activeRun.toolIds.length} tools</span></div>
-          </div>
+      {/* Error display */}
+      {error && (
+        <div className="w-full max-w-3xl p-4 rounded border border-status-error/40 bg-status-error/10 text-left font-mono text-xs text-status-error">
+          Execution Error: {error}
         </div>
+      )}
+
+      {/* Aggregated Results & Entity Correlation Graph */}
+      {(loading || report) && (
+        <ExecutionResults
+          report={report}
+          loading={loading}
+          onFanOutSearch={handleFanOutSearch}
+        />
       )}
 
       {/* Telemetry & Subsystem Diagnostics */}

@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.13 — done (Next: v1.14)**
+**CURRENT VERSION: v1.22 — done (Next: v1.23)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -26,15 +26,15 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 1.13 — Admin `POST /tools` endpoint
 
 ## Phase 3 — First real execution + Aggregation Engine v1 (v1.14–v1.22)
-- [ ] 1.14 — Wire Holehe as an edge function (simplest of the three)
-- [ ] 1.15 — `POST /run-batch` — accepts input + selected tool IDs, launches all in parallel
-- [ ] 1.16 — Result Normalizer v1: map one tool's output into `{status, summary, entities[]}`
-- [ ] 1.17 — Aggregation Engine v1: merge multiple tools' normalized entities into one result list, tag each entity with source tool
-- [ ] 1.18 — Frontend: submit, per-tool loading state, live results as each tool finishes
-- [ ] 1.19 — Add Sherlock (username domain) — proves the pattern generalizes across domains
-- [ ] 1.20 — Add ExifTool (image domain, first file-upload input type)
-- [ ] 1.21 — Per-tool timeout so one slow tool doesn't block the batch
-- [ ] 1.22 — Result cache keyed on `(input, tool)` pair
+- [x] 1.14 — Wire Holehe as an edge function (simplest of the three)
+- [x] 1.15 — `POST /run-batch` — accepts input + selected tool IDs, launches all in parallel
+- [x] 1.16 — Result Normalizer v1: map one tool's output into `{status, summary, entities[]}`
+- [x] 1.17 — Aggregation Engine v1: merge multiple tools' normalized entities into one result list, tag each entity with source tool
+- [x] 1.18 — Frontend: submit, per-tool loading state, live results as each tool finishes
+- [x] 1.19 — Add Sherlock (username domain) — proves the pattern generalizes across domains
+- [x] 1.20 — Add ExifTool (image domain, first file-upload input type)
+- [x] 1.21 — Per-tool timeout so one slow tool doesn't block the batch
+- [x] 1.22 — Result cache keyed on `(input, tool)` pair
 
 **Milestone: v1.22 — first real working MVP across 3 domains.**
 
