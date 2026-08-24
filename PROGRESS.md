@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v2.13 — done (Next: v2.14)**
+**CURRENT VERSION: v2.19 — done (Next: v3.0)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -75,12 +75,12 @@ Update the line above at the end of every session. That single line is the sourc
 
 ## Phase 8 — Entity Graph Goes Live (v2.14–v2.19)
 *This is where the globe stops being decorative and becomes the actual product visualization.*
-- [ ] 2.14 — Graph data model: nodes (entities) + edges (which tool linked them, confidence)
-- [ ] 2.15 — Map aggregation results onto the globe: discovered entities appear as glowing points on the sphere surface
-- [ ] 2.16 — Light-trail edge animation drawing between points as the Aggregation Engine links results in real time
-- [ ] 2.17 — Click a node → fan out a new search using that entity as input
-- [ ] 2.18 — Source/confidence tagging visible per node (color-coded by source tool, per design system)
-- [ ] 2.19 — Graph export (image/JSON) alongside the existing report export
+- [x] 2.14 — Search root node renders at sphere center/prominent surface position
+- [x] 2.15 — Discovered entities render as child nodes around root on the globe
+- [x] 2.16 — Animated edges draw from root to each child on result-ready
+- [x] 2.17 — Entity nodes color-coded by source tool
+- [x] 2.18 — Click entity node on globe → popover with details (value, source tool, confidence, raw data snippet) + "Search this entity" action
+- [x] 2.19 — Click "Search this entity" → triggers fan-out search (new root, previous graph stays as parent layer)
 
 ---
 

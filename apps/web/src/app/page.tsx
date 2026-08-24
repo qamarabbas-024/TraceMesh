@@ -161,6 +161,8 @@ export default function Home() {
       {/* 3D Entity Graph Globe Visual Centerpiece (DESIGN.md Section 4) */}
       <section className="w-full">
         <EntityGlobe
+          rootValue={report?.root.value}
+          rootType={report?.root.type}
           entities={report?.entities || []}
           onNodeClick={handleFanOutSearch}
           reduceMotion={reduceMotion}
