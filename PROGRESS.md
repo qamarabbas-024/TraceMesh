@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v2.19 — done (Next: v3.0)**
+**CURRENT VERSION: v3.5 — done (Next: Phase 10 Tool Expansion)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -81,6 +81,16 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 2.17 — Entity nodes color-coded by source tool
 - [x] 2.18 — Click entity node on globe → popover with details (value, source tool, confidence, raw data snippet) + "Search this entity" action
 - [x] 2.19 — Click "Search this entity" → triggers fan-out search (new root, previous graph stays as parent layer)
+
+---
+
+## Phase 9 — Multi-Domain Hardening (v3.0–v3.5)
+- [x] 3.0 — Phone number domain onboarding (PhoneInfoga runner & validator)
+- [x] 3.1 — Domain/IP lookup onboarding (Amass / DNS / Shodan-style passive runner & validator)
+- [x] 3.2 — Reverse image search onboarding (ExifTool metadata & optical signature runner)
+- [x] 3.3 — Cross-domain correlation logic in Aggregation Engine (email → username → platforms, IP → domain)
+- [x] 3.4 — Batch comparison view (compare two past runs)
+- [x] 3.5 — Domain-switcher quick filter on frontend
 
 ---
 

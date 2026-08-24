@@ -5,6 +5,8 @@ import { AggregationService } from './aggregation.service';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
 import { ExifToolRunner } from '../runners/exiftool.runner';
+import { PhoneInfogaRunner } from '../runners/phoneinfoga.runner';
+import { DomainReconRunner } from '../runners/domain-recon.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -28,10 +30,14 @@ export class RunsService {
     private readonly holeheRunner: HoleheRunner,
     private readonly sherlockRunner: SherlockRunner,
     private readonly exifToolRunner: ExifToolRunner,
+    private readonly phoneInfogaRunner: PhoneInfogaRunner,
+    private readonly domainReconRunner: DomainReconRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
     this.runnerMap.set('exiftool', this.exifToolRunner);
+    this.runnerMap.set('phoneinfoga', this.phoneInfogaRunner);
+    this.runnerMap.set('domainrecon', this.domainReconRunner);
   }
 
   async runBatch(req: BatchRunRequest): Promise<AggregatedReport> {
