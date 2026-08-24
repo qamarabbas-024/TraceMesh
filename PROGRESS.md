@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.22 — done (Next: v1.23)**
+**CURRENT VERSION: v1.27 — done (Next: v1.28)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -39,11 +39,11 @@ Update the line above at the end of every session. That single line is the sourc
 **Milestone: v1.22 — first real working MVP across 3 domains.**
 
 ## Phase 4 — Accounts (v1.23–v1.27)
-- [ ] 1.23 — Auth (signup/login/sessions)
-- [ ] 1.24 — Protect run endpoints behind auth
-- [ ] 1.25 — Run history table per user
-- [ ] 1.26 — History page (list past runs)
-- [ ] 1.27 — Re-open a past result without re-running
+- [x] 1.23 — Auth (signup/login/sessions)
+- [x] 1.24 — Protect run endpoints behind auth
+- [x] 1.25 — Run history table per user
+- [x] 1.26 — History page (list past runs)
+- [x] 1.27 — Re-open a past result without re-running
 
 ## Phase 5 — Export v1 (v1.28–v1.31)
 - [ ] 1.28 — CSV export of one result

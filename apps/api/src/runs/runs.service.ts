@@ -175,4 +175,101 @@ export class RunsService {
 
     return report;
   }
+
+  async getHistory(userId?: string) {
+    try {
+      const runs = await this.prisma.run.findMany({
+        where: userId ? { userId } : {},
+        include: {
+          items: {
+            include: {
+              tool: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 30,
+      });
+
+      if (runs && runs.length > 0) {
+        return runs.map((r) => ({
+          id: r.id,
+          inputValue: r.inputValue,
+          inputType: r.inputType,
+          status: r.status,
+          createdAt: r.createdAt.toISOString(),
+          toolsCount: r.items.length,
+          entitiesCount: r.items.reduce((acc, item) => {
+            const ents = item.normalized as any[];
+            return acc + (Array.isArray(ents) ? ents.length : 0);
+          }, 0),
+        }));
+      }
+    } catch (e) {
+      this.logger.warn(`Could not query run history from Prisma: ${e}`);
+    }
+
+    // In-memory cached history
+    const cachedRuns: any[] = [];
+    for (const [key, val] of this.cache.entries()) {
+      cachedRuns.push({
+        id: val.report.runId,
+        inputValue: val.report.root.value,
+        inputType: val.report.root.type,
+        status: 'completed',
+        createdAt: val.report.createdAt,
+        toolsCount: val.report.stats.totalTools,
+        entitiesCount: val.report.entities.length,
+      });
+    }
+
+    return cachedRuns;
+  }
+
+  async getRunById(runId: string): Promise<AggregatedReport | null> {
+    // Check in-memory reports
+    for (const [_, val] of this.cache.entries()) {
+      if (val.report.runId === runId) {
+        return val.report;
+      }
+    }
+
+    try {
+      const run = await this.prisma.run.findUnique({
+        where: { id: runId },
+        include: {
+          items: {
+            include: {
+              tool: true,
+            },
+          },
+        },
+      });
+
+      if (run) {
+        const toolExecutions = run.items.map((item) => ({
+          toolId: item.toolId,
+          toolName: item.tool?.name || 'unknown',
+          displayName: item.tool?.displayName || 'Module',
+          status: item.status as any,
+          durationMs: item.durationMs || 0,
+          summary: `Historical execution (${item.status})`,
+          entities: (item.normalized as any[]) || [],
+          error: item.error || undefined,
+        }));
+
+        return this.aggregationService.aggregate(
+          run.id,
+          run.inputValue,
+          run.inputType as InputType,
+          toolExecutions,
+          true,
+        );
+      }
+    } catch (e) {
+      this.logger.warn(`Could not find run by ID in Prisma: ${e}`);
+    }
+
+    return null;
+  }
 }
