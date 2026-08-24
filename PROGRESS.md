@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v1.31 — done (Next: v2.0)**
+**CURRENT VERSION: v2.7 — done (Next: v2.8)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -56,14 +56,14 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 6 — 3D Shell: the Entity Graph Globe (v2.0–v2.7)
-- [ ] 2.0 — Static particle/wireframe sphere rendered behind the existing flat UI, ambient idle rotation only (this is the signature visual — see AGENTS.md Section 3)
-- [ ] 2.1 — Tool list rendered as HUD-style cards around/near the globe (still using flat click handlers underneath)
-- [ ] 2.2 — Cards directly clickable/hoverable via raycasting, remove flat list
-- [ ] 2.3 — Camera orbit/pan controls around the globe
-- [ ] 2.4 — Loading-state motion redesign: globe assembling from scattered particles into a sphere as the platform initializes
-- [ ] 2.5 — Reduce-motion toggle wired to every animation so far, including globe idle rotation
-- [ ] 2.6 — Translucent glass HUD panels (cyan-glow borders per design system) for forms/results over the 3D scene
-- [ ] 2.7 — Keyboard navigation through the HUD interface
+- [x] 2.0 — Static particle/wireframe sphere rendered behind the existing flat UI, ambient idle rotation only (this is the signature visual — see AGENTS.md Section 3)
+- [x] 2.1 — Tool list rendered as HUD-style cards around/near the globe (still using flat click handlers underneath)
+- [x] 2.2 — Cards directly clickable/hoverable via raycasting, remove flat list
+- [x] 2.3 — Camera orbit/pan controls around the globe
+- [x] 2.4 — Loading-state motion redesign: globe assembling from scattered particles into a sphere as the platform initializes
+- [x] 2.5 — Reduce-motion toggle wired to every animation so far, including globe idle rotation
+- [x] 2.6 — Translucent glass HUD panels (cyan-glow borders per design system) for forms/results over the 3D scene
+- [x] 2.7 — Keyboard navigation through the HUD interface
 
 ## Phase 7 — Update Checker Engine (v2.8–v2.13)
 - [ ] 2.8 — `lastCheckedCommit` field on `Tool`

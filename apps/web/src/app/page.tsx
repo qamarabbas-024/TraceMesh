@@ -6,14 +6,16 @@ import { ToolSelector } from '@/components/ToolSelector';
 import { ExecutionResults } from '@/components/ExecutionResults';
 import { HistoryDrawer } from '@/components/HistoryDrawer';
 import { AuthModal } from '@/components/AuthModal';
+import { EntityGlobe } from '@/components/EntityGlobe';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
-import { History, User as UserIcon, LogOut, Shield } from 'lucide-react';
+import { History, User as UserIcon, LogOut, Shield, Zap, Sparkles } from 'lucide-react';
 
 export default function Home() {
   const [report, setReport] = useState<AggregatedReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fanOutTarget, setFanOutTarget] = useState<{ value: string; type: InputType } | null>(null);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   // Auth state
   const [user, setUser] = useState<{ id: string; email: string; name?: string } | null>(null);
@@ -108,6 +110,19 @@ export default function Home() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Reduce motion toggle per DESIGN.md Section 5 */}
+          <button
+            onClick={() => setReduceMotion(!reduceMotion)}
+            className={`px-2.5 py-1 text-[11px] font-mono rounded border transition-colors ${
+              reduceMotion
+                ? 'bg-accent-amber/15 border-accent-amber/50 text-accent-amber'
+                : 'bg-bg-surface border-accent-cyan-dim/30 text-text-secondary hover:text-text-primary'
+            }`}
+            title="Toggle reduced motion mode"
+          >
+            {reduceMotion ? 'Motion: Reduced' : 'Motion: Smooth'}
+          </button>
+
           {/* History Drawer Button */}
           <button
             onClick={() => setIsHistoryOpen(true)}
@@ -143,7 +158,16 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Main Header */}
+      {/* 3D Entity Graph Globe Visual Centerpiece (DESIGN.md Section 4) */}
+      <section className="w-full">
+        <EntityGlobe
+          entities={report?.entities || []}
+          onNodeClick={handleFanOutSearch}
+          reduceMotion={reduceMotion}
+        />
+      </section>
+
+      {/* Main Command Header */}
       <header className="text-center space-y-2 pt-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 text-[11px] uppercase tracking-widest font-mono text-accent-cyan bg-bg-surface border border-accent-cyan-dim/40 rounded shadow-cyan-glow">
           <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" />
