@@ -11,6 +11,10 @@ import { MaigretRunner } from '../runners/maigret.runner';
 import { GHuntRunner } from '../runners/ghunt.runner';
 import { H8mailRunner } from '../runners/h8mail.runner';
 import { SubfinderRunner } from '../runners/subfinder.runner';
+import { SpiderFootRunner } from '../runners/spiderfoot.runner';
+import { TheHarvesterRunner } from '../runners/theharvester.runner';
+import { CensysRunner } from '../runners/censys.runner';
+import { AhmiaRunner } from '../runners/ahmia.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -40,6 +44,10 @@ export class RunsService {
     private readonly ghuntRunner: GHuntRunner,
     private readonly h8mailRunner: H8mailRunner,
     private readonly subfinderRunner: SubfinderRunner,
+    private readonly spiderFootRunner: SpiderFootRunner,
+    private readonly theHarvesterRunner: TheHarvesterRunner,
+    private readonly censysRunner: CensysRunner,
+    private readonly ahmiaRunner: AhmiaRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -51,6 +59,10 @@ export class RunsService {
     this.runnerMap.set('ghunt', this.ghuntRunner);
     this.runnerMap.set('h8mail', this.h8mailRunner);
     this.runnerMap.set('subfinder', this.subfinderRunner);
+    this.runnerMap.set('spiderfoot', this.spiderFootRunner);
+    this.runnerMap.set('theharvester', this.theHarvesterRunner);
+    this.runnerMap.set('censys', this.censysRunner);
+    this.runnerMap.set('ahmia', this.ahmiaRunner);
   }
 
   async runBatch(req: BatchRunRequest): Promise<AggregatedReport> {

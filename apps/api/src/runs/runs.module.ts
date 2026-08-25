@@ -12,6 +12,10 @@ import { MaigretRunner } from '../runners/maigret.runner';
 import { GHuntRunner } from '../runners/ghunt.runner';
 import { H8mailRunner } from '../runners/h8mail.runner';
 import { SubfinderRunner } from '../runners/subfinder.runner';
+import { SpiderFootRunner } from '../runners/spiderfoot.runner';
+import { TheHarvesterRunner } from '../runners/theharvester.runner';
+import { CensysRunner } from '../runners/censys.runner';
+import { AhmiaRunner } from '../runners/ahmia.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -28,6 +32,10 @@ import { SubfinderRunner } from '../runners/subfinder.runner';
     GHuntRunner,
     H8mailRunner,
     SubfinderRunner,
+    SpiderFootRunner,
+    TheHarvesterRunner,
+    CensysRunner,
+    AhmiaRunner,
   ],
   exports: [RunsService, AggregationService],
 })

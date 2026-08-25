@@ -19,7 +19,6 @@ export class AggregationService {
     }[],
     cached: boolean = false,
   ): AggregatedReport {
-    const startTime = Date.now();
     const entityMap = new Map<string, DiscoveredEntity>();
 
     // Merge and deduplicate entities
@@ -29,7 +28,6 @@ export class AggregationService {
         const existing = entityMap.get(key);
 
         if (existing) {
-          // Merge metadata and strengthen confidence
           existing.metadata = {
             ...existing.metadata,
             ...entity.metadata,
@@ -44,6 +42,28 @@ export class AggregationService {
 
     const uniqueEntities = Array.from(entityMap.values());
     const totalDuration = toolExecutions.reduce((max, t) => Math.max(max, t.durationMs), 0);
+
+    // Calculate OPSEC Exposure Score (0-100%) and Threat Matrix
+    let rawScore = 0;
+    for (const entity of uniqueEntities) {
+      if (entity.type === 'breach') {
+        rawScore += 25;
+      } else if (entity.type === 'platform') {
+        rawScore += 8;
+      } else if (entity.type === 'ip' || entity.type === 'domain') {
+        rawScore += 12;
+      } else if (entity.type === 'record') {
+        rawScore += 15;
+      } else {
+        rawScore += 5;
+      }
+    }
+
+    const opsecScore = Math.min(100, Math.max(10, Math.round(rawScore)));
+    let threatLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW';
+    if (opsecScore >= 80) threatLevel = 'CRITICAL';
+    else if (opsecScore >= 55) threatLevel = 'HIGH';
+    else if (opsecScore >= 30) threatLevel = 'MEDIUM';
 
     return {
       runId,
@@ -70,6 +90,8 @@ export class AggregationService {
         durationMs: totalDuration,
         cached,
       },
+      opsecScore,
+      threatLevel,
       createdAt: new Date().toISOString(),
     };
   }

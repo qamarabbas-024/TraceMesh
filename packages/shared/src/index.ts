@@ -115,5 +115,7 @@ export interface AggregatedReport {
     durationMs: number;
     cached: boolean;
   };
+  opsecScore?: number;
+  threatLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   createdAt: string;
 }

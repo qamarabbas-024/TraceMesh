@@ -13,6 +13,9 @@ import {
   Database,
   ArrowRight,
   RefreshCw,
+  ShieldAlert,
+  ShieldCheck,
+  Flame,
 } from 'lucide-react';
 
 interface ExecutionResultsProps {
@@ -38,6 +41,56 @@ const TOOL_COLORS: Record<string, { badge: string; border: string; text: string 
     border: 'border-[#fb923c]/40',
     text: 'text-[#fb923c]',
   },
+  maigret: {
+    badge: 'bg-[#a78bfa]/15 border-[#a78bfa]/60 text-[#a78bfa]',
+    border: 'border-[#a78bfa]/40',
+    text: 'text-[#a78bfa]',
+  },
+  ghunt: {
+    badge: 'bg-[#38bdf8]/15 border-[#38bdf8]/60 text-[#38bdf8]',
+    border: 'border-[#38bdf8]/40',
+    text: 'text-[#38bdf8]',
+  },
+  h8mail: {
+    badge: 'bg-[#f43f5e]/15 border-[#f43f5e]/60 text-[#f43f5e]',
+    border: 'border-[#f43f5e]/40',
+    text: 'text-[#f43f5e]',
+  },
+  subfinder: {
+    badge: 'bg-[#06b6d4]/15 border-[#06b6d4]/60 text-[#06b6d4]',
+    border: 'border-[#06b6d4]/40',
+    text: 'text-[#06b6d4]',
+  },
+  spiderfoot: {
+    badge: 'bg-[#eab308]/15 border-[#eab308]/60 text-[#eab308]',
+    border: 'border-[#eab308]/40',
+    text: 'text-[#eab308]',
+  },
+  theharvester: {
+    badge: 'bg-[#10b981]/15 border-[#10b981]/60 text-[#10b981]',
+    border: 'border-[#10b981]/40',
+    text: 'text-[#10b981]',
+  },
+  censys: {
+    badge: 'bg-[#6366f1]/15 border-[#6366f1]/60 text-[#6366f1]',
+    border: 'border-[#6366f1]/40',
+    text: 'text-[#6366f1]',
+  },
+  ahmia: {
+    badge: 'bg-[#ec4899]/15 border-[#ec4899]/60 text-[#ec4899]',
+    border: 'border-[#ec4899]/40',
+    text: 'text-[#ec4899]',
+  },
+  phoneinfoga: {
+    badge: 'bg-[#38bdf8]/15 border-[#38bdf8]/60 text-[#38bdf8]',
+    border: 'border-[#38bdf8]/40',
+    text: 'text-[#38bdf8]',
+  },
+  domainrecon: {
+    badge: 'bg-[#22d3ee]/15 border-[#22d3ee]/60 text-[#22d3ee]',
+    border: 'border-[#22d3ee]/40',
+    text: 'text-[#22d3ee]',
+  },
 };
 
 export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionResultsProps) {
@@ -57,11 +110,20 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
 
   if (!report) return null;
 
+  const threatColor =
+    report.threatLevel === 'CRITICAL'
+      ? 'text-status-error border-status-error/60 bg-status-error/15'
+      : report.threatLevel === 'HIGH'
+      ? 'text-accent-amber border-accent-amber/60 bg-accent-amber/15'
+      : report.threatLevel === 'MEDIUM'
+      ? 'text-yellow-400 border-yellow-400/60 bg-yellow-400/15'
+      : 'text-status-success border-status-success/60 bg-status-success/15';
+
   return (
     <div className="w-full max-w-3xl space-y-6 text-left">
-      {/* HUD Telemetry Stats Banner */}
-      <div className="border border-accent-cyan bg-bg-surface/90 backdrop-blur-md p-4 rounded shadow-cyan-glow">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-accent-cyan-dim/25 pb-3 mb-3">
+      {/* HUD Telemetry Stats & OPSEC Threat Banner */}
+      <div className="border border-accent-cyan bg-bg-surface/90 backdrop-blur-md p-4 rounded shadow-cyan-glow space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-accent-cyan-dim/25 pb-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-status-success animate-pulse" />
             <span className="text-xs uppercase tracking-widest font-mono font-semibold text-accent-cyan">
@@ -99,178 +161,158 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                 className="px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan text-accent-cyan hover:bg-accent-cyan hover:text-bg-base font-semibold rounded transition-all text-[10px]"
                 title="Export Dossier as PDF"
               >
-                PDF Report
+                PDF Dossier
               </button>
             </div>
           </div>
         </div>
 
-        {/* Stats Counters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-          <div className="p-2.5 bg-bg-surface-raised/60 border border-accent-cyan-dim/20 rounded">
-            <div className="text-[10px] text-text-muted uppercase">Target Entity</div>
-            <div className="text-sm text-text-primary font-bold truncate" title={report.root.value}>
-              {report.root.value}
+        {/* OPSEC Score & Threat Level Matrix */}
+        {report.opsecScore !== undefined && (
+          <div className="p-3 bg-bg-surface-raised/70 border border-accent-cyan-dim/25 rounded flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-accent-amber" />
+                <span className="text-xs font-mono uppercase font-bold text-text-primary">
+                  OPSEC Exposure Score: {report.opsecScore}%
+                </span>
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${threatColor}`}
+                >
+                  Threat: {report.threatLevel || 'EVALUATED'}
+                </span>
+              </div>
+              <p className="text-[11px] font-mono text-text-secondary">
+                Calculated exposure risk based on correlated breaches, social footprint, and infrastructure endpoints.
+              </p>
             </div>
-          </div>
 
-          <div className="p-2.5 bg-bg-surface-raised/60 border border-accent-cyan-dim/20 rounded">
-            <div className="text-[10px] text-text-muted uppercase">Discovered Nodes</div>
-            <div className="text-sm text-status-success font-bold">
-              {report.entities.length} Nodes
+            <div className="w-full sm:w-36 h-2.5 bg-bg-base rounded-full overflow-hidden border border-accent-cyan-dim/30">
+              <div
+                className="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-500"
+                style={{ width: `${report.opsecScore}%` }}
+              />
             </div>
           </div>
+        )}
 
-          <div className="p-2.5 bg-bg-surface-raised/60 border border-accent-cyan-dim/20 rounded">
-            <div className="text-[10px] text-text-muted uppercase">Modules Executed</div>
-            <div className="text-sm text-text-primary font-bold">
-              {report.stats.successCount} / {report.stats.totalTools} Active
+        {/* Module Execution Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+          {report.toolResults.map((t) => (
+            <div
+              key={t.toolId}
+              className="p-2 bg-bg-surface-raised border border-accent-cyan-dim/20 rounded text-[11px] font-mono flex items-center justify-between"
+            >
+              <div className="truncate pr-1">
+                <span className="text-text-primary font-medium">{t.displayName}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {t.status === 'success' ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-status-success" />
+                ) : (
+                  <AlertCircle className="w-3.5 h-3.5 text-status-error" />
+                )}
+                <span className="text-[10px] text-accent-cyan font-bold">{t.entitiesCount}</span>
+              </div>
             </div>
-          </div>
-
-          <div className="p-2.5 bg-bg-surface-raised/60 border border-accent-cyan-dim/20 rounded">
-            <div className="text-[10px] text-text-muted uppercase">Target Domain</div>
-            <div className="text-sm text-accent-cyan font-bold uppercase">
-              {report.root.type}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Discovered Entities Correlation Stream */}
-      <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4">
+      {/* Discovered Correlated Entities Section */}
+      <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4 shadow-cyan-glow">
         <div className="flex items-center justify-between border-b border-accent-cyan-dim/20 pb-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-accent-cyan" />
+            <Layers className="w-4 h-4 text-accent-cyan" />
             <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
               Correlated Entity Nodes ({report.entities.length})
             </span>
           </div>
-          <span className="text-[11px] font-mono text-text-muted">
-            Click any node to fan out new search
+          <span className="text-[10px] font-mono text-text-muted">
+            Click &apos;Search Entity&apos; to fan out deeper recon
           </span>
         </div>
 
         {report.entities.length === 0 ? (
-          <div className="py-6 text-center text-xs font-mono text-text-muted">
-            No linked entities discovered for this target identifier.
+          <div className="py-8 text-center text-xs font-mono text-text-muted">
+            No linked entities or footprints discovered across executed tools.
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-2.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {report.entities.map((entity, idx) => {
-              const toolStyle = TOOL_COLORS[entity.sourceTool.toLowerCase()] || {
-                badge: 'bg-accent-cyan/15 border-accent-cyan/60 text-accent-cyan',
-                border: 'border-accent-cyan-dim/30',
-                text: 'text-accent-cyan',
-              };
+              const toolColor =
+                TOOL_COLORS[entity.sourceTool] || {
+                  badge: 'bg-accent-cyan/15 border-accent-cyan/60 text-accent-cyan',
+                  border: 'border-accent-cyan-dim/40',
+                  text: 'text-accent-cyan',
+                };
 
-              const canFanOut =
-                entity.type === 'email' ||
-                entity.type === 'username' ||
-                entity.type === 'phone' ||
-                entity.type === 'domain' ||
-                entity.type === 'ip';
+              const isURL = entity.value.startsWith('http://') || entity.value.startsWith('https://');
 
               return (
                 <div
                   key={idx}
-                  className="p-3.5 rounded bg-bg-surface-raised/50 border border-accent-cyan-dim/20 hover:border-accent-cyan-dim transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className={`p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan transition-all`}
                 >
-                  <div className="space-y-1 overflow-hidden">
-                    <div className="flex items-center gap-2">
-                      {/* Source Tool Badge */}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
                       <span
-                        className={`text-[10px] font-mono px-2 py-0.5 rounded border uppercase font-medium ${toolStyle.badge}`}
+                        className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${toolColor.badge}`}
                       >
                         {entity.sourceTool}
                       </span>
 
-                      {/* Entity Type Badge */}
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-bg-base border border-accent-cyan-dim/30 text-text-secondary uppercase">
-                        {entity.type}
-                      </span>
-
-                      {entity.confidence !== undefined && (
+                      {entity.confidence && (
                         <span className="text-[10px] font-mono text-text-muted">
-                          {Math.round(entity.confidence * 100)}% conf
+                          {Math.round(entity.confidence * 100)}% match
                         </span>
                       )}
                     </div>
 
-                    {/* Value & Label */}
-                    <div className="text-xs font-mono text-text-primary font-medium truncate">
-                      {entity.value}
+                    <div className="text-xs font-semibold text-text-primary font-mono break-all pt-1 flex items-center gap-1.5">
+                      <span className="truncate">{entity.value}</span>
+                      {isURL && (
+                        <a
+                          href={entity.value}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-text-muted hover:text-accent-cyan inline-flex shrink-0"
+                          title="Open external link"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
                     </div>
-                    <div className="text-[11px] text-text-secondary truncate">
+
+                    <p className="text-[11px] text-text-secondary leading-relaxed line-clamp-2 font-mono">
                       {entity.label}
-                    </div>
+                    </p>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    {entity.value.startsWith('http') && (
-                      <a
-                        href={entity.value}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono bg-bg-base border border-accent-cyan-dim/30 text-text-secondary hover:text-accent-cyan rounded transition-colors"
-                      >
-                        <span>Open</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
+                  {/* Fan-out / Secondary Search Button */}
+                  <div className="pt-2 border-t border-accent-cyan-dim/15 flex items-center justify-between">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-bg-base text-text-muted uppercase">
+                      {entity.type}
+                    </span>
 
-                    {canFanOut && (
-                      <button
-                        onClick={() => onFanOutSearch(entity.value, entity.type as InputType)}
-                        className="flex items-center gap-1.5 px-3 py-1 text-[11px] font-mono bg-accent-cyan/15 border border-accent-cyan text-accent-cyan hover:bg-accent-cyan hover:text-bg-base rounded transition-all font-semibold"
-                        title="Fan out intelligence query on this entity"
-                      >
-                        <span>Fan Out</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() =>
+                        onFanOutSearch(
+                          entity.value,
+                          (entity.type as InputType) || 'username',
+                        )
+                      }
+                      className="flex items-center gap-1 px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan/50 hover:bg-accent-cyan hover:text-bg-base text-accent-cyan text-[10px] font-mono font-semibold rounded transition-all shadow-cyan-glow"
+                    >
+                      <span>Fan-Out Search</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
                   </div>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
-
-      {/* Module Execution Logs & Diagnostics */}
-      <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-3">
-        <div className="flex items-center gap-2 border-b border-accent-cyan-dim/20 pb-2">
-          <Layers className="w-4 h-4 text-accent-cyan" />
-          <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
-            Module Telemetry & Diagnostic Breakdown
-          </span>
-        </div>
-
-        <div className="space-y-2 font-mono text-xs">
-          {report.toolResults.map((result) => (
-            <div
-              key={result.toolId}
-              className="p-3 rounded bg-bg-surface-raised/40 border border-accent-cyan-dim/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
-            >
-              <div className="flex items-center gap-2">
-                {result.status === 'success' ? (
-                  <CheckCircle2 className="w-4 h-4 text-status-success shrink-0" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-status-error shrink-0" />
-                )}
-                <div>
-                  <span className="font-semibold text-text-primary">{result.displayName}</span>
-                  <span className="text-text-muted text-[11px] ml-2">({result.durationMs}ms)</span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-text-secondary">
-                {result.summary || result.error}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
