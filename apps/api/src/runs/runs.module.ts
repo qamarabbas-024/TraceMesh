@@ -16,6 +16,9 @@ import { SpiderFootRunner } from '../runners/spiderfoot.runner';
 import { TheHarvesterRunner } from '../runners/theharvester.runner';
 import { CensysRunner } from '../runners/censys.runner';
 import { AhmiaRunner } from '../runners/ahmia.runner';
+import { GitHubReconRunner } from '../runners/github-recon.runner';
+import { CrtShRunner } from '../runners/crtsh.runner';
+import { IPInfoRunner } from '../runners/ipinfo.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -36,6 +39,9 @@ import { AhmiaRunner } from '../runners/ahmia.runner';
     TheHarvesterRunner,
     CensysRunner,
     AhmiaRunner,
+    GitHubReconRunner,
+    CrtShRunner,
+    IPInfoRunner,
   ],
   exports: [RunsService, AggregationService],
 })
