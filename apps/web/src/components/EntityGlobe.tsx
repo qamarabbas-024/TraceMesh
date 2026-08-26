@@ -318,12 +318,83 @@ export function EntityGlobe({
         projected.sort((a, b) => b.zDepth - a.zDepth);
         projectedNodesRef.current = projected;
 
-        // Draw 3D Wireframe Orbit Rings
-        ctx.strokeStyle = 'rgba(14, 116, 144, 0.18)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 185 * zoom, 0, Math.PI * 2);
-        ctx.stroke();
+        // Draw 3D Geodesic Latitude & Longitude Wireframe Rings
+        const fov = 420;
+        [-60, -30, 0, 30, 60].forEach((latDeg) => {
+          const latRad = (latDeg * Math.PI) / 180;
+          const ringR = 185 * Math.cos(latRad);
+          const ringY = 185 * Math.sin(latRad);
+
+          ctx.strokeStyle = latDeg === 0 ? 'rgba(34, 211, 238, 0.28)' : 'rgba(14, 116, 144, 0.16)';
+          ctx.lineWidth = latDeg === 0 ? 1.4 : 0.8;
+          ctx.setLineDash(latDeg === 0 ? [] : [3, 4]);
+
+          ctx.beginPath();
+          for (let seg = 0; seg <= 36; seg++) {
+            const segRad = (seg / 36) * Math.PI * 2 + rotation.yaw;
+            const x0 = ringR * Math.cos(segRad);
+            const z0 = ringR * Math.sin(segRad);
+
+            const cosX = Math.cos(rotation.pitch);
+            const sinX = Math.sin(rotation.pitch);
+            const yRot = ringY * cosX - z0 * sinX;
+            const zRot = z0 * cosX + ringY * sinX;
+
+            const sc = (fov / (fov + zRot)) * zoom;
+            const pX = cx + x0 * sc;
+            const pY = cy + yRot * sc;
+
+            if (seg === 0) ctx.moveTo(pX, pY);
+            else ctx.lineTo(pX, pY);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        });
+
+        // Draw Orbiting Recon Satellites
+        if (!reduceMotion) {
+          const satAngles = [
+            (pulsePhaseRef.current * Math.PI * 2),
+            (pulsePhaseRef.current * Math.PI * 2 + Math.PI),
+            (-pulsePhaseRef.current * Math.PI * 2 * 0.7),
+          ];
+
+          satAngles.forEach((angle, idx) => {
+            const orbitR = 215;
+            const isPolar = idx === 2;
+            const sX = isPolar ? 0 : Math.cos(angle) * orbitR;
+            const sY = isPolar ? Math.sin(angle) * orbitR : Math.sin(angle) * orbitR * 0.3;
+            const sZ = isPolar ? Math.cos(angle) * orbitR : Math.sin(angle) * orbitR;
+
+            const cosY = Math.cos(rotation.yaw);
+            const sinY = Math.sin(rotation.yaw);
+            const x1 = sX * cosY - sZ * sinY;
+            const z1 = sZ * cosY + sX * sinY;
+
+            const cosX = Math.cos(rotation.pitch);
+            const sinX = Math.sin(rotation.pitch);
+            const y2 = sY * cosX - z1 * sinX;
+            const z2 = z1 * cosX + sY * sinX;
+
+            const sc = (fov / (fov + z2)) * zoom;
+            const satPx = cx + x1 * sc;
+            const satPy = cy + y2 * sc;
+
+            // Satellite Body
+            ctx.fillStyle = '#22d3ee';
+            ctx.shadowColor = '#22d3ee';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(satPx, satPy, 3 * sc, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Satellite Label & Orbit Ring
+            ctx.font = '8px "JetBrains Mono", monospace';
+            ctx.fillStyle = 'rgba(34, 211, 238, 0.7)';
+            ctx.fillText(`SAT-${idx + 1} // POLAR`, satPx + 6, satPy + 2);
+          });
+        }
 
         // Draw Vector Arcs & Energy Pulse Packets
         const rootNode = projected.find((p) => p.isRoot);
