@@ -14,6 +14,7 @@ import {
   Volume2,
   VolumeX,
   Keyboard,
+  GitCompare,
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
 import { DecryptText } from '@/components/DecryptText';
@@ -24,6 +25,7 @@ interface HudHeaderProps {
   onOpenHistory: () => void;
   onOpenImport: () => void;
   onOpenCases: () => void;
+  onOpenCompare: () => void;
   onOpenShortcuts: () => void;
   onOpenAuth: () => void;
   user: any | null;
@@ -36,6 +38,7 @@ export function HudHeader({
   onOpenHistory,
   onOpenImport,
   onOpenCases,
+  onOpenCompare,
   onOpenShortcuts,
   onOpenAuth,
   user,
@@ -149,6 +152,18 @@ export function HudHeader({
             title="Keyboard Shortcuts (?)"
           >
             <Keyboard className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenCompare();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
+            title="Cross-Correlate Multi-Target Matrix"
+          >
+            <GitCompare className="w-3.5 h-3.5 text-accent-cyan" />
+            <span className="hidden sm:inline">Compare</span>
           </button>
 
           <button

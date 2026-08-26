@@ -14,6 +14,7 @@ import { CommandBar } from '@/components/CommandBar';
 import { ActivityTicker } from '@/components/ActivityTicker';
 import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
+import { ComparisonMatrix } from '@/components/ComparisonMatrix';
 import { DecryptText } from '@/components/DecryptText';
 import { CyberGrid3D } from '@/components/CyberGrid3D';
 import { soundFx } from '@/lib/soundFx';
@@ -22,6 +23,7 @@ import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
 
 export default function Home() {
   const [report, setReport] = useState<AggregatedReport | null>(null);
+  const [reportsHistory, setReportsHistory] = useState<AggregatedReport[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fanOutTarget, setFanOutTarget] = useState<{ value: string; type: InputType } | null>(null);
@@ -34,6 +36,7 @@ export default function Home() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isCasesOpen, setIsCasesOpen] = useState(false);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   // Global Tactical Keyboard Shortcuts
@@ -137,6 +140,10 @@ export default function Home() {
 
       const data: AggregatedReport = await res.json();
       setReport(data);
+      setReportsHistory((prev) => [
+        data,
+        ...prev.filter((r) => r.runId !== data.runId),
+      ]);
       soundFx.playSuccess();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Batch execution failed');
@@ -164,6 +171,7 @@ export default function Home() {
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenImport={() => setIsImportOpen(true)}
         onOpenCases={() => setIsCasesOpen(true)}
+        onOpenCompare={() => setIsCompareOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenAuth={() => (user ? handleLogout() : setIsAuthOpen(true))}
         user={user}
@@ -268,6 +276,12 @@ export default function Home() {
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
         onSuccess={handleAuthSuccess}
+      />
+
+      <ComparisonMatrix
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        reports={reportsHistory.length > 0 ? reportsHistory : report ? [report] : []}
       />
 
       <ImportModal
