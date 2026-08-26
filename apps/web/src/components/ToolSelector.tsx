@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { ToolDTO, InputType } from '@tracemesh/shared';
 import { detectInputType } from '@/lib/detector';
+import { useParallaxTilt } from '@/hooks/useParallaxTilt';
+import { soundFx } from '@/lib/soundFx';
 import {
   Search,
   CheckSquare,
@@ -35,6 +37,113 @@ interface ToolSelectorProps {
   onRun?: (inputValue: string, inputType: InputType, selectedToolIds: string[]) => void;
 }
 
+function ToolCard({
+  tool,
+  isSelected,
+  isFav,
+  onToggle,
+  onToggleFav,
+}: {
+  tool: ToolDTO;
+  isSelected: boolean;
+  isFav: boolean;
+  onToggle: () => void;
+  onToggleFav: (e: React.MouseEvent) => void;
+}) {
+  const { ref, transform, glarePosition, onMouseMove, onMouseLeave } = useParallaxTilt({
+    maxTilt: 6,
+    scale: 1.015,
+  });
+
+  return (
+    <div
+      ref={ref}
+      style={{ transform, transition: 'transform 0.15s ease-out' }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onClick={() => {
+        soundFx.playBlip();
+        onToggle();
+      }}
+      className={`p-4 rounded border transition-all cursor-pointer select-none text-left flex flex-col justify-between relative group overflow-hidden ${
+        isSelected
+          ? 'bg-bg-surface-raised border-accent-cyan shadow-cyan-glow'
+          : 'bg-bg-surface-raised/40 border-accent-cyan-dim/30 hover:border-accent-cyan/60'
+      }`}
+    >
+      {/* Holographic Specular Glare Reflection */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(34, 211, 238, ${glarePosition.opacity}), transparent 65%)`,
+        }}
+      />
+
+      {/* Top Right Controls (Favorite Star & Update Badge) */}
+      <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-10">
+        {tool.updateAvailable && (
+          <div
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-amber/15 border border-accent-amber/60 text-accent-amber text-[9px] font-mono uppercase"
+            title="Update Available from upstream repository"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse" />
+            <span>Update</span>
+          </div>
+        )}
+        <button
+          onClick={onToggleFav}
+          className={`p-1 rounded hover:bg-bg-base transition-colors ${
+            isFav ? 'text-accent-amber' : 'text-text-muted hover:text-text-secondary'
+          }`}
+          title={isFav ? 'Unfavorite tool' : 'Favorite tool (pins to top)'}
+        >
+          <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-accent-amber' : ''}`} />
+        </button>
+      </div>
+
+      <div className="z-10">
+        <div className="flex items-center justify-between mb-2 pr-16">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-4 h-4 rounded border flex items-center justify-center ${
+                isSelected
+                  ? 'border-accent-cyan bg-accent-cyan/20 text-accent-cyan'
+                  : 'border-accent-cyan-dim/40 bg-bg-surface text-transparent'
+              }`}
+            >
+              <CheckSquare className="w-3.5 h-3.5" />
+            </div>
+            <span className="font-semibold text-xs text-text-primary uppercase tracking-wider font-mono">
+              {tool.displayName}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-text-secondary leading-relaxed mb-3 line-clamp-2 font-mono">
+          {tool.description}
+        </p>
+      </div>
+
+      {/* Card Telemetry Footer & Execution Waveform */}
+      <div className="pt-2 border-t border-accent-cyan-dim/15 flex items-center justify-between text-[10px] text-text-muted font-mono z-10">
+        <div className="flex items-center gap-2">
+          <span className="px-1.5 py-0.5 rounded bg-bg-base text-accent-cyan border border-accent-cyan-dim/30 uppercase text-[9px]">
+            {tool.executionType}
+          </span>
+          <span>v{tool.trackedVersion}</span>
+        </div>
+
+        {/* Animated execution waveform */}
+        <div className="flex items-center gap-0.5">
+          <span className="w-0.5 h-2 bg-accent-cyan-dim animate-pulse" />
+          <span className="w-0.5 h-3.5 bg-accent-cyan animate-pulse delay-75" />
+          <span className="w-0.5 h-2.5 bg-accent-cyan-dim animate-pulse delay-150" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function ToolSelector({ onRun }: ToolSelectorProps) {
   const [inputValue, setInputValue] = useState('');
   const [manualInputType, setManualInputType] = useState<InputType | null>(null);
@@ -58,6 +167,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
 
   const toggleFavorite = (e: React.MouseEvent, toolId: string) => {
     e.stopPropagation();
+    soundFx.playBlip();
     setFavorites((prev) => {
       const next = new Set(prev);
       if (next.has(toolId)) next.delete(toolId);
@@ -134,28 +244,11 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
   const isAllSelected = matchingTools.length > 0 && selectedToolIds.size === matchingTools.length;
 
   const toggleSelectAll = () => {
+    soundFx.playBlip();
     if (isAllSelected) {
       setSelectedToolIds(new Set());
     } else {
       setSelectedToolIds(new Set(matchingTools.map((t) => t.id)));
-    }
-  };
-
-  const handleUpdateTool = async (e: React.MouseEvent, toolId: string) => {
-    e.stopPropagation();
-    setUpdatingToolId(toolId);
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const res = await fetch(`${apiUrl}/tools/${toolId}/update`, {
-        method: 'POST',
-      });
-      if (res.ok) {
-        await fetchTools();
-      }
-    } catch (err) {
-      console.error('Failed to update tool:', err);
-    } finally {
-      setUpdatingToolId(null);
     }
   };
 
@@ -174,6 +267,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
               <button
                 key={type}
                 onClick={() => {
+                  soundFx.playBlip();
                   setManualInputType(type);
                   setCategoryFilter('all');
                 }}
@@ -191,7 +285,10 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
 
         {manualInputType && (
           <button
-            onClick={() => setManualInputType(null)}
+            onClick={() => {
+              soundFx.playBlip();
+              setManualInputType(null);
+            }}
             className="text-[10px] text-text-muted hover:text-accent-cyan underline transition-colors"
           >
             Auto-Detect
@@ -235,7 +332,10 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
 
         {/* Launch Execution Button */}
         <button
-          onClick={() => onRun && onRun(inputValue, detectedType, Array.from(selectedToolIds))}
+          onClick={() => {
+            soundFx.playLockOn();
+            onRun && onRun(inputValue, detectedType, Array.from(selectedToolIds));
+          }}
           disabled={!inputValue.trim() || selectedToolIds.size === 0}
           className="flex items-center gap-2 px-5 py-2.5 bg-accent-cyan text-bg-base font-bold text-xs uppercase tracking-wider font-mono rounded hover:bg-cyan-300 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-cyan-glow"
         >
@@ -244,7 +344,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
         </button>
       </div>
 
-      {/* Available Modules Grid */}
+      {/* Available Modules Grid with 3D Parallax Tilt Cards */}
       <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4 shadow-cyan-glow">
         {/* Header with Search and Select All */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-accent-cyan-dim/20 pb-3">
@@ -297,84 +397,17 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
             No active tools matching query &apos;{toolSearchQuery}&apos; for &apos;{detectedType}&apos;.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {matchingTools.map((tool) => {
-              const isSelected = selectedToolIds.has(tool.id);
-              const isFav = favorites.has(tool.id);
-              return (
-                <div
-                  key={tool.id}
-                  onClick={() => toggleTool(tool.id)}
-                  className={`p-4 rounded border transition-all cursor-pointer select-none text-left flex flex-col justify-between relative group ${
-                    isSelected
-                      ? 'bg-bg-surface-raised border-accent-cyan shadow-cyan-glow'
-                      : 'bg-bg-surface-raised/40 border-accent-cyan-dim/30 hover:border-accent-cyan/60'
-                  }`}
-                >
-                  {/* Top Right Controls (Favorite Star & Update Badge) */}
-                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
-                    {tool.updateAvailable && (
-                      <div
-                        className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-accent-amber/15 border border-accent-amber/60 text-accent-amber text-[9px] font-mono uppercase"
-                        title="Update Available from upstream repository"
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-amber animate-pulse" />
-                        <span>Update</span>
-                      </div>
-                    )}
-                    <button
-                      onClick={(e) => toggleFavorite(e, tool.id)}
-                      className={`p-1 rounded hover:bg-bg-base transition-colors ${
-                        isFav ? 'text-accent-amber' : 'text-text-muted hover:text-text-secondary'
-                      }`}
-                      title={isFav ? 'Unfavorite tool' : 'Favorite tool (pins to top)'}
-                    >
-                      <Star className={`w-3.5 h-3.5 ${isFav ? 'fill-accent-amber' : ''}`} />
-                    </button>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between mb-2 pr-16">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-4 h-4 rounded border flex items-center justify-center ${
-                            isSelected
-                              ? 'border-accent-cyan bg-accent-cyan/20 text-accent-cyan'
-                              : 'border-accent-cyan-dim/40 bg-bg-surface text-transparent'
-                          }`}
-                        >
-                          <CheckSquare className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="font-semibold text-xs text-text-primary uppercase tracking-wider font-mono">
-                          {tool.displayName}
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-[11px] text-text-secondary leading-relaxed mb-3 line-clamp-2 font-mono">
-                      {tool.description}
-                    </p>
-                  </div>
-
-                  {/* Card Telemetry Footer & Execution Waveform */}
-                  <div className="pt-2 border-t border-accent-cyan-dim/15 flex items-center justify-between text-[10px] text-text-muted font-mono">
-                    <div className="flex items-center gap-2">
-                      <span className="px-1.5 py-0.5 rounded bg-bg-base text-accent-cyan border border-accent-cyan-dim/30 uppercase text-[9px]">
-                        {tool.executionType}
-                      </span>
-                      <span>v{tool.trackedVersion}</span>
-                    </div>
-
-                    {/* Animated execution waveform */}
-                    <div className="flex items-center gap-0.5">
-                      <span className="w-0.5 h-2 bg-accent-cyan-dim animate-pulse" />
-                      <span className="w-0.5 h-3.5 bg-accent-cyan animate-pulse delay-75" />
-                      <span className="w-0.5 h-2.5 bg-accent-cyan-dim animate-pulse delay-150" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 perspective-1000">
+            {matchingTools.map((tool) => (
+              <ToolCard
+                key={tool.id}
+                tool={tool}
+                isSelected={selectedToolIds.has(tool.id)}
+                isFav={favorites.has(tool.id)}
+                onToggle={() => toggleTool(tool.id)}
+                onToggleFav={(e) => toggleFavorite(e, tool.id)}
+              />
+            ))}
           </div>
         )}
       </div>
