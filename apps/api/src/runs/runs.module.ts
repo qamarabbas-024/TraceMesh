@@ -19,6 +19,9 @@ import { AhmiaRunner } from '../runners/ahmia.runner';
 import { GitHubReconRunner } from '../runners/github-recon.runner';
 import { CrtShRunner } from '../runners/crtsh.runner';
 import { IPInfoRunner } from '../runners/ipinfo.runner';
+import { ShodanRunner } from '../runners/shodan.runner';
+import { AbuseIPDBRunner } from '../runners/abuseipdb.runner';
+import { AlienVaultOTXRunner } from '../runners/alienvault-otx.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -42,6 +45,9 @@ import { IPInfoRunner } from '../runners/ipinfo.runner';
     GitHubReconRunner,
     CrtShRunner,
     IPInfoRunner,
+    ShodanRunner,
+    AbuseIPDBRunner,
+    AlienVaultOTXRunner,
   ],
   exports: [RunsService, AggregationService],
 })

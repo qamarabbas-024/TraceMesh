@@ -18,6 +18,9 @@ import { AhmiaRunner } from '../runners/ahmia.runner';
 import { GitHubReconRunner } from '../runners/github-recon.runner';
 import { CrtShRunner } from '../runners/crtsh.runner';
 import { IPInfoRunner } from '../runners/ipinfo.runner';
+import { ShodanRunner } from '../runners/shodan.runner';
+import { AbuseIPDBRunner } from '../runners/abuseipdb.runner';
+import { AlienVaultOTXRunner } from '../runners/alienvault-otx.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -54,6 +57,9 @@ export class RunsService {
     private readonly gitHubReconRunner: GitHubReconRunner,
     private readonly crtShRunner: CrtShRunner,
     private readonly ipInfoRunner: IPInfoRunner,
+    private readonly shodanRunner: ShodanRunner,
+    private readonly abuseIPDBRunner: AbuseIPDBRunner,
+    private readonly alienVaultOTXRunner: AlienVaultOTXRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -72,6 +78,9 @@ export class RunsService {
     this.runnerMap.set('github_recon', this.gitHubReconRunner);
     this.runnerMap.set('crtsh', this.crtShRunner);
     this.runnerMap.set('ipinfo', this.ipInfoRunner);
+    this.runnerMap.set('shodan_api', this.shodanRunner);
+    this.runnerMap.set('abuseipdb', this.abuseIPDBRunner);
+    this.runnerMap.set('alienvault_otx', this.alienVaultOTXRunner);
   }
 
   async runBatch(req: BatchRunRequest, userId?: string): Promise<AggregatedReport> {
