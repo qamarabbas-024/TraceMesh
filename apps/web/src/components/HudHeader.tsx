@@ -15,6 +15,8 @@ import {
   VolumeX,
   Keyboard,
   GitCompare,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
 import { DecryptText } from '@/components/DecryptText';
@@ -31,6 +33,8 @@ interface HudHeaderProps {
   user: any | null;
   reduceMotion: boolean;
   onToggleMotion: () => void;
+  redactMode?: boolean;
+  onToggleRedact?: () => void;
   activeWorkerCount?: number;
 }
 
@@ -44,6 +48,8 @@ export function HudHeader({
   user,
   reduceMotion,
   onToggleMotion,
+  redactMode = false,
+  onToggleRedact,
   activeWorkerCount = 18,
 }: HudHeaderProps) {
   const [utcTime, setUtcTime] = useState<string>('');
@@ -219,6 +225,23 @@ export function HudHeader({
             title="Toggle reduced motion"
           >
             {reduceMotion ? 'Motion: Off' : 'Motion: On'}
+          </button>
+
+          {/* OPSEC Redact Mode Toggle */}
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onToggleRedact && onToggleRedact();
+            }}
+            className={`flex items-center gap-1 px-2 py-1 text-[10px] uppercase border rounded transition-all ${
+              redactMode
+                ? 'border-status-error text-status-error bg-status-error/15 shadow-sm'
+                : 'border-accent-cyan-dim/40 text-text-secondary hover:border-accent-cyan'
+            }`}
+            title="Toggle OPSEC Live Redaction (Masks sensitive emails, IPs, phone numbers)"
+          >
+            {redactMode ? <EyeOff className="w-3 h-3 text-status-error" /> : <Eye className="w-3 h-3 text-accent-cyan" />}
+            <span>{redactMode ? 'Redact: On' : 'Redact: Off'}</span>
           </button>
 
           <button

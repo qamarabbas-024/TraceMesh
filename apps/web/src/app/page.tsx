@@ -28,6 +28,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [fanOutTarget, setFanOutTarget] = useState<{ value: string; type: InputType } | null>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [redactMode, setRedactMode] = useState(false);
 
   // Auth & Modal states
   const [user, setUser] = useState<{ id: string; email: string; name?: string } | null>(null);
@@ -64,6 +65,10 @@ export default function Home() {
         e.preventDefault();
         soundFx.playBlip();
         setReduceMotion((prev) => !prev);
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setRedactMode((prev) => !prev);
       } else if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
         soundFx.toggleMute();
@@ -177,6 +182,8 @@ export default function Home() {
         user={user}
         reduceMotion={reduceMotion}
         onToggleMotion={() => setReduceMotion(!reduceMotion)}
+        redactMode={redactMode}
+        onToggleRedact={() => setRedactMode(!redactMode)}
         activeWorkerCount={18}
       />
 
@@ -190,6 +197,7 @@ export default function Home() {
             entities={report?.entities || []}
             onNodeClick={handleFanOutSearch}
             reduceMotion={reduceMotion}
+            redactMode={redactMode}
           />
         </section>
 
@@ -228,6 +236,7 @@ export default function Home() {
             report={report}
             loading={loading}
             onFanOutSearch={handleFanOutSearch}
+            redactMode={redactMode}
           />
         )}
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import type { DiscoveredEntity, InputType } from '@tracemesh/shared';
 import { ForceGraphSimulation } from '@/lib/graphPhysics';
+import { maskSensitiveValue } from '@/lib/redact';
 import {
   Sparkles,
   ExternalLink,
@@ -27,6 +28,7 @@ interface EntityGlobeProps {
   entities?: DiscoveredEntity[];
   onNodeClick?: (value: string, type: InputType) => void;
   reduceMotion?: boolean;
+  redactMode?: boolean;
 }
 
 interface ProjectedNode {
@@ -83,6 +85,7 @@ export function EntityGlobe({
   entities = [],
   onNodeClick,
   reduceMotion = false,
+  redactMode = false,
 }: EntityGlobeProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [viewMode, setViewMode] = useState<'3d_globe' | '2d_tactical'>('3d_globe');
@@ -497,7 +500,8 @@ export function EntityGlobe({
             ctx.font = '10px "JetBrains Mono", monospace';
             ctx.fillStyle = isSelected ? '#22d3ee' : '#e8edf4';
             ctx.textAlign = 'center';
-            const displayVal = p.value.length > 20 ? `${p.value.substring(0, 20)}...` : p.value;
+            const rawVal = redactMode ? maskSensitiveValue(p.value, p.type) : p.value;
+            const displayVal = rawVal.length > 20 ? `${rawVal.substring(0, 20)}...` : rawVal;
             ctx.fillText(displayVal, p.px, p.py - r - 10);
           }
         });
@@ -578,7 +582,8 @@ export function EntityGlobe({
             ctx.font = '11px "JetBrains Mono", monospace';
             ctx.fillStyle = isSelected ? '#22d3ee' : '#e8edf4';
             ctx.textAlign = 'center';
-            const displayVal = p.value.length > 24 ? `${p.value.substring(0, 24)}...` : p.value;
+            const rawVal = redactMode ? maskSensitiveValue(p.value, p.type) : p.value;
+            const displayVal = rawVal.length > 24 ? `${rawVal.substring(0, 24)}...` : rawVal;
             ctx.fillText(displayVal, p.px, p.py + r + 14);
 
             // Sub-label (source tool)

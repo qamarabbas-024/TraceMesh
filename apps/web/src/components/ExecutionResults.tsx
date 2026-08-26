@@ -22,12 +22,14 @@ import { useState, useEffect, useRef } from 'react';
 import { RadialGauge } from '@/components/RadialGauge';
 import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
 import { soundFx } from '@/lib/soundFx';
+import { maskSensitiveValue } from '@/lib/redact';
 import { animate, stagger } from 'animejs';
 
 interface ExecutionResultsProps {
   report: AggregatedReport | null;
   loading: boolean;
   onFanOutSearch: (value: string, type: InputType) => void;
+  redactMode?: boolean;
 }
 
 // Source-tool color mapping per DESIGN.md Section 6
@@ -99,7 +101,12 @@ const TOOL_COLORS: Record<string, { badge: string; border: string; text: string 
   },
 };
 
-export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionResultsProps) {
+export function ExecutionResults({
+  report,
+  loading,
+  onFanOutSearch,
+  redactMode = false,
+}: ExecutionResultsProps) {
   const [inspectedEntity, setInspectedEntity] = useState<DiscoveredEntity | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
@@ -345,8 +352,10 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                     </div>
 
                     <div className="text-xs font-semibold text-text-primary font-mono break-all pt-1 flex items-center gap-1.5">
-                      <span className="truncate">{entity.value}</span>
-                      {isURL && (
+                      <span className="truncate">
+                        {redactMode ? maskSensitiveValue(entity.value, entity.type) : entity.value}
+                      </span>
+                      {isURL && !redactMode && (
                         <a
                           href={entity.value}
                           target="_blank"
