@@ -12,6 +12,7 @@ import { ScanlineOverlay } from '@/components/ScanlineOverlay';
 import { HudHeader } from '@/components/HudHeader';
 import { CommandBar } from '@/components/CommandBar';
 import { ActivityTicker } from '@/components/ActivityTicker';
+import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
 
@@ -28,6 +29,7 @@ export default function Home() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isCasesOpen, setIsCasesOpen] = useState(false);
 
   // Load session from localStorage on mount
   useEffect(() => {
@@ -111,6 +113,7 @@ export default function Home() {
       <HudHeader
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenImport={() => setIsImportOpen(true)}
+        onOpenCases={() => setIsCasesOpen(true)}
         onOpenAuth={() => (user ? handleLogout() : setIsAuthOpen(true))}
         user={user}
         reduceMotion={reduceMotion}
@@ -188,6 +191,12 @@ export default function Home() {
       </div>
 
       {/* Modals & Drawers */}
+      <CaseManagerDrawer
+        isOpen={isCasesOpen}
+        onClose={() => setIsCasesOpen(false)}
+        onSelectEntity={handleFanOutSearch}
+      />
+
       <HistoryDrawer
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}

@@ -10,13 +10,13 @@ import {
   FileText,
   User,
   Zap,
-  Volume2,
-  VolumeX,
+  Briefcase,
 } from 'lucide-react';
 
 interface HudHeaderProps {
   onOpenHistory: () => void;
   onOpenImport: () => void;
+  onOpenCases: () => void;
   onOpenAuth: () => void;
   user: any | null;
   reduceMotion: boolean;
@@ -27,6 +27,7 @@ interface HudHeaderProps {
 export function HudHeader({
   onOpenHistory,
   onOpenImport,
+  onOpenCases,
   onOpenAuth,
   user,
   reduceMotion,
@@ -102,6 +103,15 @@ export function HudHeader({
 
         {/* Right: Quick Action Controls */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenCases}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
+            title="Open Tactical Case Dossiers"
+          >
+            <Briefcase className="w-3.5 h-3.5 text-accent-amber" />
+            <span className="hidden sm:inline">Cases</span>
+          </button>
+
           <button
             onClick={onOpenImport}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
