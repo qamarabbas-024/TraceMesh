@@ -16,6 +16,7 @@ import {
   Keyboard,
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
+import { DecryptText } from '@/components/DecryptText';
 
 interface HudHeaderProps {
   onOpenHistory: () => void;
@@ -82,14 +83,14 @@ export function HudHeader({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold tracking-widest text-text-primary uppercase">
-                TraceMesh
+                <DecryptText text="TraceMesh" />
               </span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-accent-cyan/15 border border-accent-cyan/40 text-accent-cyan font-semibold">
-                HUD v6.2
+                HUD v8.3
               </span>
             </div>
             <div className="text-[10px] text-text-secondary tracking-wider uppercase">
-              Autonomous OSINT Aggregation Engine
+              <DecryptText text="Autonomous OSINT Aggregation Engine" speed={25} />
             </div>
           </div>
         </div>

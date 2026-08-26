@@ -14,6 +14,7 @@ import { CommandBar } from '@/components/CommandBar';
 import { ActivityTicker } from '@/components/ActivityTicker';
 import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
+import { DecryptText } from '@/components/DecryptText';
 import { soundFx } from '@/lib/soundFx';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
@@ -184,10 +185,12 @@ export default function Home() {
         <div className="text-center space-y-2 pt-1 font-mono">
           <div className="inline-flex items-center gap-2 px-3 py-1 text-[10px] uppercase tracking-widest text-accent-cyan bg-bg-surface border border-accent-cyan-dim/40 rounded shadow-cyan-glow">
             <Terminal className="w-3 h-3 text-status-success animate-pulse" />
-            <span>Autonomous Multi-Domain Cyber Reconnaissance Platform</span>
+            <span>
+              <DecryptText text="Autonomous Multi-Domain Cyber Reconnaissance Platform" speed={20} />
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary uppercase">
-            Unified Intel <span className="text-accent-cyan">Command Center</span>
+            Unified Intel <span className="text-accent-cyan"><DecryptText text="Command Center" /></span>
           </h1>
           <p className="text-xs text-text-secondary max-w-xl mx-auto font-sans leading-relaxed">
             Multi-source OSINT intelligence: emails, usernames, telephone routing, TLS infrastructure, and darknet graph correlation.
