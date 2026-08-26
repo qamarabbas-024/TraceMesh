@@ -16,6 +16,8 @@ import {
   Network,
   Maximize2,
   Filter,
+  Activity,
+  Zap,
 } from 'lucide-react';
 
 interface EntityGlobeProps {
@@ -48,9 +50,7 @@ interface ProjectedNode {
   py: number;
   scale: number;
   zDepth: number;
-  // 2D force simulation properties
-  vx?: number;
-  vy?: number;
+  // 2D tactical coordinates
   target2dX?: number;
   target2dY?: number;
 }
@@ -70,6 +70,9 @@ const TOOL_COLORS: Record<string, string> = {
   github_recon: '#38bdf8',
   crtsh: '#06b6d4',
   ipinfo: '#3b82f6',
+  alienvault_otx: '#f59e0b',
+  shodan_api: '#ef4444',
+  abuseipdb: '#f43f5e',
   root: '#22d3ee',
 };
 
@@ -93,22 +96,27 @@ export function EntityGlobe({
   const prevMouseRef = useRef({ x: 0, y: 0 });
   const projectedNodesRef = useRef<ProjectedNode[]>([]);
   const panOffsetRef = useRef({ x: 0, y: 0 });
+  const pulsePhaseRef = useRef(0);
 
-  // Base background sphere particles for 3D Globe
+  // 3D Sphere Particles: Core + Atmospheric Halo
   const baseParticles = useMemo(() => {
     const points: any[] = [];
-    const count = 360;
+    const count = 420;
     const radius = 185;
 
     for (let i = 0; i < count; i++) {
       const phi = Math.acos(-1 + (2 * i) / count);
       const theta = Math.sqrt(count * Math.PI) * phi;
 
-      const x = radius * Math.cos(theta) * Math.sin(phi);
-      const y = radius * Math.sin(theta) * Math.sin(phi);
-      const z = radius * Math.cos(phi);
+      // Outer atmosphere dispersion
+      const isAtmosphere = i % 4 === 0;
+      const r = isAtmosphere ? radius * (1 + (Math.random() * 0.2 - 0.1)) : radius;
 
-      const scatterFactor = 4;
+      const x = r * Math.cos(theta) * Math.sin(phi);
+      const y = r * Math.sin(theta) * Math.sin(phi);
+      const z = r * Math.cos(phi);
+
+      const scatterFactor = 3.5;
       const originX = (Math.random() - 0.5) * radius * scatterFactor * 2;
       const originY = (Math.random() - 0.5) * radius * scatterFactor * 2;
       const originZ = (Math.random() - 0.5) * radius * scatterFactor * 2;
@@ -121,9 +129,9 @@ export function EntityGlobe({
         originX,
         originY,
         originZ,
-        radius: 1.4,
-        color: '#0e7490',
-        glowColor: 'rgba(34, 211, 238, 0.3)',
+        radius: isAtmosphere ? 1.0 : 1.5,
+        color: isAtmosphere ? 'rgba(14, 116, 144, 0.4)' : '#0e7490',
+        glowColor: 'rgba(34, 211, 238, 0.25)',
         isEntity: false,
         isRoot: false,
       });
@@ -139,12 +147,12 @@ export function EntityGlobe({
     );
   }, [entities, selectedFilter]);
 
-  // Root and Discovered Entity Nodes
+  // Root Target & Correlated Entity Nodes
   const graphNodes = useMemo(() => {
     const nodes: any[] = [];
     const radius = 185;
 
-    // Prominent Root Target Node
+    // Center Root Target Node
     if (rootValue) {
       nodes.push({
         id: 'root-node',
@@ -152,11 +160,11 @@ export function EntityGlobe({
         y: -10,
         z: radius,
         originX: 0,
-        originY: -200,
+        originY: -220,
         originZ: 0,
         target2dX: 0,
         target2dY: 0,
-        radius: 8,
+        radius: 9,
         color: '#22d3ee',
         glowColor: '#22d3ee',
         label: `Target Root (${rootType || 'Identifier'})`,
@@ -178,9 +186,9 @@ export function EntityGlobe({
       const y = radius * Math.sin(theta) * Math.sin(phi);
       const z = radius * Math.cos(phi);
 
-      // 2D Tactical Layout (Concentric spiral / clustered positioning)
+      // 2D Tactical Spiral Positioning
       const angle2d = (i / Math.max(1, activeEntities.length)) * Math.PI * 2;
-      const dist2d = 90 + (i % 3) * 55 + Math.floor(i / 6) * 20;
+      const dist2d = 95 + (i % 3) * 55 + Math.floor(i / 6) * 22;
       const target2dX = Math.cos(angle2d) * dist2d;
       const target2dY = Math.sin(angle2d) * dist2d;
 
@@ -196,7 +204,7 @@ export function EntityGlobe({
         originZ: (Math.random() - 0.5) * 600,
         target2dX,
         target2dY,
-        radius: 5.5,
+        radius: 6,
         color,
         glowColor: color,
         label: entity.label,
@@ -212,7 +220,7 @@ export function EntityGlobe({
     return nodes;
   }, [rootValue, rootType, activeEntities]);
 
-  // Assembly animation on mount or target change
+  // Assembly animation on target / dataset change
   useEffect(() => {
     if (reduceMotion) {
       setAssembledProgress(1);
@@ -233,7 +241,7 @@ export function EntityGlobe({
     return () => clearInterval(timer);
   }, [reduceMotion, rootValue, activeEntities]);
 
-  // Render loop
+  // Render loop with Pulse Beams & Atmospheric Glow
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -247,7 +255,10 @@ export function EntityGlobe({
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
-      // Ambient idle rotation for 3D globe (~20s per rotation per DESIGN.md)
+      // Pulse beam phase advancement
+      pulsePhaseRef.current = (pulsePhaseRef.current + delta * 0.8) % 1;
+
+      // Ambient idle rotation for 3D globe (~20s per rotation)
       if (viewMode === '3d_globe' && !isHovered && !isDraggingRef.current && !reduceMotion) {
         setRotation((prev) => ({
           yaw: prev.yaw + 0.314 * delta,
@@ -260,6 +271,16 @@ export function EntityGlobe({
       const cy = canvas.height / 2 + panOffsetRef.current.y;
 
       if (viewMode === '3d_globe') {
+        // Volumetric Atmospheric Glow Aura behind globe
+        const atmosGrad = ctx.createRadialGradient(cx, cy, 140 * zoom, cx, cy, 240 * zoom);
+        atmosGrad.addColorStop(0, 'rgba(14, 116, 144, 0.12)');
+        atmosGrad.addColorStop(0.7, 'rgba(34, 211, 238, 0.04)');
+        atmosGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = atmosGrad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 240 * zoom, 0, Math.PI * 2);
+        ctx.fill();
+
         // --- 3D Globe Projection ---
         const allPoints = [...baseParticles, ...graphNodes];
         const projected: ProjectedNode[] = allPoints.map((p) => {
@@ -296,20 +317,20 @@ export function EntityGlobe({
         projected.sort((a, b) => b.zDepth - a.zDepth);
         projectedNodesRef.current = projected;
 
-        // Draw 3D Latitude/Longitude Wireframe Rings
-        ctx.strokeStyle = 'rgba(14, 116, 144, 0.15)';
+        // Draw 3D Wireframe Orbit Rings
+        ctx.strokeStyle = 'rgba(14, 116, 144, 0.18)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.arc(cx, cy, 185 * zoom, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Draw Vector Beams Connecting Root to Discovered Entities
+        // Draw Vector Arcs & Energy Pulse Packets
         const rootNode = projected.find((p) => p.isRoot);
         if (rootNode) {
           projected.forEach((p) => {
             if (p.isEntity && !p.isRoot) {
-              const alpha = Math.max(0.1, (p.zDepth + 200) / 400);
-              ctx.strokeStyle = `rgba(34, 211, 238, ${alpha * 0.45})`;
+              const alpha = Math.max(0.12, (p.zDepth + 200) / 400);
+              ctx.strokeStyle = `rgba(34, 211, 238, ${alpha * 0.5})`;
               ctx.lineWidth = 1.2 * p.scale;
               ctx.setLineDash([4, 4]);
 
@@ -318,6 +339,22 @@ export function EntityGlobe({
               ctx.quadraticCurveTo(cx, cy, p.px, p.py);
               ctx.stroke();
               ctx.setLineDash([]);
+
+              // Energy Pulse Packet traveling along arc
+              if (!reduceMotion) {
+                const t = pulsePhaseRef.current;
+                // Quadratic bezier formula: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+                const pulseX = (1 - t) * (1 - t) * rootNode.px + 2 * (1 - t) * t * cx + t * t * p.px;
+                const pulseY = (1 - t) * (1 - t) * rootNode.py + 2 * (1 - t) * t * cy + t * t * p.py;
+
+                ctx.beginPath();
+                ctx.arc(pulseX, pulseY, 2.5 * p.scale, 0, Math.PI * 2);
+                ctx.fillStyle = '#22d3ee';
+                ctx.shadowColor = '#22d3ee';
+                ctx.shadowBlur = 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+              }
             }
           });
         }
@@ -338,7 +375,7 @@ export function EntityGlobe({
             ctx.lineWidth = isSelected ? 2 : 1.2;
             ctx.stroke();
 
-            // Glow aura
+            // Volumetric Node Glow Aura
             const gradient = ctx.createRadialGradient(p.px, p.py, r, p.px, p.py, r * 3);
             gradient.addColorStop(0, p.glowColor);
             gradient.addColorStop(1, 'rgba(0,0,0,0)');
@@ -348,7 +385,7 @@ export function EntityGlobe({
             ctx.fill();
           }
 
-          // Render Text Label for Hovered/Root Nodes
+          // Render Label for Hovered/Root Nodes
           if ((p.isRoot || isHover || isSelected) && p.value) {
             ctx.font = '10px "JetBrains Mono", monospace';
             ctx.fillStyle = isSelected ? '#22d3ee' : '#e8edf4';
@@ -373,9 +410,9 @@ export function EntityGlobe({
 
         projectedNodesRef.current = projected2d;
 
-        // Draw 2D Tactical Concentric Radar Circles
+        // Draw Tactical Radar Rings
         [80, 150, 220].forEach((r) => {
-          ctx.strokeStyle = 'rgba(14, 116, 144, 0.2)';
+          ctx.strokeStyle = 'rgba(14, 116, 144, 0.22)';
           ctx.lineWidth = 1;
           ctx.setLineDash([3, 3]);
           ctx.beginPath();
@@ -389,12 +426,23 @@ export function EntityGlobe({
         if (rootNode) {
           projected2d.forEach((p) => {
             if (p.isEntity && !p.isRoot) {
-              ctx.strokeStyle = 'rgba(34, 211, 238, 0.4)';
+              ctx.strokeStyle = 'rgba(34, 211, 238, 0.45)';
               ctx.lineWidth = 1.5;
               ctx.beginPath();
               ctx.moveTo(rootNode.px, rootNode.py);
               ctx.lineTo(p.px, p.py);
               ctx.stroke();
+
+              // Moving particle packet in 2D
+              if (!reduceMotion) {
+                const t = pulsePhaseRef.current;
+                const px = rootNode.px + (p.px - rootNode.px) * t;
+                const py = rootNode.py + (p.py - rootNode.py) * t;
+                ctx.beginPath();
+                ctx.arc(px, py, 2.5 * zoom, 0, Math.PI * 2);
+                ctx.fillStyle = '#22d3ee';
+                ctx.fill();
+              }
             }
           });
         }
@@ -499,7 +547,7 @@ export function EntityGlobe({
     isDraggingRef.current = false;
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleClick = () => {
     if (hoveredNode && hoveredNode.isEntity) {
       setSelectedNode(hoveredNode);
     } else {
@@ -522,7 +570,7 @@ export function EntityGlobe({
 
   return (
     <div
-      className="relative w-full h-[460px] sm:h-[500px] border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md rounded overflow-hidden shadow-cyan-glow flex flex-col justify-between"
+      className="relative w-full h-[470px] sm:h-[510px] border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md rounded overflow-hidden shadow-cyan-glow flex flex-col justify-between"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
@@ -530,7 +578,7 @@ export function EntityGlobe({
       }}
     >
       {/* Top HUD Controls & View Switcher Bar */}
-      <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-accent-cyan-dim/20 pb-2.5 bg-bg-surface/75 backdrop-blur-sm px-3 py-1.5 rounded">
+      <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 border-b border-accent-cyan-dim/20 pb-2.5 bg-bg-surface/80 backdrop-blur-sm px-3 py-1.5 rounded">
         {/* Left: View Mode Toggle */}
         <div className="flex items-center gap-1.5 bg-bg-base/80 p-1 border border-accent-cyan-dim/30 rounded">
           <button
@@ -586,8 +634,8 @@ export function EntityGlobe({
       {/* Main Interactive Canvas */}
       <canvas
         ref={canvasRef}
-        width={760}
-        height={480}
+        width={780}
+        height={500}
         className="w-full h-full cursor-grab active:cursor-grabbing"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -673,12 +721,16 @@ export function EntityGlobe({
             crt.sh / DNS
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-[#f43f5e]" />
-            h8mail Breach
+            <span className="w-2 h-2 rounded-full bg-[#f59e0b]" />
+            AlienVault OTX
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#ef4444]" />
+            Shodan / Abuse
           </span>
         </div>
         <span className="text-text-muted hidden sm:inline">
-          Toggle 3D Globe / 2D Tactical Graph • Click nodes to fan-out
+          Live Vector Energy Pulse • Click nodes to fan-out
         </span>
       </div>
     </div>
