@@ -48,7 +48,11 @@ export function HudHeader({
 }: HudHeaderProps) {
   const [utcTime, setUtcTime] = useState<string>('');
   const [latency, setLatency] = useState<number>(14);
-  const [isMuted, setIsMuted] = useState(soundFx.isMuted());
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    setIsMuted(soundFx.isMuted());
+  }, []);
 
   useEffect(() => {
     const updateTime = () => {

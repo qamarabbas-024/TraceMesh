@@ -18,6 +18,7 @@ export function DecryptText({
   triggerOnMount = true,
 }: DecryptTextProps) {
   const [displayText, setDisplayText] = useState(text);
+  const [mounted, setMounted] = useState(false);
   const isRunningRef = useRef(false);
 
   const startDecryption = () => {
@@ -52,16 +53,21 @@ export function DecryptText({
   };
 
   useEffect(() => {
-    if (triggerOnMount) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && triggerOnMount) {
       startDecryption();
     }
-  }, [text, triggerOnMount]);
+  }, [mounted, text, triggerOnMount]);
 
   return (
     <span
       className={className}
       onMouseEnter={startDecryption}
       title="Hover to decrypt telemetry"
+      suppressHydrationWarning
     >
       {displayText}
     </span>

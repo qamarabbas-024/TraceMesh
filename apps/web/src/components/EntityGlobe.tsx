@@ -254,7 +254,7 @@ export function EntityGlobe({
 
     const render = (now: number) => {
       // Pause rendering completely when tab is hidden
-      if (document.hidden) {
+      if (typeof document !== 'undefined' && document.hidden) {
         animFrame = requestAnimationFrame(render);
         return;
       }

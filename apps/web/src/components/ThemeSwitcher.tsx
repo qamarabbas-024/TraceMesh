@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Palette, Check, Sparkles } from 'lucide-react';
-import { TACTICAL_THEMES, type TacticalTheme } from '@/lib/themeConfig';
+import { Palette, Check } from 'lucide-react';
+import { TACTICAL_THEMES } from '@/lib/themeConfig';
 import { soundFx } from '@/lib/soundFx';
 
 export function ThemeSwitcher() {
   const [activeThemeId, setActiveThemeId] = useState<string>('cyber-cyan');
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     try {
       const saved = localStorage.getItem('tracemesh_tactical_theme');
       if (saved) {
@@ -20,6 +22,7 @@ export function ThemeSwitcher() {
   }, []);
 
   const applyTheme = (themeId: string) => {
+    if (typeof document === 'undefined') return;
     const theme = TACTICAL_THEMES.find((t) => t.id === themeId) || TACTICAL_THEMES[0];
     document.documentElement.style.setProperty('--accent-cyan', theme.accent);
     document.documentElement.style.setProperty('--bg-base', theme.bgBase);
@@ -39,7 +42,7 @@ export function ThemeSwitcher() {
   const activeTheme = TACTICAL_THEMES.find((t) => t.id === activeThemeId) || TACTICAL_THEMES[0];
 
   return (
-    <div className="relative font-mono">
+    <div className="relative font-mono" suppressHydrationWarning>
       <button
         onClick={() => {
           soundFx.playBlip();
@@ -52,7 +55,9 @@ export function ThemeSwitcher() {
           className="w-2.5 h-2.5 rounded-full shadow-sm"
           style={{ backgroundColor: activeTheme.accent }}
         />
-        <span className="hidden xl:inline text-[10px] uppercase">{activeTheme.name.split(' ')[0]}</span>
+        <span className="hidden xl:inline text-[10px] uppercase">
+          {mounted ? activeTheme.name.split(' ')[0] : 'Theme'}
+        </span>
       </button>
 
       {isOpen && (

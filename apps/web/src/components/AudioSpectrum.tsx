@@ -9,10 +9,11 @@ interface AudioSpectrumProps {
 }
 
 export function AudioSpectrum({ barCount = 10, height = 16 }: AudioSpectrumProps) {
-  const [bars, setBars] = useState<number[]>(new Array(barCount).fill(2));
-  const [isMuted, setIsMuted] = useState(soundFx.isMuted());
+  const [bars, setBars] = useState<number[]>(() => new Array(barCount).fill(2));
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
+    setIsMuted(soundFx.isMuted());
     const interval = setInterval(() => {
       setIsMuted(soundFx.isMuted());
       if (soundFx.isMuted()) {
@@ -20,10 +21,9 @@ export function AudioSpectrum({ barCount = 10, height = 16 }: AudioSpectrumProps
         return;
       }
 
-      setBars((prev) =>
-        prev.map(() => {
-          const rand = Math.floor(Math.random() * (height - 4)) + 3;
-          return rand;
+      setBars(
+        Array.from({ length: barCount }, () => {
+          return Math.floor(Math.random() * (height - 4)) + 3;
         }),
       );
     }, 120);
@@ -36,6 +36,7 @@ export function AudioSpectrum({ barCount = 10, height = 16 }: AudioSpectrumProps
       className="flex items-end gap-0.5 px-2 py-1 bg-bg-surface-raised/80 border border-accent-cyan-dim/30 rounded"
       style={{ height: height + 8 }}
       title="Live Audio & Signal Frequency Telemetry"
+      suppressHydrationWarning
     >
       {bars.map((barHeight, idx) => (
         <span
