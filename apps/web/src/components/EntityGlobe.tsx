@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import type { DiscoveredEntity, InputType } from '@tracemesh/shared';
+import { ForceGraphSimulation } from '@/lib/graphPhysics';
 import {
   Sparkles,
   ExternalLink,
