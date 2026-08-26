@@ -242,7 +242,7 @@ export function EntityGlobe({
     return () => clearInterval(timer);
   }, [reduceMotion, rootValue, activeEntities]);
 
-  // Render loop with Pulse Beams & Atmospheric Glow
+  // Render loop with Pulse Beams, Dynamic FPS Throttling & Atmospheric Glow
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -253,7 +253,13 @@ export function EntityGlobe({
     let lastTime = performance.now();
 
     const render = (now: number) => {
-      const delta = (now - lastTime) / 1000;
+      // Pause rendering completely when tab is hidden
+      if (document.hidden) {
+        animFrame = requestAnimationFrame(render);
+        return;
+      }
+
+      const delta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
       // Pulse beam phase advancement
