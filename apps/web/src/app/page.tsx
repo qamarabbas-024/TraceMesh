@@ -11,6 +11,7 @@ import { ImportModal } from '@/components/ImportModal';
 import { ScanlineOverlay } from '@/components/ScanlineOverlay';
 import { HudHeader } from '@/components/HudHeader';
 import { CommandBar } from '@/components/CommandBar';
+import { ActivityTicker } from '@/components/ActivityTicker';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
 
@@ -172,12 +173,19 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Real-Time OSINT Threat Activity Stream Ticker */}
+      <div className="w-full fixed bottom-0 left-0 right-0 z-20">
+        <ActivityTicker />
+      </div>
+
       {/* Floating Holographic Command Bar */}
-      <CommandBar
-        onRun={(val, type) => handleRun(val, type, [])}
-        loading={loading}
-        selectedToolCount={18}
-      />
+      <div className="mb-8">
+        <CommandBar
+          onRun={(val, type) => handleRun(val, type, [])}
+          loading={loading}
+          selectedToolCount={18}
+        />
+      </div>
 
       {/* Modals & Drawers */}
       <HistoryDrawer
