@@ -18,9 +18,11 @@ import {
   Flame,
 } from 'lucide-react';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { RadialGauge } from '@/components/RadialGauge';
 import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
+import { soundFx } from '@/lib/soundFx';
+import { animate, stagger } from 'animejs';
 
 interface ExecutionResultsProps {
   report: AggregatedReport | null;
@@ -99,6 +101,22 @@ const TOOL_COLORS: Record<string, { badge: string; border: string; text: string 
 
 export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionResultsProps) {
   const [inspectedEntity, setInspectedEntity] = useState<DiscoveredEntity | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (gridRef.current && report?.entities && report.entities.length > 0) {
+      try {
+        animate(gridRef.current.querySelectorAll('.entity-card'), {
+          opacity: [0, 1],
+          translateY: [14, 0],
+          scale: [0.96, 1],
+          delay: stagger(45, { start: 80 }),
+          ease: 'outCubic',
+          duration: 500,
+        });
+      } catch {}
+    }
+  }, [report]);
 
   if (loading) {
     return (
@@ -273,7 +291,7 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
             No linked entities or footprints discovered across executed tools.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {report.entities.map((entity, idx) => {
               const toolColor =
                 TOOL_COLORS[entity.sourceTool] || {
@@ -283,20 +301,41 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                 };
 
               const isURL = entity.value.startsWith('http://') || entity.value.startsWith('https://');
+              const isHighRisk =
+                entity.sourceTool === 'h8mail' ||
+                entity.sourceTool === 'shodan_api' ||
+                entity.sourceTool === 'abuseipdb';
 
               return (
                 <div
                   key={idx}
-                  onClick={() => setInspectedEntity(entity)}
-                  className={`p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan cursor-pointer transition-all`}
+                  onClick={() => {
+                    soundFx.playBlip();
+                    setInspectedEntity(entity);
+                  }}
+                  className={`entity-card p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan cursor-pointer transition-all ${
+                    isHighRisk ? 'ring-1 ring-status-error/40' : ''
+                  }`}
                 >
+                  {/* High Risk Hazard Beacon */}
+                  {isHighRisk && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-status-error animate-ping" />
+                  )}
+
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <span
-                        className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${toolColor.badge}`}
-                      >
-                        {entity.sourceTool}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${toolColor.badge}`}
+                        >
+                          {entity.sourceTool}
+                        </span>
+                        {isHighRisk && (
+                          <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-status-error/15 border border-status-error/40 text-status-error uppercase font-bold">
+                            ALERT
+                          </span>
+                        )}
+                      </div>
 
                       {entity.confidence && (
                         <span className="text-[10px] font-mono text-text-muted">
