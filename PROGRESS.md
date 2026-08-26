@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v3.8 — done (ALL PHASES COMPLETE & VERIFIED)**
+**CURRENT VERSION: v6.0 — done (Phase 17 Dual-Mode Visualizer & STIX2/MISP/Maltego Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -187,14 +187,26 @@ Update the line above at the end of every session. That single line is the sourc
 
 ---
 
-## Phase 16 — Scale & Multi-Domain Architecture (v5.0)
+## Phase 16 — Scale & Multi-Domain Architecture (v5.0–v5.2)
 - [x] 5.0 — Operator account authentication, JWT session security, and run history
 - [x] 5.1 — Automated tool catalog ingestion from awesome-osint meta-lists
 - [x] 5.2 — Public health, registry, and batch run endpoints
 - [x] 5.3 — Auto-updater engine with GitHub commit tracking & one-click re-pull
+- [x] 5.4 — Live OSINT resolvers (GitHub API, crt.sh CT logs, IP-API Geo/ASN, Cloudflare DoH)
+- [x] 5.5 — Real-time OPSEC Exposure Score calculation & threat level matrix
 
 ---
 
-## Mission Complete
+## Phase 17 — Dual-Mode Visualizer & Enterprise Threat Formats (v6.0)
+- [x] 6.0 — Dual-mode graph visualizer: seamless toggle between 3D Holographic Globe and 2D Tactical Force-Directed Graph
+- [x] 6.1 — Interactive HUD camera controls: zoom in/out, pan, reset coordinates, raycasting node selection
+- [x] 6.2 — STIX 2.1 Cyber Threat Intelligence JSON bundle exporter
+- [x] 6.3 — MISP (Malware Information Sharing Platform) Event JSON exporter
+- [x] 6.4 — Maltego Graph Transform CSV exporter
+- [x] 6.5 — Node inspector popover with live entity confidence, source tool branding, and 1-click fan-out search
 
-Every phase across the roadmap is built, normalized, and feeding the unified 3D entity aggregation engine.
+---
+
+## Mission Complete (v6.0)
+
+Every phase across the roadmap is built, normalized, and feeding the dual-mode 3D/2D visualizer and intelligence aggregation engine.

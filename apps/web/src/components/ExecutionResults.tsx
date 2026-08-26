@@ -141,7 +141,7 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                 CACHED
               </span>
             )}
-            <div className="flex items-center gap-1.5 ml-2">
+            <div className="flex flex-wrap items-center gap-1.5 ml-2">
               <button
                 onClick={() => import('@/lib/export').then((m) => m.exportReportCSV(report))}
                 className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
@@ -155,6 +155,27 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                 title="Export as raw JSON dossier"
               >
                 JSON
+              </button>
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportSTIX2(report))}
+                className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
+                title="Export as STIX 2.1 Cyber Threat Intel Bundle"
+              >
+                STIX 2.1
+              </button>
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportMISP(report))}
+                className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
+                title="Export as MISP Event JSON"
+              >
+                MISP
+              </button>
+              <button
+                onClick={() => import('@/lib/export').then((m) => m.exportReportMaltego(report))}
+                className="px-2 py-1 bg-bg-surface-raised border border-accent-cyan-dim/30 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan rounded transition-colors text-[10px]"
+                title="Export as Maltego Graph Transform CSV"
+              >
+                Maltego
               </button>
               <button
                 onClick={() => import('@/lib/export').then((m) => m.exportReportPDF(report))}

@@ -17,6 +17,160 @@ export function exportReportJSON(report: AggregatedReport) {
 }
 
 /**
+ * Export AggregatedReport as standard STIX 2.1 Cyber Threat Intelligence JSON Bundle
+ */
+export function exportReportSTIX2(report: AggregatedReport) {
+  const now = new Date().toISOString();
+  const rootId = `identity--${Math.random().toString(36).substring(2, 10)}-${Date.now()}`;
+
+  const stixObjects: any[] = [
+    {
+      type: 'identity',
+      spec_version: '2.1',
+      id: rootId,
+      created: now,
+      modified: now,
+      name: `Target: ${report.root.value}`,
+      identity_class: report.root.type === 'email' || report.root.type === 'username' ? 'individual' : 'organization',
+      description: `Investigated root identifier (${report.root.type}) via TraceMesh OSINT Aggregator`,
+    },
+  ];
+
+  report.entities.forEach((e, idx) => {
+    const entityId = `indicator--${Math.random().toString(36).substring(2, 10)}-${idx}`;
+    let stixPattern = `[custom-object:value = '${e.value.replace(/'/g, "\\'")}']`;
+
+    if (e.type === 'ip') {
+      stixPattern = `[ipv4-addr:value = '${e.value}']`;
+    } else if (e.type === 'domain') {
+      stixPattern = `[domain-name:value = '${e.value}']`;
+    } else if (e.type === 'email') {
+      stixPattern = `[email-addr:value = '${e.value}']`;
+    } else if (e.type === 'username') {
+      stixPattern = `[user-account:account_login = '${e.value}']`;
+    }
+
+    stixObjects.push({
+      type: 'indicator',
+      spec_version: '2.1',
+      id: entityId,
+      created: now,
+      modified: now,
+      name: e.label,
+      description: `Discovered by ${e.sourceTool} with confidence ${Math.round((e.confidence || 0.9) * 100)}%`,
+      pattern: stixPattern,
+      pattern_type: 'stix',
+      valid_from: now,
+      confidence: Math.round((e.confidence || 0.9) * 100),
+    });
+
+    // Relationship linking indicator to target
+    stixObjects.push({
+      type: 'relationship',
+      spec_version: '2.1',
+      id: `relationship--${Math.random().toString(36).substring(2, 10)}-${idx}`,
+      created: now,
+      modified: now,
+      relationship_type: 'indicates',
+      source_ref: entityId,
+      target_ref: rootId,
+      description: `Correlated OSINT entity node discovered by ${e.sourceTool}`,
+    });
+  });
+
+  const stixBundle = {
+    type: 'bundle',
+    id: `bundle--${Math.random().toString(36).substring(2, 12)}`,
+    spec_version: '2.1',
+    objects: stixObjects,
+  };
+
+  const jsonStr = JSON.stringify(stixBundle, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tracemesh-stix2-${report.root.value.replace(/[^a-zA-Z0-9_-]/g, '_')}-${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Export AggregatedReport as MISP (Malware Information Sharing Platform) Event JSON
+ */
+export function exportReportMISP(report: AggregatedReport) {
+  const now = Math.floor(Date.now() / 1000);
+
+  const mispEvent = {
+    Event: {
+      uuid: `uuid-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+      info: `TraceMesh OSINT Reconnaissance: ${report.root.value}`,
+      threat_level_id: report.threatLevel === 'CRITICAL' ? '1' : report.threatLevel === 'HIGH' ? '2' : '3',
+      analysis: '2',
+      date: new Date().toISOString().split('T')[0],
+      timestamp: String(now),
+      published: false,
+      Attribute: report.entities.map((e) => ({
+        type: e.type === 'ip' ? 'ip-dst' : e.type === 'domain' ? 'domain' : e.type === 'email' ? 'email-dst' : 'text',
+        category: e.type === 'breach' ? 'Financial fraud' : 'Attribution',
+        value: e.value,
+        comment: `Source: ${e.sourceTool} | ${e.label}`,
+        to_ids: true,
+        timestamp: String(now),
+      })),
+    },
+  };
+
+  const jsonStr = JSON.stringify(mispEvent, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tracemesh-misp-${report.root.value.replace(/[^a-zA-Z0-9_-]/g, '_')}-${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Export AggregatedReport as Maltego Graph Transform CSV
+ */
+export function exportReportMaltego(report: AggregatedReport) {
+  const headers = ['Entity Type', 'Value', 'Source Tool', 'Target Root', 'Weight', 'Label'];
+  const rows = report.entities.map((e) => {
+    let maltegoType = 'maltego.Phrase';
+    if (e.type === 'email') maltegoType = 'maltego.EmailAddress';
+    else if (e.type === 'domain') maltegoType = 'maltego.Domain';
+    else if (e.type === 'ip') maltegoType = 'maltego.IPv4Address';
+    else if (e.type === 'username') maltegoType = 'maltego.Alias';
+    else if (e.type === 'platform') maltegoType = 'maltego.URL';
+
+    return [
+      `"${maltegoType}"`,
+      `"${e.value.replace(/"/g, '""')}"`,
+      `"${e.sourceTool.replace(/"/g, '""')}"`,
+      `"${report.root.value.replace(/"/g, '""')}"`,
+      `"${e.confidence !== undefined ? Math.round(e.confidence * 100) : 90}"`,
+      `"${e.label.replace(/"/g, '""')}"`,
+    ];
+  });
+
+  const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tracemesh-maltego-${report.root.value.replace(/[^a-zA-Z0-9_-]/g, '_')}-${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
  * Export AggregatedReport as CSV file download
  */
 export function exportReportCSV(report: AggregatedReport) {
@@ -210,8 +364,8 @@ export function exportReportPDF(report: AggregatedReport) {
       <span class="meta-val">${report.entities.length} Discovered</span>
     </div>
     <div class="meta-item">
-      <span class="meta-label">Scan Latency</span>
-      <span class="meta-val">${report.stats.durationMs}ms</span>
+      <span class="meta-label">Scan Latency / OPSEC</span>
+      <span class="meta-val">${report.stats.durationMs}ms • ${report.opsecScore || 85}% Exposure</span>
     </div>
   </div>
 
