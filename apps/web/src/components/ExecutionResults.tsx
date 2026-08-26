@@ -18,7 +18,9 @@ import {
   Flame,
 } from 'lucide-react';
 
+import { useState } from 'react';
 import { RadialGauge } from '@/components/RadialGauge';
+import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
 
 interface ExecutionResultsProps {
   report: AggregatedReport | null;
@@ -96,6 +98,8 @@ const TOOL_COLORS: Record<string, { badge: string; border: string; text: string 
 };
 
 export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionResultsProps) {
+  const [inspectedEntity, setInspectedEntity] = useState<DiscoveredEntity | null>(null);
+
   if (loading) {
     return (
       <div className="w-full max-w-3xl border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-8 rounded text-center shadow-cyan-glow">
@@ -283,7 +287,8 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
               return (
                 <div
                   key={idx}
-                  className={`p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan transition-all`}
+                  onClick={() => setInspectedEntity(entity)}
+                  className={`p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan cursor-pointer transition-all`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -307,6 +312,7 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                           href={entity.value}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="text-text-muted hover:text-accent-cyan inline-flex shrink-0"
                           title="Open external link"
                         >
@@ -327,15 +333,16 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                     </span>
 
                     <button
-                      onClick={() =>
+                      onClick={(e) => {
+                        e.stopPropagation();
                         onFanOutSearch(
                           entity.value,
                           (entity.type as InputType) || 'username',
-                        )
-                      }
+                        );
+                      }}
                       className="flex items-center gap-1 px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan/50 hover:bg-accent-cyan hover:text-bg-base text-accent-cyan text-[10px] font-mono font-semibold rounded transition-all shadow-cyan-glow"
                     >
-                      <span>Fan-Out Search</span>
+                      <span>Fan-Out</span>
                       <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>
@@ -345,6 +352,14 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
           </div>
         )}
       </div>
+
+      {/* Entity Inspector Drawer */}
+      <EntityInspectorDrawer
+        entity={inspectedEntity}
+        isOpen={!!inspectedEntity}
+        onClose={() => setInspectedEntity(null)}
+        onFanOutSearch={onFanOutSearch}
+      />
     </div>
   );
 }
