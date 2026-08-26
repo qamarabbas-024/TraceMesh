@@ -18,6 +18,7 @@ import {
 import { soundFx } from '@/lib/soundFx';
 import { DecryptText } from '@/components/DecryptText';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { AudioSpectrum } from '@/components/AudioSpectrum';
 
 interface HudHeaderProps {
   onOpenHistory: () => void;
@@ -96,7 +97,7 @@ export function HudHeader({
           </div>
         </div>
 
-        {/* Center: Live Mission Telemetry & Clock */}
+        {/* Center: Live Mission Telemetry & Clock & Audio Spectrum */}
         <div className="hidden md:flex items-center gap-5 text-[11px] text-text-secondary">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-accent-cyan" />
@@ -116,6 +117,8 @@ export function HudHeader({
               WORKERS: <strong className="text-accent-cyan">{activeWorkerCount} ACTIVE</strong>
             </span>
           </div>
+
+          <AudioSpectrum barCount={8} height={14} />
         </div>
 
         {/* Right: Quick Action Controls */}
