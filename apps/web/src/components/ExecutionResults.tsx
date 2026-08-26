@@ -18,6 +18,8 @@ import {
   Flame,
 } from 'lucide-react';
 
+import { RadialGauge } from '@/components/RadialGauge';
+
 interface ExecutionResultsProps {
   report: AggregatedReport | null;
   loading: boolean;
@@ -188,14 +190,14 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
           </div>
         </div>
 
-        {/* OPSEC Score & Threat Level Matrix */}
+        {/* OPSEC Score & Threat Level Matrix with Radial Telemetry Gauge */}
         {report.opsecScore !== undefined && (
-          <div className="p-3 bg-bg-surface-raised/70 border border-accent-cyan-dim/25 rounded flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="space-y-1">
+          <div className="p-3.5 bg-bg-surface-raised/70 border border-accent-cyan-dim/25 rounded flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex-1 space-y-1.5 text-left">
               <div className="flex items-center gap-2">
                 <Flame className="w-4 h-4 text-accent-amber" />
                 <span className="text-xs font-mono uppercase font-bold text-text-primary">
-                  OPSEC Exposure Score: {report.opsecScore}%
+                  Target Exposure Assessment
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${threatColor}`}
@@ -203,15 +205,23 @@ export function ExecutionResults({ report, loading, onFanOutSearch }: ExecutionR
                   Threat: {report.threatLevel || 'EVALUATED'}
                 </span>
               </div>
-              <p className="text-[11px] font-mono text-text-secondary">
+              <p className="text-[11px] font-mono text-text-secondary leading-relaxed">
                 Calculated exposure risk based on correlated breaches, social footprint, and infrastructure endpoints.
               </p>
+              <div className="w-full h-2 bg-bg-base rounded-full overflow-hidden border border-accent-cyan-dim/30 mt-2">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-500"
+                  style={{ width: `${report.opsecScore}%` }}
+                />
+              </div>
             </div>
 
-            <div className="w-full sm:w-36 h-2.5 bg-bg-base rounded-full overflow-hidden border border-accent-cyan-dim/30">
-              <div
-                className="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-rose-500 transition-all duration-500"
-                style={{ width: `${report.opsecScore}%` }}
+            <div className="shrink-0 flex items-center justify-center">
+              <RadialGauge
+                value={report.opsecScore}
+                size={100}
+                threatLevel={report.threatLevel || 'MEDIUM'}
+                label="OPSEC Exposure"
               />
             </div>
           </div>
