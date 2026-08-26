@@ -10,6 +10,7 @@ import { EntityGlobe } from '@/components/EntityGlobe';
 import { ImportModal } from '@/components/ImportModal';
 import { ScanlineOverlay } from '@/components/ScanlineOverlay';
 import { HudHeader } from '@/components/HudHeader';
+import { CommandBar } from '@/components/CommandBar';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
 
@@ -170,6 +171,13 @@ export default function Home() {
           <BackendStatus />
         </div>
       </main>
+
+      {/* Floating Holographic Command Bar */}
+      <CommandBar
+        onRun={(val, type) => handleRun(val, type, [])}
+        loading={loading}
+        selectedToolCount={18}
+      />
 
       {/* Modals & Drawers */}
       <HistoryDrawer
