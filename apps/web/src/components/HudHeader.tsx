@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
 import { DecryptText } from '@/components/DecryptText';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 interface HudHeaderProps {
   onOpenHistory: () => void;
@@ -131,6 +132,9 @@ export function HudHeader({
           >
             {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>
+
+          {/* Tactical Palette Theme Switcher */}
+          <ThemeSwitcher />
 
           {/* Hotkey Guide */}
           <button
