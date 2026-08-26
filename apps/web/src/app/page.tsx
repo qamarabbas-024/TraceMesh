@@ -15,6 +15,7 @@ import { ActivityTicker } from '@/components/ActivityTicker';
 import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
 import { DecryptText } from '@/components/DecryptText';
+import { CyberGrid3D } from '@/components/CyberGrid3D';
 import { soundFx } from '@/lib/soundFx';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
@@ -152,6 +153,9 @@ export default function Home() {
 
   return (
     <div className="relative min-h-screen bg-bg-base text-text-primary flex flex-col items-center selection:bg-accent-cyan selection:text-bg-base">
+      {/* 3D Perspective Cyber Grid Horizon & Rising Particles */}
+      <CyberGrid3D opacity={0.35} reduceMotion={reduceMotion} />
+
       {/* Procedural Ambient Scanline & Cyber Grid */}
       <ScanlineOverlay opacity={0.04} />
 
