@@ -447,6 +447,35 @@ export function EntityGlobe({
             ctx.lineWidth = isSelected ? 2 : 1.2;
             ctx.stroke();
 
+            // Rotating 3D Lock-On Reticle on Selected / Hovered Entity
+            if (isSelected || isHover) {
+              const reticleAngle = pulsePhaseRef.current * Math.PI * 4;
+              const reticleRadius = r + 8;
+
+              ctx.strokeStyle = '#22d3ee';
+              ctx.lineWidth = 1.2;
+
+              // Outer segmented lock ring
+              ctx.beginPath();
+              ctx.arc(p.px, p.py, reticleRadius, reticleAngle, reticleAngle + Math.PI * 0.6);
+              ctx.stroke();
+              ctx.beginPath();
+              ctx.arc(p.px, p.py, reticleRadius, reticleAngle + Math.PI, reticleAngle + Math.PI * 1.6);
+              ctx.stroke();
+
+              // Crosshair brackets
+              ctx.beginPath();
+              ctx.moveTo(p.px - reticleRadius - 4, p.py);
+              ctx.lineTo(p.px - reticleRadius + 2, p.py);
+              ctx.moveTo(p.px + reticleRadius - 2, p.py);
+              ctx.lineTo(p.px + reticleRadius + 4, p.py);
+              ctx.moveTo(p.px, p.py - reticleRadius - 4);
+              ctx.lineTo(p.px, p.py - reticleRadius + 2);
+              ctx.moveTo(p.px, p.py + reticleRadius - 2);
+              ctx.lineTo(p.px, p.py + reticleRadius + 4);
+              ctx.stroke();
+            }
+
             // Volumetric Node Glow Aura
             const gradient = ctx.createRadialGradient(p.px, p.py, r, p.px, p.py, r * 3);
             gradient.addColorStop(0, p.glowColor);
@@ -463,7 +492,7 @@ export function EntityGlobe({
             ctx.fillStyle = isSelected ? '#22d3ee' : '#e8edf4';
             ctx.textAlign = 'center';
             const displayVal = p.value.length > 20 ? `${p.value.substring(0, 20)}...` : p.value;
-            ctx.fillText(displayVal, p.px, p.py - r - 6);
+            ctx.fillText(displayVal, p.px, p.py - r - 10);
           }
         });
       } else {
