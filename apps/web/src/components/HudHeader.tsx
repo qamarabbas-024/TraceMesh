@@ -11,12 +11,17 @@ import {
   User,
   Zap,
   Briefcase,
+  Volume2,
+  VolumeX,
+  Keyboard,
 } from 'lucide-react';
+import { soundFx } from '@/lib/soundFx';
 
 interface HudHeaderProps {
   onOpenHistory: () => void;
   onOpenImport: () => void;
   onOpenCases: () => void;
+  onOpenShortcuts: () => void;
   onOpenAuth: () => void;
   user: any | null;
   reduceMotion: boolean;
@@ -28,6 +33,7 @@ export function HudHeader({
   onOpenHistory,
   onOpenImport,
   onOpenCases,
+  onOpenShortcuts,
   onOpenAuth,
   user,
   reduceMotion,
@@ -36,6 +42,7 @@ export function HudHeader({
 }: HudHeaderProps) {
   const [utcTime, setUtcTime] = useState<string>('');
   const [latency, setLatency] = useState<number>(14);
+  const [isMuted, setIsMuted] = useState(soundFx.isMuted());
 
   useEffect(() => {
     const updateTime = () => {
@@ -53,6 +60,14 @@ export function HudHeader({
     }, 4000);
     return () => clearInterval(pingInterval);
   }, []);
+
+  const handleToggleSound = () => {
+    const nextMuted = soundFx.toggleMute();
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      soundFx.playBlip();
+    }
+  };
 
   return (
     <header className="relative w-full z-20 border-b border-accent-cyan-dim/40 bg-bg-surface/90 backdrop-blur-md px-4 py-2.5 shadow-cyan-glow">
@@ -103,8 +118,36 @@ export function HudHeader({
 
         {/* Right: Quick Action Controls */}
         <div className="flex items-center gap-2">
+          {/* Sound Synthesizer Toggle */}
           <button
-            onClick={onOpenCases}
+            onClick={handleToggleSound}
+            className={`p-1.5 border rounded transition-all ${
+              isMuted
+                ? 'border-accent-cyan-dim/30 text-text-muted hover:text-text-secondary'
+                : 'border-accent-cyan bg-accent-cyan/15 text-accent-cyan shadow-cyan-glow'
+            }`}
+            title={isMuted ? 'Unmute procedural UI sounds' : 'Mute UI sounds'}
+          >
+            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+          </button>
+
+          {/* Hotkey Guide */}
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenShortcuts();
+            }}
+            className="p-1.5 border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
+            title="Keyboard Shortcuts (?)"
+          >
+            <Keyboard className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenCases();
+            }}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
             title="Open Tactical Case Dossiers"
           >
@@ -113,16 +156,22 @@ export function HudHeader({
           </button>
 
           <button
-            onClick={onOpenImport}
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenImport();
+            }}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
             title="Import intelligence case transcripts or text"
           >
             <FileText className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Import Intel</span>
+            <span className="hidden sm:inline">Import</span>
           </button>
 
           <button
-            onClick={onOpenHistory}
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenHistory();
+            }}
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
             title="Open past investigation runs"
           >
@@ -131,7 +180,10 @@ export function HudHeader({
           </button>
 
           <button
-            onClick={onToggleMotion}
+            onClick={() => {
+              soundFx.playBlip();
+              onToggleMotion();
+            }}
             className={`px-2 py-1 text-[10px] uppercase border rounded transition-all ${
               reduceMotion
                 ? 'border-accent-amber text-accent-amber bg-accent-amber/10'
@@ -143,7 +195,10 @@ export function HudHeader({
           </button>
 
           <button
-            onClick={onOpenAuth}
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenAuth();
+            }}
             className="flex items-center gap-1 px-2.5 py-1 text-xs border border-accent-cyan bg-accent-cyan/15 hover:bg-accent-cyan hover:text-bg-base text-accent-cyan font-bold rounded transition-all shadow-cyan-glow"
           >
             <User className="w-3.5 h-3.5" />

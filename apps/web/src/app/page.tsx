@@ -13,6 +13,8 @@ import { HudHeader } from '@/components/HudHeader';
 import { CommandBar } from '@/components/CommandBar';
 import { ActivityTicker } from '@/components/ActivityTicker';
 import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
+import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
+import { soundFx } from '@/lib/soundFx';
 import type { InputType, AggregatedReport } from '@tracemesh/shared';
 import { Shield, Zap, Sparkles, Terminal } from 'lucide-react';
 
@@ -30,6 +32,46 @@ export default function Home() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isCasesOpen, setIsCasesOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+
+  // Global Tactical Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Avoid hotkeys when typing inside inputs or textareas
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+
+      if (e.key === 'Escape') {
+        setIsAuthOpen(false);
+        setIsHistoryOpen(false);
+        setIsImportOpen(false);
+        setIsCasesOpen(false);
+        setIsShortcutsOpen(false);
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setIsCasesOpen((prev) => !prev);
+      } else if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setIsHistoryOpen((prev) => !prev);
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setReduceMotion((prev) => !prev);
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        soundFx.toggleMute();
+      } else if (e.key === '?') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setIsShortcutsOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Load session from localStorage on mount
   useEffect(() => {
@@ -62,6 +104,7 @@ export default function Home() {
   };
 
   const handleRun = async (inputValue: string, inputType: InputType, toolIds: string[]) => {
+    soundFx.playLockOn();
     setLoading(true);
     setError(null);
     try {
@@ -92,6 +135,7 @@ export default function Home() {
 
       const data: AggregatedReport = await res.json();
       setReport(data);
+      soundFx.playSuccess();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Batch execution failed');
     } finally {
@@ -100,6 +144,7 @@ export default function Home() {
   };
 
   const handleFanOutSearch = (value: string, type: InputType) => {
+    soundFx.playBlip();
     setFanOutTarget({ value, type });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -114,6 +159,7 @@ export default function Home() {
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenImport={() => setIsImportOpen(true)}
         onOpenCases={() => setIsCasesOpen(true)}
+        onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenAuth={() => (user ? handleLogout() : setIsAuthOpen(true))}
         user={user}
         reduceMotion={reduceMotion}
@@ -191,6 +237,11 @@ export default function Home() {
       </div>
 
       {/* Modals & Drawers */}
+      <KeyboardShortcutsModal
+        isOpen={isShortcutsOpen}
+        onClose={() => setIsShortcutsOpen(false)}
+      />
+
       <CaseManagerDrawer
         isOpen={isCasesOpen}
         onClose={() => setIsCasesOpen(false)}
