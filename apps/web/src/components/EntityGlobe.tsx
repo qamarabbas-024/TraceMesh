@@ -56,6 +56,8 @@ interface ProjectedNode {
   // 2D tactical coordinates
   target2dX?: number;
   target2dY?: number;
+  parentValue?: string;
+  hopLevel?: number;
 }
 
 const TOOL_COLORS: Record<string, string> = {
@@ -181,18 +183,21 @@ export function EntityGlobe({
       });
     }
 
-    // Discovered Child Entities
+    // Discovered Child Entities (Concentric Multi-Tier Shells)
     activeEntities.forEach((entity, i) => {
+      const hop = entity.hopLevel || 1;
+      const shellRadius = hop === 3 ? radius + 50 : hop === 2 ? radius + 25 : radius;
+
       const phi = Math.acos(-1 + (2 * (i + 1)) / (activeEntities.length + 1));
       const theta = Math.sqrt((activeEntities.length + 1) * Math.PI) * phi;
 
-      const x = radius * Math.cos(theta) * Math.sin(phi);
-      const y = radius * Math.sin(theta) * Math.sin(phi);
-      const z = radius * Math.cos(phi);
+      const x = shellRadius * Math.cos(theta) * Math.sin(phi);
+      const y = shellRadius * Math.sin(theta) * Math.sin(phi);
+      const z = shellRadius * Math.cos(phi);
 
-      // 2D Tactical Spiral Positioning
+      // 2D Tactical Multi-Hop Concentric Orbital Rings
       const angle2d = (i / Math.max(1, activeEntities.length)) * Math.PI * 2;
-      const dist2d = 95 + (i % 3) * 55 + Math.floor(i / 6) * 22;
+      const dist2d = 85 + (hop - 1) * 70 + (i % 4) * 20;
       const target2dX = Math.cos(angle2d) * dist2d;
       const target2dY = Math.sin(angle2d) * dist2d;
 
@@ -208,7 +213,7 @@ export function EntityGlobe({
         originZ: (Math.random() - 0.5) * 600,
         target2dX,
         target2dY,
-        radius: 6,
+        radius: hop === 1 ? 6 : hop === 2 ? 5 : 4,
         color,
         glowColor: color,
         label: entity.label,
@@ -216,6 +221,8 @@ export function EntityGlobe({
         type: entity.type,
         sourceTool: entity.sourceTool,
         confidence: entity.confidence || 0.9,
+        hopLevel: hop,
+        parentValue: entity.parentValue || rootValue,
         isRoot: false,
         isEntity: true,
       });
@@ -410,13 +417,20 @@ export function EntityGlobe({
         if (rootNode) {
           projected.forEach((p) => {
             if (p.isEntity && !p.isRoot) {
+              const originNode =
+                (p.parentValue && projected.find((n) => n.value === p.parentValue && n.id !== p.id)) ||
+                rootNode;
               const alpha = Math.max(0.12, (p.zDepth + 200) / 400);
-              ctx.strokeStyle = `rgba(34, 211, 238, ${alpha * 0.5})`;
-              ctx.lineWidth = 1.2 * p.scale;
-              ctx.setLineDash([4, 4]);
+              const isMultiHop = p.hopLevel && p.hopLevel > 1;
+
+              ctx.strokeStyle = isMultiHop
+                ? `rgba(245, 158, 11, ${alpha * 0.6})`
+                : `rgba(34, 211, 238, ${alpha * 0.5})`;
+              ctx.lineWidth = (isMultiHop ? 1.0 : 1.2) * p.scale;
+              ctx.setLineDash(isMultiHop ? [2, 3] : [4, 4]);
 
               ctx.beginPath();
-              ctx.moveTo(rootNode.px, rootNode.py);
+              ctx.moveTo(originNode.px, originNode.py);
               ctx.quadraticCurveTo(cx, cy, p.px, p.py);
               ctx.stroke();
               ctx.setLineDash([]);
@@ -424,14 +438,15 @@ export function EntityGlobe({
               // Energy Pulse Packet traveling along arc
               if (!reduceMotion) {
                 const t = pulsePhaseRef.current;
-                // Quadratic bezier formula: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
-                const pulseX = (1 - t) * (1 - t) * rootNode.px + 2 * (1 - t) * t * cx + t * t * p.px;
-                const pulseY = (1 - t) * (1 - t) * rootNode.py + 2 * (1 - t) * t * cy + t * t * p.py;
+                const pulseX =
+                  (1 - t) * (1 - t) * originNode.px + 2 * (1 - t) * t * cx + t * t * p.px;
+                const pulseY =
+                  (1 - t) * (1 - t) * originNode.py + 2 * (1 - t) * t * cy + t * t * p.py;
 
                 ctx.beginPath();
                 ctx.arc(pulseX, pulseY, 2.5 * p.scale, 0, Math.PI * 2);
-                ctx.fillStyle = '#22d3ee';
-                ctx.shadowColor = '#22d3ee';
+                ctx.fillStyle = isMultiHop ? '#f59e0b' : '#22d3ee';
+                ctx.shadowColor = isMultiHop ? '#f59e0b' : '#22d3ee';
                 ctx.shadowBlur = 6;
                 ctx.fill();
                 ctx.shadowBlur = 0;
@@ -537,21 +552,29 @@ export function EntityGlobe({
         if (rootNode) {
           projected2d.forEach((p) => {
             if (p.isEntity && !p.isRoot) {
-              ctx.strokeStyle = 'rgba(34, 211, 238, 0.45)';
-              ctx.lineWidth = 1.5;
+              const originNode =
+                (p.parentValue &&
+                  projected2d.find((n) => n.value === p.parentValue && n.id !== p.id)) ||
+                rootNode;
+              const isMultiHop = p.hopLevel && p.hopLevel > 1;
+
+              ctx.strokeStyle = isMultiHop
+                ? 'rgba(245, 158, 11, 0.5)'
+                : 'rgba(34, 211, 238, 0.45)';
+              ctx.lineWidth = isMultiHop ? 1.2 : 1.5;
               ctx.beginPath();
-              ctx.moveTo(rootNode.px, rootNode.py);
+              ctx.moveTo(originNode.px, originNode.py);
               ctx.lineTo(p.px, p.py);
               ctx.stroke();
 
               // Moving particle packet in 2D
               if (!reduceMotion) {
                 const t = pulsePhaseRef.current;
-                const px = rootNode.px + (p.px - rootNode.px) * t;
-                const py = rootNode.py + (p.py - rootNode.py) * t;
+                const px = originNode.px + (p.px - originNode.px) * t;
+                const py = originNode.py + (p.py - originNode.py) * t;
                 ctx.beginPath();
                 ctx.arc(px, py, 2.5 * zoom, 0, Math.PI * 2);
-                ctx.fillStyle = '#22d3ee';
+                ctx.fillStyle = isMultiHop ? '#f59e0b' : '#22d3ee';
                 ctx.fill();
               }
             }

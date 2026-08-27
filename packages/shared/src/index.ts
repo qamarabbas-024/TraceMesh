@@ -72,6 +72,8 @@ export interface DiscoveredEntity {
   sourceTool: string;
   confidence?: number;
   metadata?: Record<string, any>;
+  parentValue?: string;
+  hopLevel?: number;
 }
 
 export interface NormalizedResult {
@@ -88,6 +90,8 @@ export interface BatchRunRequest {
   inputType: InputType;
   toolIds: string[];
   bypassCache?: boolean;
+  deepRecon?: boolean;
+  maxHops?: number;
 }
 
 export interface AggregatedReport {
@@ -117,5 +121,10 @@ export interface AggregatedReport {
   };
   opsecScore?: number;
   threatLevel?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  hopSummary?: {
+    hop: number;
+    entityCount: number;
+    toolsExecuted: number;
+  }[];
   createdAt: string;
 }

@@ -16,13 +16,21 @@ export class AggregationService {
       summary: string;
       entities: DiscoveredEntity[];
       error?: string;
+      hop?: number;
     }[],
     cached: boolean = false,
   ): AggregatedReport {
     const entityMap = new Map<string, DiscoveredEntity>();
+    const hopStats = new Map<number, { count: number; tools: number }>();
 
-    // Merge and deduplicate entities
+    // Merge and deduplicate entities with hop tracking
     for (const execution of toolExecutions) {
+      const hop = execution.hop || 1;
+      const currentHopStat = hopStats.get(hop) || { count: 0, tools: 0 };
+      currentHopStat.tools += 1;
+      currentHopStat.count += execution.entities.length;
+      hopStats.set(hop, currentHopStat);
+
       for (const entity of execution.entities) {
         const key = `${entity.type}:${entity.value.toLowerCase().trim()}`;
         const existing = entityMap.get(key);
@@ -33,9 +41,18 @@ export class AggregationService {
             ...entity.metadata,
             additionalSource: entity.sourceTool,
           };
-          existing.confidence = Math.min(1.0, (existing.confidence || 0.8) + 0.1);
+          existing.confidence = Math.min(1.0, (existing.confidence || 0.8) + 0.08);
+          // Keep lowest hop level (closest connection to root)
+          if (entity.hopLevel && (!existing.hopLevel || entity.hopLevel < existing.hopLevel)) {
+            existing.hopLevel = entity.hopLevel;
+            existing.parentValue = entity.parentValue;
+          }
         } else {
-          entityMap.set(key, { ...entity });
+          entityMap.set(key, {
+            ...entity,
+            hopLevel: entity.hopLevel || hop,
+            parentValue: entity.parentValue || inputValue,
+          });
         }
       }
     }
@@ -46,16 +63,17 @@ export class AggregationService {
     // Calculate OPSEC Exposure Score (0-100%) and Threat Matrix
     let rawScore = 0;
     for (const entity of uniqueEntities) {
+      const hopWeight = entity.hopLevel === 1 ? 1.0 : entity.hopLevel === 2 ? 0.75 : 0.5;
       if (entity.type === 'breach') {
-        rawScore += 25;
+        rawScore += 25 * hopWeight;
       } else if (entity.type === 'platform') {
-        rawScore += 8;
+        rawScore += 8 * hopWeight;
       } else if (entity.type === 'ip' || entity.type === 'domain') {
-        rawScore += 12;
+        rawScore += 12 * hopWeight;
       } else if (entity.type === 'record') {
-        rawScore += 15;
+        rawScore += 15 * hopWeight;
       } else {
-        rawScore += 5;
+        rawScore += 5 * hopWeight;
       }
     }
 
@@ -64,6 +82,14 @@ export class AggregationService {
     if (opsecScore >= 80) threatLevel = 'CRITICAL';
     else if (opsecScore >= 55) threatLevel = 'HIGH';
     else if (opsecScore >= 30) threatLevel = 'MEDIUM';
+
+    const hopSummary = Array.from(hopStats.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([hop, stats]) => ({
+        hop,
+        entityCount: stats.count,
+        toolsExecuted: stats.tools,
+      }));
 
     return {
       runId,
@@ -92,6 +118,7 @@ export class AggregationService {
       },
       opsecScore,
       threatLevel,
+      hopSummary: hopSummary.length > 0 ? hopSummary : [{ hop: 1, entityCount: uniqueEntities.length, toolsExecuted: toolExecutions.length }],
       createdAt: new Date().toISOString(),
     };
   }

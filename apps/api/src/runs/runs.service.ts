@@ -27,6 +27,7 @@ import {
   AggregatedReport,
   InputType,
   NormalizedResult,
+  DiscoveredEntity,
 } from '@tracemesh/shared';
 
 @Injectable()
@@ -83,9 +84,107 @@ export class RunsService {
     this.runnerMap.set('alienvault_otx', this.alienVaultOTXRunner);
   }
 
+  private detectType(val: string): InputType {
+    const trimmed = val.trim();
+    if (trimmed.includes('@')) return 'email';
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(trimmed)) return 'ip';
+    if (/^https?:\/\//.test(trimmed)) return 'domain';
+    if (/^[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(trimmed)) return 'domain';
+    if (/^\+?\d{7,15}$/.test(trimmed)) return 'phone';
+    return 'username';
+  }
+
+  private getMatchingToolsForType(type: InputType): string[] {
+    switch (type) {
+      case 'email':
+        return ['holehe', 'h8mail', 'theharvester'];
+      case 'username':
+        return ['sherlock', 'maigret', 'github_recon'];
+      case 'domain':
+        return ['subfinder', 'crtsh', 'alienvault_otx', 'domainrecon'];
+      case 'ip':
+        return ['shodan_api', 'abuseipdb', 'ipinfo'];
+      case 'phone':
+        return ['phoneinfoga'];
+      case 'image':
+        return ['exiftool'];
+      default:
+        return ['sherlock'];
+    }
+  }
+
+  private async executeSingleTool(
+    toolName: string,
+    val: string,
+    type: InputType,
+    hopLevel: number = 1,
+    parentVal: string = val,
+  ) {
+    const runner = this.runnerMap.get(toolName);
+    if (!runner) {
+      return {
+        toolId: toolName,
+        toolName,
+        displayName: toolName,
+        status: 'error' as const,
+        durationMs: 0,
+        summary: `Runner not found for tool: ${toolName}`,
+        entities: [],
+        error: 'Runner not implemented',
+        hop: hopLevel,
+      };
+    }
+
+    try {
+      const timeoutPromise = new Promise<NormalizedResult>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`Tool ${toolName} timed out after 8s`)),
+          this.TOOL_TIMEOUT_MS,
+        ),
+      );
+
+      const execPromise = runner.execute(val, type);
+      const result = await Promise.race([execPromise, timeoutPromise]);
+      const finalStatus: 'success' | 'error' | 'timeout' =
+        result.status === 'success' ? 'success' : 'error';
+
+      const taggedEntities: DiscoveredEntity[] = result.entities.map((e) => ({
+        ...e,
+        hopLevel,
+        parentValue: parentVal,
+      }));
+
+      return {
+        toolId: toolName,
+        toolName,
+        displayName: toolName,
+        status: finalStatus,
+        durationMs: result.durationMs || 0,
+        summary: result.summary,
+        entities: taggedEntities,
+        error: result.error,
+        hop: hopLevel,
+      };
+    } catch (err: any) {
+      const isTimeout = err.message?.includes('timed out');
+      return {
+        toolId: toolName,
+        toolName,
+        displayName: toolName,
+        status: (isTimeout ? 'timeout' : 'error') as 'timeout' | 'error',
+        durationMs: this.TOOL_TIMEOUT_MS,
+        summary: isTimeout ? `Execution timed out (${toolName})` : `Execution error: ${err.message}`,
+        entities: [],
+        error: err.message,
+        hop: hopLevel,
+      };
+    }
+  }
+
   async runBatch(req: BatchRunRequest, userId?: string): Promise<AggregatedReport> {
-    const { inputValue, inputType, toolIds, bypassCache } = req;
-    const cacheKey = `${inputType}:${inputValue.toLowerCase().trim()}:${toolIds.sort().join(',')}`;
+    const { inputValue, inputType, toolIds, bypassCache, deepRecon, maxHops = 2 } = req;
+    const targetHops = deepRecon ? Math.min(3, Math.max(1, maxHops)) : 1;
+    const cacheKey = `${inputType}:${inputValue.toLowerCase().trim()}:${toolIds.sort().join(',')}:${deepRecon ? `deep_${targetHops}` : 'flat'}`;
 
     // Check cache
     if (!bypassCache) {
@@ -107,78 +206,94 @@ export class RunsService {
     const activeToolMap = new Map(registeredTools.map((t) => [t.id, t]));
     const nameToToolMap = new Map(registeredTools.map((t) => [t.name, t]));
 
-    // Execute selected tools in parallel with timeout protection
-    const executionPromises = toolIds.map(async (toolIdOrName) => {
+    const allExecutions: any[] = [];
+    const visitedPivots = new Set<string>([inputValue.toLowerCase().trim()]);
+
+    // --- Hop 1: Primary Target Execution ---
+    const hop1Promises = toolIds.map(async (toolIdOrName) => {
       const tool = activeToolMap.get(toolIdOrName) || nameToToolMap.get(toolIdOrName);
       const toolName = tool?.name || toolIdOrName;
-      const displayName = tool?.displayName || toolName;
-      const runner = this.runnerMap.get(toolName);
-
-      if (!runner) {
-        return {
-          toolId: tool?.id || toolIdOrName,
-          toolName,
-          displayName,
-          status: 'error' as const,
-          durationMs: 0,
-          summary: `Runner not found for tool: ${displayName}`,
-          entities: [],
-          error: 'Runner not implemented',
-        };
-      }
-
-      try {
-        const timeoutPromise = new Promise<NormalizedResult>((_, reject) =>
-          setTimeout(() => reject(new Error(`Tool ${displayName} timed out after 8s`)), this.TOOL_TIMEOUT_MS),
-        );
-
-        const execPromise = runner.execute(inputValue, inputType);
-        const result = await Promise.race([execPromise, timeoutPromise]);
-        const finalStatus: 'success' | 'error' | 'timeout' =
-          result.status === 'success' ? 'success' : 'error';
-
-        return {
-          toolId: tool?.id || toolIdOrName,
-          toolName,
-          displayName,
-          status: finalStatus,
-          durationMs: result.durationMs || 0,
-          summary: result.summary,
-          entities: result.entities,
-          error: result.error,
-        };
-      } catch (err: any) {
-        const isTimeout = err.message?.includes('timed out');
-        return {
-          toolId: tool?.id || toolIdOrName,
-          toolName,
-          displayName,
-          status: (isTimeout ? 'timeout' : 'error') as 'timeout' | 'error',
-          durationMs: this.TOOL_TIMEOUT_MS,
-          summary: isTimeout ? `Execution timed out (${displayName})` : `Execution error: ${err.message}`,
-          entities: [],
-          error: err.message,
-        };
-      }
-    });
-
-    const settled = await Promise.allSettled(executionPromises);
-    const results = settled.map((s, idx) => {
-      if (s.status === 'fulfilled') return s.value;
+      const res = await this.executeSingleTool(toolName, inputValue, inputType, 1, inputValue);
       return {
-        toolId: toolIds[idx],
-        toolName: toolIds[idx],
-        displayName: toolIds[idx],
-        status: 'error' as const,
-        durationMs: 0,
-        summary: 'Unhandled runner failure',
-        entities: [],
-        error: s.reason?.message || 'Unknown error',
+        ...res,
+        displayName: tool?.displayName || res.displayName,
       };
     });
 
-    // Aggregate into unified entity graph & compute OPSEC score
-    const report = this.aggregationService.aggregate(runId, inputValue, inputType, results, false);
+    const hop1Results = await Promise.all(hop1Promises);
+    allExecutions.push(...hop1Results);
+
+    // --- Autonomous Recursive Multi-Hop Loop (Hop 2 to targetHops) ---
+    if (deepRecon && targetHops > 1) {
+      let previousHopEntities: DiscoveredEntity[] = [];
+      hop1Results.forEach((r) => previousHopEntities.push(...r.entities));
+
+      for (let currentHop = 2; currentHop <= targetHops; currentHop++) {
+        // Extract high-value pivot candidates from previous hop
+        const pivotCandidates: { value: string; type: InputType; parentValue: string }[] = [];
+
+        for (const ent of previousHopEntities) {
+          const cleanVal = ent.value.trim().toLowerCase();
+          if (visitedPivots.has(cleanVal)) continue;
+
+          let candType: InputType | null = null;
+          let candVal = ent.value.trim();
+
+          if (ent.type === 'domain') {
+            candType = 'domain';
+          } else if (ent.type === 'ip') {
+            candType = 'ip';
+          } else if (ent.type === 'username') {
+            candType = 'username';
+          } else if (ent.type === 'email') {
+            candType = 'email';
+          } else if (ent.type === 'platform' && ent.value.includes('github.com/')) {
+            const parts = ent.value.split('/');
+            candVal = parts[parts.length - 1] || parts[parts.length - 2];
+            candType = 'username';
+          } else {
+            const detected = this.detectType(candVal);
+            if (detected !== 'username' || candVal.length >= 3) {
+              candType = detected;
+            }
+          }
+
+          if (candType && candVal && !visitedPivots.has(candVal.toLowerCase())) {
+            visitedPivots.add(candVal.toLowerCase());
+            pivotCandidates.push({
+              value: candVal,
+              type: candType,
+              parentValue: ent.parentValue || inputValue,
+            });
+          }
+        }
+
+        // Limit concurrent recursive pivots per hop to 3 highest-value pivots to maintain fast response
+        const selectedPivots = pivotCandidates.slice(0, 3);
+        if (selectedPivots.length === 0) break;
+
+        this.logger.log(`Executing Deep Recon Hop ${currentHop} for ${selectedPivots.length} pivots`);
+
+        const hopPromises: Promise<any>[] = [];
+        for (const pivot of selectedPivots) {
+          const matchingTools = this.getMatchingToolsForType(pivot.type);
+          for (const toolName of matchingTools) {
+            hopPromises.push(
+              this.executeSingleTool(toolName, pivot.value, pivot.type, currentHop, pivot.value),
+            );
+          }
+        }
+
+        const hopResults = await Promise.all(hopPromises);
+        allExecutions.push(...hopResults);
+
+        previousHopEntities = [];
+        hopResults.forEach((r) => previousHopEntities.push(...r.entities));
+      }
+    }
+
+    // Aggregate into unified multi-hop entity graph & compute OPSEC score
+    const report = this.aggregationService.aggregate(runId, inputValue, inputType, allExecutions, false);
 
     // Save to Cache
     this.cache.set(cacheKey, {
@@ -208,48 +323,23 @@ export class RunsService {
 
   async getHistory(userId?: string): Promise<any[]> {
     try {
-      const runs = await this.prisma.run.findMany({
+      if (!this.prisma.run) return [];
+      return await this.prisma.run.findMany({
         where: userId ? { userId } : {},
         orderBy: { createdAt: 'desc' },
         take: 30,
       });
-      return runs;
     } catch {
-      return Array.from(this.cache.values()).map((c) => ({
-        id: c.report.runId,
-        inputValue: c.report.root.value,
-        inputType: c.report.root.type,
-        totalEntities: c.report.entities.length,
-        createdAt: c.report.createdAt,
-        status: 'COMPLETED',
-      }));
+      return [];
     }
   }
 
-  async getRunById(id: string): Promise<AggregatedReport | null> {
-    for (const c of this.cache.values()) {
-      if (c.report.runId === id) return c.report;
-    }
-
+  async getRunById(id: string): Promise<any | null> {
     try {
-      const run = await this.prisma.run.findUnique({ where: { id } });
-      if (!run) return null;
-
-      return {
-        runId: run.id,
-        root: { value: run.inputValue, type: run.inputType as InputType },
-        entities: [],
-        toolResults: [],
-        stats: {
-          totalTools: 0,
-          successCount: 0,
-          errorCount: 0,
-          totalEntities: 0,
-          durationMs: 0,
-          cached: true,
-        },
-        createdAt: run.createdAt.toISOString(),
-      };
+      if (!this.prisma.run) return null;
+      return await this.prisma.run.findUnique({
+        where: { id },
+      });
     } catch {
       return null;
     }

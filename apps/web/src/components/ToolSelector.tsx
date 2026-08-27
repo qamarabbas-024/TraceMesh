@@ -22,6 +22,7 @@ import {
   Activity,
   Zap,
   Radio,
+  Network,
 } from 'lucide-react';
 
 const SUPPORTED_INPUT_TYPES: { type: InputType; label: string }[] = [
@@ -34,7 +35,13 @@ const SUPPORTED_INPUT_TYPES: { type: InputType; label: string }[] = [
 ];
 
 interface ToolSelectorProps {
-  onRun?: (inputValue: string, inputType: InputType, selectedToolIds: string[]) => void;
+  onRun?: (
+    inputValue: string,
+    inputType: InputType,
+    selectedToolIds: string[],
+    deepRecon?: boolean,
+    maxHops?: number,
+  ) => void;
 }
 
 function ToolCard({
@@ -154,6 +161,8 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
   const [toolSearchQuery, setToolSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [deepRecon, setDeepRecon] = useState(false);
+  const [maxHops, setMaxHops] = useState(2);
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -334,7 +343,7 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
         <button
           onClick={() => {
             soundFx.playLockOn();
-            onRun && onRun(inputValue, detectedType, Array.from(selectedToolIds));
+            onRun && onRun(inputValue, detectedType, Array.from(selectedToolIds), deepRecon, maxHops);
           }}
           disabled={!inputValue.trim() || selectedToolIds.size === 0}
           className="flex items-center gap-2 px-5 py-2.5 bg-accent-cyan text-bg-base font-bold text-xs uppercase tracking-wider font-mono rounded hover:bg-cyan-300 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-cyan-glow"
@@ -342,6 +351,58 @@ export function ToolSelector({ onRun }: ToolSelectorProps) {
           <span>Run Intel</span>
           <ChevronRight className="w-4 h-4" />
         </button>
+      </div>
+
+      {/* Deep Autonomous Multi-Hop Reconnaissance Settings Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-bg-surface/70 border border-accent-cyan-dim/30 rounded-lg text-xs">
+        <div className="flex items-center gap-2">
+          <Network className="w-4 h-4 text-accent-cyan" />
+          <span className="text-text-primary font-bold uppercase tracking-wider text-[11px]">
+            Autonomous Deep Recon
+          </span>
+          <span className="text-[10px] text-text-muted hidden sm:inline">
+            (Auto-pivots across discovered usernames, domains, and IPs)
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-text-secondary uppercase">Depth:</span>
+            {[1, 2, 3].map((hop) => (
+              <button
+                key={hop}
+                type="button"
+                onClick={() => {
+                  soundFx.playBlip();
+                  setMaxHops(hop);
+                  if (!deepRecon) setDeepRecon(true);
+                }}
+                className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition-all ${
+                  maxHops === hop && deepRecon
+                    ? 'border-accent-cyan bg-accent-cyan/20 text-accent-cyan shadow-cyan-glow'
+                    : 'border-accent-cyan-dim/20 text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                {hop} {hop === 1 ? 'Hop' : 'Hops'}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              soundFx.playBlip();
+              setDeepRecon(!deepRecon);
+            }}
+            className={`px-2.5 py-1 rounded text-[10px] uppercase font-bold border transition-all ${
+              deepRecon
+                ? 'border-status-success bg-status-success/15 text-status-success shadow-sm'
+                : 'border-accent-cyan-dim/40 text-text-muted hover:text-text-secondary'
+            }`}
+          >
+            {deepRecon ? `Deep: ${maxHops} Hops Active` : 'Deep: Off'}
+          </button>
+        </div>
       </div>
 
       {/* Available Modules Grid with 3D Parallax Tilt Cards */}

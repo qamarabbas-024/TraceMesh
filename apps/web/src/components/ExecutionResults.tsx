@@ -16,6 +16,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   Flame,
+  Network,
+  Filter,
 } from 'lucide-react';
 
 import { useState, useEffect, useRef } from 'react';
@@ -108,6 +110,7 @@ export function ExecutionResults({
   redactMode = false,
 }: ExecutionResultsProps) {
   const [inspectedEntity, setInspectedEntity] = useState<DiscoveredEntity | null>(null);
+  const [hopFilter, setHopFilter] = useState<number | 'all'>('all');
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -281,16 +284,52 @@ export function ExecutionResults({
 
       {/* Discovered Correlated Entities Section */}
       <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4 shadow-cyan-glow">
-        <div className="flex items-center justify-between border-b border-accent-cyan-dim/20 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-accent-cyan-dim/20 pb-3">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-accent-cyan" />
             <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
               Correlated Entity Nodes ({report.entities.length})
             </span>
           </div>
-          <span className="text-[10px] font-mono text-text-muted">
-            Click &apos;Search Entity&apos; to fan out deeper recon
-          </span>
+
+          {/* Hop Filter Switcher */}
+          {report.hopSummary && report.hopSummary.length > 1 && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] uppercase text-text-secondary mr-1 flex items-center gap-1">
+                <Network className="w-3 h-3 text-accent-cyan" />
+                Hop:
+              </span>
+              <button
+                onClick={() => {
+                  soundFx.playBlip();
+                  setHopFilter('all');
+                }}
+                className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition-all ${
+                  hopFilter === 'all'
+                    ? 'border-accent-cyan bg-accent-cyan/20 text-accent-cyan shadow-cyan-glow'
+                    : 'border-accent-cyan-dim/20 text-text-muted hover:text-text-secondary'
+                }`}
+              >
+                All ({report.entities.length})
+              </button>
+              {report.hopSummary.map((hs) => (
+                <button
+                  key={hs.hop}
+                  onClick={() => {
+                    soundFx.playBlip();
+                    setHopFilter(hs.hop);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border transition-all ${
+                    hopFilter === hs.hop
+                      ? 'border-accent-amber bg-accent-amber/20 text-accent-amber shadow-sm'
+                      : 'border-accent-cyan-dim/20 text-text-muted hover:text-text-secondary'
+                  }`}
+                >
+                  Hop {hs.hop} ({hs.entityCount})
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {report.entities.length === 0 ? (
@@ -299,50 +338,57 @@ export function ExecutionResults({
           </div>
         ) : (
           <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {report.entities.map((entity, idx) => {
-              const toolColor =
-                TOOL_COLORS[entity.sourceTool] || {
-                  badge: 'bg-accent-cyan/15 border-accent-cyan/60 text-accent-cyan',
-                  border: 'border-accent-cyan-dim/40',
-                  text: 'text-accent-cyan',
-                };
+            {report.entities
+              .filter((e) => hopFilter === 'all' || (e.hopLevel || 1) === hopFilter)
+              .map((entity, idx) => {
+                const toolColor =
+                  TOOL_COLORS[entity.sourceTool] || {
+                    badge: 'bg-accent-cyan/15 border-accent-cyan/60 text-accent-cyan',
+                    border: 'border-accent-cyan-dim/40',
+                    text: 'text-accent-cyan',
+                  };
 
-              const isURL = entity.value.startsWith('http://') || entity.value.startsWith('https://');
-              const isHighRisk =
-                entity.sourceTool === 'h8mail' ||
-                entity.sourceTool === 'shodan_api' ||
-                entity.sourceTool === 'abuseipdb';
+                const isURL = entity.value.startsWith('http://') || entity.value.startsWith('https://');
+                const isHighRisk =
+                  entity.sourceTool === 'h8mail' ||
+                  entity.sourceTool === 'shodan_api' ||
+                  entity.sourceTool === 'abuseipdb';
 
-              return (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    soundFx.playBlip();
-                    setInspectedEntity(entity);
-                  }}
-                  className={`entity-card p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan cursor-pointer transition-all ${
-                    isHighRisk ? 'ring-1 ring-status-error/40' : ''
-                  }`}
-                >
-                  {/* High Risk Hazard Beacon */}
-                  {isHighRisk && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-status-error animate-ping" />
-                  )}
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      soundFx.playBlip();
+                      setInspectedEntity(entity);
+                    }}
+                    className={`entity-card p-3.5 bg-bg-surface-raised/70 border ${toolColor.border} rounded flex flex-col justify-between space-y-2 relative group hover:border-accent-cyan cursor-pointer transition-all ${
+                      isHighRisk ? 'ring-1 ring-status-error/40' : ''
+                    }`}
+                  >
+                    {/* High Risk Hazard Beacon */}
+                    {isHighRisk && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-status-error animate-ping" />
+                    )}
 
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${toolColor.badge}`}
-                        >
-                          {entity.sourceTool}
-                        </span>
-                        {isHighRisk && (
-                          <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-status-error/15 border border-status-error/40 text-status-error uppercase font-bold">
-                            ALERT
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`text-[9px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${toolColor.badge}`}
+                          >
+                            {entity.sourceTool}
                           </span>
-                        )}
-                      </div>
+                          {entity.hopLevel && entity.hopLevel > 1 && (
+                            <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-accent-amber/15 border border-accent-amber/40 text-accent-amber uppercase font-bold">
+                              Hop {entity.hopLevel}
+                            </span>
+                          )}
+                          {isHighRisk && (
+                            <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-status-error/15 border border-status-error/40 text-status-error uppercase font-bold">
+                              ALERT
+                            </span>
+                          )}
+                        </div>
 
                       {entity.confidence && (
                         <span className="text-[10px] font-mono text-text-muted">

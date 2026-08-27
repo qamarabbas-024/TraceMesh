@@ -113,7 +113,13 @@ export default function Home() {
     } catch {}
   };
 
-  const handleRun = async (inputValue: string, inputType: InputType, toolIds: string[]) => {
+  const handleRun = async (
+    inputValue: string,
+    inputType: InputType,
+    toolIds: string[],
+    deepRecon: boolean = false,
+    maxHops: number = 2,
+  ) => {
     soundFx.playLockOn();
     setLoading(true);
     setError(null);
@@ -136,6 +142,8 @@ export default function Home() {
           inputValue,
           inputType,
           toolIds,
+          deepRecon,
+          maxHops,
         }),
       });
 
@@ -254,7 +262,7 @@ export default function Home() {
       {/* Floating Holographic Command Bar */}
       <div className="mb-8">
         <CommandBar
-          onRun={(val, type) => handleRun(val, type, [])}
+          onRun={(val, type, deep, hops) => handleRun(val, type, [], deep, hops)}
           loading={loading}
           selectedToolCount={18}
         />

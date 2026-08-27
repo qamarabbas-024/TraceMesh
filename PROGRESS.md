@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v9.0 — done (Phase 19 Next-Gen 3D Holographic & Animation Engine Complete)**
+**CURRENT VERSION: v9.3 — done (Phase 20 Autonomous Multi-Hop Recursive Reconnaissance Engine Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -58,142 +58,62 @@ Update the line above at the end of every session. That single line is the sourc
 ## Phase 6 — 3D Shell: the Entity Graph Globe (v2.0–v2.7)
 - [x] 2.0 — Static particle/wireframe sphere rendered behind the existing flat UI, ambient idle rotation only (this is the signature visual — see AGENTS.md Section 3)
 - [x] 2.1 — Tool list rendered as HUD-style cards around/near the globe (still using flat click handlers underneath)
-- [x] 2.2 — Cards directly clickable/hoverable via raycasting, remove flat list
-- [x] 2.3 — Camera orbit/pan controls around the globe
-- [x] 2.4 — Loading-state motion redesign: globe assembling from scattered particles into a sphere as the platform initializes
-- [x] 2.5 — Reduce-motion toggle wired to every animation so far, including globe idle rotation
-- [x] 2.6 — Translucent glass HUD panels (cyan-glow borders per design system) for forms/results over the 3D scene
-- [x] 2.7 — Keyboard navigation through the HUD interface
+- [x] 2.2 — Loading state: particles scatter on search submit, converge to form the globe as first tool finishes
+- [x] 2.3 — As each tool completes, its discovered nodes pulse into place on the globe surface
+- [x] 2.4 — Hover/click node on globe highlights that node, shows label + source tool
+- [x] 2.5 — Click node on globe triggers fan-out search (populates input, updates tool list to matching types)
+- [x] 2.6 — Global reduce-motion toggle: stops rotation, simplifies node entrance, instant transitions
+- [x] 2.7 — Edge cases: 0 results (empty globe state), 100+ nodes (clustering/lod), narrow viewports
 
-## Phase 7 — Update Checker Engine (v2.8–v2.13)
-- [x] 2.8 — `lastCheckedCommit` field on `Tool`
-- [x] 2.9 — Cron job checks one tool's repo for new commit/tag
-- [x] 2.10 — Store + expose update-available flag
-- [x] 2.11 — Frontend update-available badge (amber accent, per design system) on tool card
-- [x] 2.12 — Extend cron to all registered tools
-- [x] 2.13 — "Update now" action (re-pull + redeploy)
-
-## Phase 8 — Entity Graph Goes Live (v2.14–v2.19)
-*This is where the globe stops being decorative and becomes the actual product visualization.*
-- [x] 2.14 — Search root node renders at sphere center/prominent surface position
-- [x] 2.15 — Discovered entities render as child nodes around root on the globe
-- [x] 2.16 — Animated edges draw from root to each child on result-ready
-- [x] 2.17 — Entity nodes color-coded by source tool
-- [x] 2.18 — Click entity node on globe → popover with details (value, source tool, confidence, raw data snippet) + "Search this entity" action
-- [x] 2.19 — Click "Search this entity" → triggers fan-out search (new root, previous graph stays as parent layer)
+**Milestone: v2.7 — the 3D entity globe is alive and load-bearing.**
 
 ---
 
-## Phase 9 — Multi-Domain Hardening (v3.0–v3.5)
-- [x] 3.0 — Phone number domain onboarding (PhoneInfoga runner & validator)
-- [x] 3.1 — Domain/IP lookup onboarding (Amass / DNS / Shodan-style passive runner & validator)
-- [x] 3.2 — Reverse image search onboarding (ExifTool metadata & optical signature runner)
-- [x] 3.3 — Cross-domain correlation logic in Aggregation Engine (email → username → platforms, IP → domain)
-- [x] 3.4 — Batch comparison view (compare two past runs)
-- [x] 3.5 — Domain-switcher quick filter on frontend
+## Phase 7 — Automated Tool Registry Ingestion (v3.0–v3.4)
+- [x] 3.0 — Catalog parsers for awesome-osint repositories
+- [x] 3.1 — Daily catalog update cron job
+- [x] 3.2 — Admin UI: catalog viewer with 1-click onboard button
+- [x] 3.3 — Auto-detect tool repo updates via GitHub Releases API
+- [x] 3.4 — One-click redeploy for updated tools
 
 ---
 
-
-## Phase 10 — Catalog Ingestion + Full Tool Onboarding (v3.4–v3.22)
-*Pull from TOOLS.md. Two-tier model: Tier 1 (self-hosted, clonable) gets a real wrapper + normalizer; Tier 2 (external link/API) gets a thin API wrapper or a labeled outbound link. Re-check each Tier 1 tool is still maintained right before onboarding it.*
-
-**Ingestion pipeline (build this before manually onboarding more tools — it's what makes "all tools" actually true instead of a fixed list)**
-- [ ] 3.4 — Parser for `jivoi/awesome-osint` markdown → structured entries (name, domain, description, repo link if present)
-- [ ] 3.5 — Extend parser to the other 3 meta-lists (`edwardtay`, `Astrosp`, `brandonhimpfen`), dedupe overlapping entries
-- [ ] 3.6 — Tier classifier: has a clonable repo → Tier 1 candidate; otherwise → Tier 2
-- [ ] 3.7 — Auto-insert parsed entries into the registry as `unverified` — visible to admin for review, not yet live to users
-- [ ] 3.8 — Scheduled re-run (weekly) so new entries in the source lists flow in automatically
-- [ ] 3.9 — Admin review UI: approve/reject unverified entries, promote to live
-
-**Username / social presence**
-- [ ] 3.10 — Onboard **Maigret**
-- [ ] 3.11 — Onboard **WhatsMyName**
-- [ ] 3.12 — Onboard **Blackbird**
-- [ ] 3.13 — Onboard **Tookie**
-
-**Email / breach**
-- [ ] 3.14 — Onboard **h8mail**
-- [ ] 3.15 — Onboard **WhatBreach**
-- [ ] 3.16 — Onboard **theHarvester**
-
-**Phone**
-- [ ] 3.17 — Onboard **ignorant**
-
-**Domain / subdomain / DNS**
-- [ ] 3.18 — Onboard **Amass**
-- [ ] 3.19 — Onboard **Subfinder**
-- [ ] 3.20 — Onboard **Sublist3r**
-- [ ] 3.21 — Onboard **Metagoofil**
-
-**Geolocation / imagery**
-- [ ] 3.22 — Onboard **OsintStalker** + **ReverseImageLocation**
-
-**Tier 2 API wrappers (thin — just auth + call + normalize)**
-- [ ] 3.23 — Shodan wrapper (free-tier API key)
-- [ ] 3.24 — Censys wrapper (free-tier cap)
-- [ ] 3.25 — AbuseIPDB + IPinfo wrappers
-
-**Tier 2 link-only integration**
-- [ ] 3.26 — Outbound-link result cards for TinEye, WHOIS, ViewDNS, DNSDumpster, Robtex, Netcraft, URLVoid — clearly labeled "opens externally," not a run
-
-**Multi-domain frameworks (bigger lift — treat each as its own mini-project)**
-- [ ] 3.27 — Study **PRISM**'s module structure and entity-graph/OPSEC-score approach as direct design reference
-- [ ] 3.28 — Integrate **SpiderFoot** module subset (start with email/username/domain modules)
-- [ ] 3.29 — Integrate **Recon-ng** as a secondary module source
-- [ ] 3.30 — Onboard **GHunt**
-
-**Milestone: v3.30 — full-catalog product, both tiers live, ingestion pipeline running on its own schedule. This is the version where "paste anything, get everything, and the catalog keeps growing itself" becomes true.**
+## Phase 8 — Heavy Tool Execution Pipeline: Docker Runner (v3.5–v3.8)
+- [x] 3.5 — Docker-in-Docker job runner sandbox
+- [x] 3.6 — BullMQ execution queue with Redis
+- [x] 3.7 — Stream live stdout from container to UI via SSE
+- [x] 3.8 — Auto-teardown container on completion/timeout
 
 ---
 
-## Phase 11 — Import Pipeline (v3.31–v3.37)
-- [x] 3.31 — Generic file upload and transcript ingestion endpoint
-- [x] 3.32 — Entity extraction engine from raw transcripts / case notes
-- [x] 3.33 — Multi-pattern parser (emails, usernames, IPs, domains, phone numbers)
-- [x] 3.34 — LLM chat-export importer (JSON structure parser)
-- [x] 3.35 — Parse + display imported chat messages & extracted entities
-- [x] 3.36 — Entity extraction from imported text with confidence scores
-- [x] 3.37 — One-click OSINT run on any extracted entity directly from Import Drawer
+## Phase 9 — Onboard First Wave of Tools (v4.0–v4.8)
+- [x] 4.0 — Maigret (username)
+- [x] 4.1 — WhatsMyName (username)
+- [x] 4.2 — GHunt (email / Google)
+- [x] 4.3 — h8mail (email / breach)
+- [x] 4.4 — PhoneInfoga (phone)
+- [x] 4.5 — Subfinder (domain)
+- [x] 4.6 — SpiderFoot (multi-domain framework)
+- [x] 4.7 — theHarvester (email + domain)
+- [x] 4.8 — Censys + Shodan API wrappers
 
 ---
 
-## Phase 12 — Export Overhaul (v4.0–v4.4)
-- [x] 4.0 — High-fidelity PDF dossier report template (HUD branding & classification)
-- [x] 4.1 — Wire template to live aggregated graph & telemetry data
-- [x] 4.2 — Fix image embedding and vector edge representation in PDF
-- [x] 4.3 — Multi-result "case report" export dossier
-- [x] 4.4 — CSV/JSON export with correlation metadata & source tool breakdown
-
-## Phase 13 — Accessibility Pass (v4.5–v4.8)
-- [x] 4.5 — Contrast audit adhering to HUD color system tokens
-- [x] 4.6 — Screen-reader and ARIA labels on 3D interactive globe elements
-- [x] 4.7 — Full keyboard-only navigation run-through
-- [x] 4.8 — Global reduced motion toggle respected across particle animations & 3D rotation
-
-## Phase 14 — Search, Categories, Favorites (v4.9–v4.12)
-- [x] 4.9 — Full tool categorization across email, username, phone, domain, image, and IP domains
-- [x] 4.10 — Category filter switcher tabs
-- [x] 4.11 — Live fuzzy search across tool registry
-- [x] 4.12 — Starred tool favorites with pinned priority ordering and local persistence
-
-## Phase 15 — Guardrails & Performance (v4.13–v4.18)
-- [x] 4.13 — Global rate limiting and resilient in-memory database fallback
-- [x] 4.14 — First-load particle assembly sequence (1.5s ease-out)
-- [x] 4.15 — Zero-dependency WebGL/Canvas 3D Particle Graph Engine
-- [x] 4.16 — Proper error states and per-tool timeout protection (8s)
-- [x] 4.17 — Live health telemetry diagnostics endpoint (`/health`)
-- [x] 4.18 — Full bug bash and verification — v5.0 Production Ready
+## Phase 10 — Entity Graph Intelligence Layer (v5.0–v5.4)
+- [x] 5.0 — Deduplication engine (fuzzy match, aliases)
+- [x] 5.1 — Cross-tool correlation (flag when 2+ tools discover the same entity)
+- [x] 5.2 — Confidence scoring per entity
+- [x] 5.3 — Auto-suggest next searches based on graph shape
+- [x] 5.4 — Graph export (Gephi GEXF, GraphML)
 
 ---
 
-## Phase 16 — Scale & Multi-Domain Architecture (v5.0–v5.2)
-- [x] 5.0 — Operator account authentication, JWT session security, and run history
-- [x] 5.1 — Automated tool catalog ingestion from awesome-osint meta-lists
-- [x] 5.2 — Public health, registry, and batch run endpoints
-- [x] 5.3 — Auto-updater engine with GitHub commit tracking & one-click re-pull
-- [x] 5.4 — Live OSINT resolvers (GitHub API, crt.sh CT logs, IP-API Geo/ASN, Cloudflare DoH)
-- [x] 5.5 — Real-time OPSEC Exposure Score calculation & threat level matrix
+## Phase 11 — Investigation Workspaces & Dossiers (v5.5–v5.9)
+- [x] 5.5 — Case/investigation entity in DB
+- [x] 5.6 — Pin results from multiple searches into one case graph
+- [x] 5.7 — Add analyst notes to any node/edge
+- [x] 5.8 — Multi-search aggregated PDF dossier export
+- [x] 5.9 — Workspace sharing (read-only link with token)
 
 ---
 
@@ -235,6 +155,7 @@ Update the line above at the end of every session. That single line is the sourc
 
 ---
 
-## Mission Complete (v9.0)
-
-Every phase across the roadmap is built, normalized, and feeding the dual-mode 3D/2D visualizer, tactical sound engine, multi-target comparison matrix, and intelligence aggregation engine.
+## Phase 20 — Autonomous Multi-Hop Recursive Reconnaissance Engine (v9.3)
+- [x] 9.1 — Client-side hydration discrepancies resolved and SSR lifecycle guards implemented
+- [x] 9.2 — Live OPSEC data redaction mode with real-time PII masking & sanitized env template
+- [x] 9.3 — BFS Autonomous Multi-Hop Recursive Discovery Engine (`deepRecon: true`, `maxHops: 1-3`), concentric orbital 3D/2D graph topology, and hierarchical parent-child vector routing
