@@ -1,74 +1,93 @@
-"""Entity correlation and risk scoring engine across multi-source OSINT results."""
+"""Entity correlation and deduplication engine."""
+import re
 from typing import Any
 
 
-def correlate_results(raw_data: dict[str, Any]) -> dict[str, Any]:
-    """Analyze raw batch outputs and correlate discovered identities, IPs, breaches, and threats."""
-    entities = []
-    breaches = []
-    threats = []
-    related_ips = set()
-    related_domains = set()
-    related_emails = set()
-    total_risk = 0
+class CorrelationEngine:
 
-    # 1. Process Email Intelligence
-    email_data = raw_data.get("email") or raw_data.get("hunter") or {}
-    if isinstance(email_data, dict) and "score" in email_data:
-        score = email_data.get("score", 0)
-        if score < 50:
-            total_risk += 15
+    @staticmethod
+    def extract_entities_from_email_results(results: dict) -> dict:
+        entities = {"emails": set(), "domains": set(), "names": set(), "breaches": set(), "services_registered": set(), "social_profiles": []}
+        hunter = results.get("hunter", {}).get("data", {}) or results.get("hunter", {})
+        if isinstance(hunter, dict):
+            if hunter.get("first_name") or hunter.get("last_name"):
+                entities["names"].add(f"{hunter.get('first_name', '')} {hunter.get('last_name', '')}".strip())
+        hibp = results.get("hibp", {}).get("data", {}) or results.get("hibp", {})
+        if isinstance(hibp, dict):
+            for breach in hibp.get("breaches", []):
+                if breach.get("name"):
+                    entities["breaches"].add(breach["name"])
+                if breach.get("domain"):
+                    entities["domains"].add(breach["domain"])
+        emailrep = results.get("emailrep", {}).get("data", {}) or results.get("emailrep", {})
+        if isinstance(emailrep, dict):
+            for ref in emailrep.get("references", []):
+                if isinstance(ref, str) and "@" in ref:
+                    entities["emails"].add(ref.lower())
+        dehashed = results.get("dehashed", {}).get("data", {}) or results.get("dehashed", {})
+        if isinstance(dehashed, dict):
+            for entry in dehashed.get("results", []):
+                if entry.get("email"):
+                    entities["emails"].add(entry["email"].lower())
+                if entry.get("domain"):
+                    entities["domains"].add(entry["domain"].lower())
+        return {k: list(v) if isinstance(v, set) else v for k, v in entities.items()}
 
-    # 2. Process Breach Intelligence
-    hibp = raw_data.get("hibp") or (raw_data.get("email_recon", {})).get("hibp") or {}
-    if isinstance(hibp, dict) and hibp.get("breach_count", 0) > 0:
-        count = hibp.get("breach_count", 0)
-        total_risk += min(40, count * 5)
-        for b in hibp.get("breaches", []):
-            breaches.append({
-                "source": "HIBP",
-                "title": b.get("name"),
-                "domain": b.get("domain"),
-                "date": b.get("date"),
-                "classes": b.get("data_classes", [])
-            })
+    @staticmethod
+    def extract_entities_from_domain_results(results: dict) -> dict:
+        entities = {"ips": set(), "subdomains": set(), "nameservers": set(), "technologies": set(), "asns": set(), "email_servers": set()}
+        dns = results.get("dns", {}).get("data", {}) or results.get("dns", {})
+        if isinstance(dns, dict):
+            for ip in dns.get("A", []):
+                if re.match(r'^\d+\.\d+\.\d+\.\d+$', ip):
+                    entities["ips"].add(ip)
+            for mx in dns.get("MX", []):
+                entities["email_servers"].add(mx)
+            for ns in dns.get("NS", []):
+                entities["nameservers"].add(ns)
+        st = results.get("securitytrails", {}).get("data", {}) or results.get("securitytrails", {})
+        if isinstance(st, dict):
+            for sub in st.get("subdomains", []):
+                entities["subdomains"].add(sub)
+            for record in st.get("dns_history", []):
+                if record.get("ip") and re.match(r'^\d+\.\d+\.\d+\.\d+$', record["ip"]):
+                    entities["ips"].add(record["ip"])
+        bw = results.get("builtwith", {}).get("data", {}) or results.get("builtwith", {})
+        if isinstance(bw, dict):
+            for tech in bw.get("technologies", []):
+                entities["technologies"].add(tech.get("technology", ""))
+        vt = results.get("virustotal", {}).get("data", {}) or results.get("virustotal", {})
+        if isinstance(vt, dict):
+            for res in vt.get("resolutions", []):
+                if res.get("hostname"):
+                    entities["subdomains"].add(res["hostname"])
+        return {k: list(v) if isinstance(v, set) else v for k, v in entities.items() if v}
 
-    # 3. Process Threat Feeds
-    virustotal = raw_data.get("virustotal") or (raw_data.get("domain_recon", {})).get("virustotal") or {}
-    if isinstance(virustotal, dict) and virustotal.get("malicious", 0) > 0:
-        mal = virustotal.get("malicious", 0)
-        total_risk += min(50, mal * 10)
-        threats.append({
-            "source": "VirusTotal",
-            "type": "Malware/Phishing Flag",
-            "detection_count": mal
-        })
+    @staticmethod
+    def generate_leads(entities: dict) -> list[dict]:
+        leads = []
+        seen = set()
+        for domain in entities.get("domains", []):
+            if domain not in seen:
+                seen.add(domain)
+                leads.append({"type": "domain", "value": domain, "reason": "Discovered from breach data", "priority": "high" if ".com" in domain else "medium"})
+        for email in entities.get("emails", []):
+            if email not in seen:
+                seen.add(email)
+                leads.append({"type": "email", "value": email, "reason": "Discovered from dehashed/correlation", "priority": "high"})
+        for ip in entities.get("ips", []):
+            if ip not in seen:
+                seen.add(ip)
+                leads.append({"type": "ip", "value": ip, "reason": "Resolved from DNS/history", "priority": "medium"})
+        return leads
 
-    # 4. Extract Linked Hosts / IPs
-    shodan = raw_data.get("shodan") or (raw_data.get("ip_recon", {})).get("shodan") or {}
-    if isinstance(shodan, dict) and "ports" in shodan:
-        ports = shodan.get("ports", [])
-        if ports:
-            total_risk += min(20, len(ports) * 2)
-
-    risk_level = "LOW"
-    if total_risk >= 70:
-        risk_level = "CRITICAL"
-    elif total_risk >= 45:
-        risk_level = "HIGH"
-    elif total_risk >= 20:
-        risk_level = "MEDIUM"
-
-    return {
-        "calculated_risk_score": min(100, total_risk),
-        "threat_level": risk_level,
-        "correlated_breach_count": len(breaches),
-        "correlated_threat_count": len(threats),
-        "breaches": breaches,
-        "threats": threats,
-        "related_entities": {
-            "ips": list(related_ips),
-            "domains": list(related_domains),
-            "emails": list(related_emails)
-        }
-    }
+    @staticmethod
+    def deduplicate_results(results: list[dict], key_field: str = "label") -> list[dict]:
+        seen = set()
+        unique = []
+        for item in results:
+            key = item.get(key_field, str(item))
+            if key not in seen:
+                seen.add(key)
+                unique.append(item)
+        return unique

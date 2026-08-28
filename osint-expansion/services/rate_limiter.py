@@ -1,71 +1,73 @@
-"""Rate limiter to manage free-tier monthly/daily request limits."""
+"""Per-service rate limiter — token bucket algorithm per service."""
 import time, threading
 from typing import Optional
 
-RATE_LIMITS = {
-    "hunter": {"limit": 25, "window": 86400 * 30},
-    "securitytrails": {"limit": 50, "window": 86400 * 30},
-    "shodan": {"limit": 1000, "window": 86400 * 30},
-    "virustotal": {"limit": 500, "window": 86400, "rate_per_min": 4},
-    "hibp": {"limit": 1000, "window": 86400},
-    "urlscan": {"limit": 1000, "window": 86400},
+SERVICE_LIMITS = {
+    "hunter":         (25, 2592000),    "hibp":           (1000, 86400),
+    "dehashed":       (20, 2592000),    "intelx":         (200, 2592000),
+    "securitytrails": (50, 2592000),    "virustotal":     (500, 86400),
+    "urlscan":        (50, 86400),      "builtwith":      (50, 2592000),
+    "shodan":         (1000, 2592000),  "greynoise":      (10000, 2592000),
+    "censys":         (250, 2592000),   "abuseipdb":      (1000, 86400),
+    "phishtank":      (100, 86400),     "etherscan":      (432000, 86400),
+    "openphish":      (100, 86400),     "urlhaus":        (100, 86400),
+    "numverify":      (100, 2592000),   "emailrep":       (1000, 86400),
+    "ipinfo":         (50000, 86400),   "google_cse":     (100, 86400),
 }
 
-_usage_history: dict[str, list[float]] = {}
+_buckets: dict[str, dict] = {}
 _lock = threading.Lock()
 
 
-def check_rate_limit(service: str) -> tuple[bool, str]:
-    """Check if service is within budget limits. Returns (allowed, reason)"""
-    config = RATE_LIMITS.get(service)
-    if not config:
-        return True, "No limit configured"
-
-    now = time.time()
-    window = config.get("window", 86400)
-    limit = config.get("limit", 100)
-    rate_per_min = config.get("rate_per_min")
-
+def _get_bucket(service: str) -> dict:
     with _lock:
-        timestamps = _usage_history.get(service, [])
-        # Filter timestamps within window
-        valid_ts = [ts for ts in timestamps if now - ts < window]
-        _usage_history[service] = valid_ts
-
-        if len(valid_ts) >= limit:
-            return False, f"Rate limit reached: {len(valid_ts)}/{limit} requests in {window}s window"
-
-        if rate_per_min:
-            recent_min = [ts for ts in valid_ts if now - ts < 60]
-            if len(recent_min) >= rate_per_min:
-                return False, f"Per-minute rate limit reached: {len(recent_min)}/{rate_per_min} req/min"
-
-        return True, f"OK ({len(valid_ts)}/{limit} used)"
-
-
-def record_request(service: str):
-    """Record an API request to a service"""
-    now = time.time()
-    with _lock:
-        if service not in _usage_history:
-            _usage_history[service] = []
-        _usage_history[service].append(now)
-
-
-def get_usage_stats() -> dict:
-    """Get current usage breakdown across all monitored services"""
-    now = time.time()
-    stats = {}
-    with _lock:
-        for service, config in RATE_LIMITS.items():
-            window = config.get("window", 86400)
-            limit = config.get("limit", 100)
-            valid_ts = [ts for ts in _usage_history.get(service, []) if now - ts < window]
-            stats[service] = {
-                "used": len(valid_ts),
-                "limit": limit,
-                "remaining": max(0, limit - len(valid_ts)),
-                "window_seconds": window,
-                "reset_in_seconds": int(window - (now - valid_ts[0])) if valid_ts else 0
+        if service not in _buckets:
+            limit, window = SERVICE_LIMITS.get(service, (30, 3600))
+            _buckets[service] = {
+                "tokens": limit, "max_tokens": limit, "window": window,
+                "last_refill": time.time(), "total_used": 0, "total_blocked": 0,
             }
-    return stats
+        return _buckets[service]
+
+
+def _refill(bucket: dict):
+    elapsed = time.time() - bucket["last_refill"]
+    refill_rate = bucket["max_tokens"] / bucket["window"]
+    new_tokens = elapsed * refill_rate
+    if new_tokens > 1:
+        bucket["tokens"] = min(bucket["max_tokens"], bucket["tokens"] + new_tokens)
+        bucket["last_refill"] = time.time()
+
+
+def check(service: str) -> tuple[bool, Optional[str]]:
+    bucket = _get_bucket(service)
+    _refill(bucket)
+    with _lock:
+        if bucket["tokens"] >= 1:
+            bucket["tokens"] -= 1
+            bucket["total_used"] += 1
+            return True, None
+        else:
+            bucket["total_blocked"] += 1
+            wait_time = bucket["window"] / bucket["max_tokens"]
+            return False, f"Rate limited '{service}': wait ~{wait_time:.1f}s or reset period"
+
+
+def consume(service: str) -> Optional[str]:
+    allowed, error = check(service)
+    return None if allowed else error
+
+
+def stats() -> dict:
+    result = {}
+    with _lock:
+        for service, bucket in _buckets.items():
+            result[service] = {
+                "tokens_remaining": round(bucket["tokens"], 1),
+                "max_tokens": bucket["max_tokens"],
+                "window_seconds": bucket["window"],
+                "total_used": bucket["total_used"],
+                "total_blocked": bucket["total_blocked"],
+                "available_pct": round(bucket["tokens"] / bucket["max_tokens"] * 100, 1),
+            }
+    return result
