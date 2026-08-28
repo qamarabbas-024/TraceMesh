@@ -1,74 +1,1260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TraceMesh // OSINT Expansion Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #07090e; color: #e2e8f0; font-family: ui-monospace, monospace; }
-    .glow { box-shadow: 0 0 20px rgba(6, 182, 212, 0.25); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TraceMesh OSINT Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* ========== CSS VARIABLES / THEME SYSTEM ========== */
+:root {
+  /* Dark theme (default) */
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111627;
+  --bg-glass: rgba(16, 18, 27, 0.45);
+  --bg-glass-hover: rgba(16, 18, 27, 0.65);
+  --bg-card: rgba(22, 28, 45, 0.7);
+  --bg-card-hover: rgba(30, 38, 60, 0.8);
+  --border-color: rgba(113, 119, 144, 0.2);
+  --border-accent: rgba(58, 109, 240, 0.4);
+  --text-primary: #e8e9ed;
+  --text-secondary: #a0a5b8;
+  --text-muted: #6b7194;
+  --accent: #3a6df0;
+  --accent-hover: #4d7cf5;
+  --accent-glow: rgba(58, 109, 240, 0.3);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #06b6d4;
+  --danger-soft: rgba(239, 68, 68, 0.15);
+  --success-soft: rgba(34, 197, 94, 0.15);
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.light-mode {
+  --bg-primary: #f0f2f7;
+  --bg-secondary: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.55);
+  --bg-glass-hover: rgba(255, 255, 255, 0.75);
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-card-hover: rgba(240, 243, 255, 0.85);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-accent: rgba(58, 109, 240, 0.25);
+  --text-primary: #1a1d2e;
+  --text-secondary: #4a4f6a;
+  --text-muted: #8a8fa8;
+  --accent: #3a6df0;
+  --accent-hover: #2959d0;
+  --accent-glow: rgba(58, 109, 240, 0.15);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ========== RESET / BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 14px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-display);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ========== BACKGROUND ORBS (ambient depth) ========== */
+.bg-orbs {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bg-orbs .orb {
+  position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.15;
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.bg-orbs .orb:nth-child(1) { width: 600px; height: 600px; background: #3a6df0; top: -10%; left: -5%; }
+.bg-orbs .orb:nth-child(2) { width: 500px; height: 500px; background: #06b6d4; bottom: -8%; right: -3%; animation-delay: -7s; }
+.bg-orbs .orb:nth-child(3) { width: 400px; height: 400px; background: #8b5cf6; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -14s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+/* ========== APP LAYOUT ========== */
+.app { position: relative; z-index: 1; display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 64px 1fr; min-height: 100vh; }
+
+/* ========== HEADER ========== */
+.header {
+  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; background: var(--bg-glass); backdrop-filter: blur(20px) saturate(1.8);
+  border-bottom: 1px solid var(--border-color); z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
+.header-logo svg { width: 32px; height: 32px; }
+.header-logo span { background: linear-gradient(135deg, #3a6df0, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-center { display: flex; align-items: center; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+/* ========== KEYBOARD SHORTCUT BADGE ========== */
+.kbd-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px;
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); cursor: pointer;
+  transition: all var(--transition);
+}
+.kbd-badge:hover { border-color: var(--accent); background: var(--bg-card-hover); }
+.kbd-badge kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 4px; background: var(--bg-primary); border-radius: 4px; font-size: 0.7rem; border: 1px solid var(--border-color); color: var(--text-muted); }
+
+/* ========== CONNECTION INDICATOR ========== */
+.conn-indicator { display: flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; transition: all var(--transition); }
+.conn-indicator .dot { width: 6px; height: 6px; border-radius: 50%; transition: all var(--transition); }
+.conn-indicator.connected { background: var(--success-soft); color: var(--success); }
+.conn-indicator.connected .dot { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.conn-indicator.disconnected { background: var(--danger-soft); color: var(--danger); }
+.conn-indicator.disconnected .dot { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+
+/* ========== THEME TOGGLE ========== */
+.theme-toggle {
+  width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
+  cursor: pointer; color: var(--text-secondary); font-size: 1.1rem;
+  transition: all var(--transition);
+}
+.theme-toggle:hover { background: var(--bg-card-hover); border-color: var(--accent); color: var(--accent); }
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  background: var(--bg-glass); backdrop-filter: blur(20px) saturate(1.8);
+  border-right: 1px solid var(--border-color); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px;
+}
+
+.sidebar-section-label {
+  padding: 12px 12px 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-muted);
+}
+
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px;
+  color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 500;
+  cursor: pointer; transition: all var(--transition); border: 1px solid transparent;
+}
+.sidebar-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.sidebar-item.active { background: var(--accent-glow); border-color: var(--border-accent); color: var(--accent); }
+.sidebar-item .icon { width: 20px; text-align: center; font-size: 1rem; flex-shrink: 0; }
+.sidebar-item .badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.sidebar-spacer { flex: 1; }
+
+/* ========== MAIN CONTENT ========== */
+.main-content { padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+
+/* ========== QUICK SEARCH (Hero) ========== */
+.hero-search {
+  position: relative; width: 100%; max-width: 720px; margin: 0 auto;
+}
+.hero-search input {
+  width: 100%; padding: 16px 56px 16px 20px; font-size: 1rem; font-family: var(--font-mono);
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+  color: var(--text-primary); outline: none; transition: all var(--transition);
+  backdrop-filter: blur(12px);
+}
+.hero-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+.hero-search input::placeholder { color: var(--text-muted); }
+.hero-search .search-icon { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.2rem; }
+.hero-search .search-shortcut { position: absolute; right: 80px; top: 50%; transform: translateY(-50%); padding: 2px 8px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); }
+
+/* ========== QUICK ACTION BUTTONS (Target Type selector) ========== */
+.quick-actions {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+}
+.quick-action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 22px;
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+  color: var(--text-secondary); cursor: pointer; transition: all var(--transition);
+  font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; min-width: 90px;
+}
+.quick-action-btn .icon { font-size: 1.4rem; }
+.quick-action-btn:hover { background: var(--bg-card-hover); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(58, 109, 240, 0.15); }
+.quick-action-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+.quick-action-btn .sub-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 400; text-transform: uppercase; letter-spacing: 0.03em; }
+
+/* ========== PANEL / CARD ========== */
+.panel {
+  background: var(--bg-glass); backdrop-filter: blur(16px) saturate(1.6);
+  border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px;
+  transition: all var(--transition);
+}
+.panel:hover { border-color: var(--border-accent); }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.panel-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); }
+.panel-actions { display: flex; gap: 8px; }
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px;
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 600; border: none;
+  cursor: pointer; transition: all var(--transition); text-decoration: none; white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); box-shadow: 0 4px 16px var(--accent-glow); transform: translateY(-1px); }
+.btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #dc2626; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #16a34a; }
+.btn-ghost { background: transparent; color: var(--text-secondary); padding: 6px 10px; }
+.btn-ghost:hover { background: var(--bg-card); color: var(--text-primary); }
+.btn-sm { padding: 4px 10px; font-size: 0.7rem; gap: 4px; }
+.btn-lg { padding: 12px 24px; font-size: 0.95rem; }
+.btn-icon { width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+/* ========== DROPDOWN ========== */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-menu {
+  position: absolute; top: 100%; right: 0; margin-top: 4px; min-width: 180px;
+  background: var(--bg-glass); backdrop-filter: blur(24px); border: 1px solid var(--border-color);
+  border-radius: 10px; padding: 6px; box-shadow: var(--shadow); z-index: 200; display: none;
+}
+.dropdown-menu.show { display: block; }
+.dropdown-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px;
+  color: var(--text-secondary); font-size: 0.8rem; cursor: pointer; transition: all var(--transition); border: none; background: none; width: 100%; text-align: left;
+}
+.dropdown-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.dropdown-divider { height: 1px; background: var(--border-color); margin: 4px 0; }
+
+/* ========== RESULTS TABLE ========== */
+.results-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.results-table th { text-align: left; padding: 10px 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+.results-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); color: var(--text-secondary); }
+.results-table tr:hover td { background: var(--bg-card); }
+.results-table .source-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 600; background: var(--bg-card); color: var(--text-secondary); }
+.results-table .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+.status-dot.green { background: var(--success); }
+.status-dot.yellow { background: var(--warning); }
+.status-dot.red { background: var(--danger); }
+
+/* ========== RESULT CARD (for each OSINT source) ========== */
+.source-result-card {
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius);
+  padding: 16px; transition: all var(--transition);
+}
+.source-result-card:hover { border-color: var(--border-accent); }
+.source-result-card .sr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.source-result-card .sr-name { font-weight: 700; font-size: 0.85rem; color: var(--text-primary); }
+.source-result-card .sr-status { font-size: 0.7rem; display: flex; align-items: center; gap: 4px; }
+.source-result-card .sr-data { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.6; }
+.source-result-card .sr-data .kv { display: flex; gap: 8px; padding: 2px 0; }
+.source-result-card .sr-data .kv .k { color: var(--text-muted); min-width: 120px; flex-shrink: 0; }
+.source-result-card .sr-data .kv .v { color: var(--text-primary); font-family: var(--font-mono); font-size: 0.78rem; word-break: break-all; }
+
+/* ========== RESULTS GRID ========== */
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 16px; }
+
+/* ========== EMPTY STATE ========== */
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 48px 24px; text-align: center; }
+.empty-state .icon { font-size: 3rem; color: var(--text-muted); opacity: 0.5; }
+.empty-state h3 { font-size: 1.1rem; color: var(--text-primary); }
+.empty-state p { font-size: 0.85rem; color: var(--text-muted); max-width: 400px; line-height: 1.5; }
+
+/* ========== LOADING SPINNER ========== */
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-overlay { display: none; position: absolute; inset: 0; background: rgba(10, 14, 26, 0.6); backdrop-filter: blur(4px); border-radius: var(--radius-lg); align-items: center; justify-content: center; z-index: 50; }
+.loading-overlay.show { display: flex; }
+.panel { position: relative; }
+
+/* ========== TAB SYSTEM ========== */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
+.tab { padding: 10px 16px; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all var(--transition); }
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ========== TOGGLE SWITCH ========== */
+.toggle { position: relative; width: 40px; height: 22px; cursor: pointer; flex-shrink: 0; }
+.toggle input { display: none; }
+.toggle .slider { position: absolute; inset: 0; background: var(--border-color); border-radius: 11px; transition: all var(--transition); }
+.toggle .slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; bottom: 3px; background: var(--text-primary); border-radius: 50%; transition: all var(--transition); }
+.toggle input:checked + .slider { background: var(--accent); }
+.toggle input:checked + .slider::before { transform: translateX(18px); background: #fff; }
+
+/* ========== CORRELATION GRAPH PLACEHOLDER ========== */
+.correlation-graph { width: 100%; height: 300px; background: var(--bg-primary); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.85rem; border: 1px dashed var(--border-color); }
+
+/* ========== NOTIFICATION TOAST ========== */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 12px 20px; border-radius: 10px; background: var(--bg-glass); backdrop-filter: blur(20px); border: 1px solid var(--border-color); box-shadow: var(--shadow); font-size: 0.8rem; color: var(--text-primary); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; min-width: 280px; }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.warning { border-left: 3px solid var(--warning); }
+.toast.info { border-left: 3px solid var(--info); }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ========== BATCH MODE INDICATOR ========== */
+.batch-mode-bar { display: none; align-items: center; gap: 12px; padding: 12px 16px; background: var(--accent-glow); border: 1px solid var(--border-accent); border-radius: var(--radius); margin-bottom: 16px; }
+.batch-mode-bar.show { display: flex; }
+.batch-mode-bar .batch-count { font-weight: 700; color: var(--accent); }
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .sidebar.mobile-open { display: flex; position: fixed; left: 0; top: 64px; bottom: 0; width: 240px; z-index: 200; }
+  .results-grid { grid-template-columns: 1fr; }
+  .quick-action-btn { min-width: 70px; padding: 10px 14px; }
+}
+@media (max-width: 640px) {
+  .main-content { padding: 16px; }
+  .header { padding: 0 12px; }
+  .header-center { display: none; }
+  .quick-actions { gap: 6px; }
+  .quick-action-btn { min-width: 60px; padding: 8px 10px; font-size: 0.65rem; }
+  .quick-action-btn .icon { font-size: 1.1rem; }
+}
+
+/* ========== SCROLL PROGRESS BAR ========== */
+.scroll-progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, #3a6df0, #06b6d4); z-index: 1000; transition: width 0.1s; width: 0; }
+</style>
 </head>
-<body class="p-6">
-  <div class="max-w-5xl mx-auto space-y-6">
-    <header class="flex items-center justify-between border-b border-cyan-500/30 pb-4">
-      <div>
-        <h1 class="text-xl font-bold text-cyan-400">TRACEMESH // OSINT EXPANSION SUITE</h1>
-        <p class="text-xs text-slate-400">Version 2.0.0 — Unified Threat Intelligence Gateway</p>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="inline-block w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></span>
-        <span class="text-xs text-emerald-400">ONLINE :3001</span>
-      </div>
-    </header>
+<body>
 
-    <!-- Query Box -->
-    <div class="bg-slate-900/80 border border-cyan-500/30 rounded-lg p-5 glow">
-      <div class="flex gap-3">
-        <input id="targetInput" type="text" placeholder="Enter Email, Domain, IP, BTC Address, or Username..." class="flex-1 bg-slate-950 border border-cyan-500/40 rounded px-4 py-2 text-sm text-cyan-200 outline-none focus:border-cyan-400">
-        <button onclick="runRecon()" class="px-6 py-2 bg-cyan-500/20 border border-cyan-400 text-cyan-300 font-bold text-sm rounded hover:bg-cyan-400 hover:text-black transition-all">EXECUTE</button>
+<!-- ========== SCROLL PROGRESS ========== -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ========== BACKGROUND ORBS ========== -->
+<div class="bg-orbs">
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+</div>
+
+<!-- ========== APP CONTAINER ========== -->
+<div class="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="header-left">
+      <button class="btn btn-ghost btn-icon" id="mobileMenuToggle" aria-label="Toggle menu">☰</button>
+      <a class="header-logo" href="/">
+        <svg viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="8" stroke="#3a6df0" stroke-width="2"/><path d="M10 16l4 4 8-8" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>TraceMesh</span>
+      </a>
+    </div>
+
+    <div class="header-center">
+      <div class="kbd-badge" id="globalSearchTrigger">
+        <kbd>⌘</kbd> <kbd>K</kbd> Quick Search
       </div>
     </div>
 
-    <!-- Live Telemetry Results -->
-    <div class="bg-slate-900/80 border border-cyan-500/30 rounded-lg p-5 space-y-3">
-      <div class="flex justify-between items-center">
-        <span class="text-xs uppercase tracking-wider text-cyan-400 font-bold">Investigation Telemetry Output</span>
-        <span id="duration" class="text-xs text-slate-400">0ms</span>
+    <div class="header-actions">
+      <div class="conn-indicator connected" id="connIndicator">
+        <span class="dot"></span>
+        <span id="connText">Live</span>
       </div>
-      <pre id="output" class="bg-slate-950 border border-slate-800 rounded p-4 text-xs text-slate-300 overflow-x-auto h-96">Awaiting operator query...</pre>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
     </div>
-  </div>
+  </header>
 
-  <script>
-    async function runRecon() {
-      const input = document.getElementById('targetInput').value.trim();
-      if (!input) return;
-      document.getElementById('output').textContent = 'Scanning across parallel OSINT modules...';
-      const start = Date.now();
-      try {
-        let endpoint = '/api/v2/domain/recon';
-        let body = { domain: input };
-        if (input.includes('@')) {
-          endpoint = '/api/v2/email/recon';
-          body = { email: input };
-        } else if (/^[0-9.]+$/.test(input)) {
-          endpoint = '/api/v2/ip/recon';
-          body = { ip: input };
-        }
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-        document.getElementById('duration').textContent = (Date.now() - start) + 'ms';
-      } catch (err) {
-        document.getElementById('output').textContent = 'Error: ' + err.message;
+  <!-- ===== SIDEBAR ===== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Investigate</div>
+    <a class="sidebar-item active" data-target="dashboard" data-section="dashboard">
+      <span class="icon">🔍</span> New Search
+    </a>
+    <a class="sidebar-item" data-target="batch" data-section="batch">
+      <span class="icon">📋</span> Batch Mode
+    </a>
+    <div class="sidebar-section-label" style="margin-top: 8px;">History</div>
+    <a class="sidebar-item" data-target="history" data-section="history">
+      <span class="icon">📜</span> Investigations <span class="badge" id="historyCount">0</span>
+    </a>
+    <a class="sidebar-item" data-target="monitors" data-section="monitors">
+      <span class="icon">👁️</span> Monitors <span class="badge" id="monitorCount">0</span>
+    </a>
+    <div class="sidebar-section-label" style="margin-top: 8px;">Export</div>
+    <a class="sidebar-item" data-target="export" data-section="export">
+      <span class="icon">📤</span> Export Reports
+    </a>
+    <a class="sidebar-item" data-target="correlation" data-section="correlation">
+      <span class="icon">🔗</span> Correlations
+    </a>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-section-label">System</div>
+    <a class="sidebar-item" data-target="settings" data-section="settings">
+      <span class="icon">⚙️</span> API Keys & Settings
+    </a>
+    <a class="sidebar-item" data-target="health" data-section="health">
+      <span class="icon">❤️</span> Service Health
+    </a>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ===== SECTION: DASHBOARD (default) ===== -->
+    <section id="section-dashboard">
+
+      <!-- Hero Search -->
+      <div class="hero-search">
+        <input type="text" id="searchInput" placeholder="Search target... e.g. email@example.com, example.com, 8.8.8.8, username, +1234567890, 0x..." spellcheck="false" autocomplete="off" />
+        <span class="search-shortcut" id="searchShortcutBadge">⌘K</span>
+        <span class="search-icon">→</span>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="quick-actions" id="quickActions">
+        <button class="quick-action-btn" data-type="email" data-label="Email">
+          <span class="icon">✉️</span>
+          Email
+          <span class="sub-label">Hunter · HIBP · EmailRep</span>
+        </button>
+        <button class="quick-action-btn" data-type="domain" data-label="Domain">
+          <span class="icon">🌐</span>
+          Domain
+          <span class="sub-label">VT · SecurityTrails · DNS</span>
+        </button>
+        <button class="quick-action-btn" data-type="ip" data-label="IP">
+          <span class="icon">🌍</span>
+          IP
+          <span class="sub-label">Shodan · GreyNoise · VT</span>
+        </button>
+        <button class="quick-action-btn" data-type="username" data-label="Username">
+          <span class="icon">👤</span>
+          Username
+          <span class="sub-label">Social · Reddit · GitHub</span>
+        </button>
+        <button class="quick-action-btn" data-type="phone" data-label="Phone">
+          <span class="icon">📱</span>
+          Phone
+          <span class="sub-label">NumVerify · Twilio</span>
+        </button>
+        <button class="quick-action-btn" data-type="crypto" data-label="Crypto">
+          <span class="icon">₿</span>
+          Crypto
+          <span class="sub-label">Etherscan · BTC</span>
+        </button>
+        <button class="quick-action-btn" data-type="social" data-label="Social">
+          <span class="icon">🔗</span>
+          Social
+          <span class="sub-label">Reddit · X · GitHub</span>
+        </button>
+      </div>
+
+      <!-- Batch Mode Bar -->
+      <div class="batch-mode-bar" id="batchBar">
+        <span class="batch-count" id="batchCount">0</span> targets queued
+        <button class="btn btn-sm btn-primary" id="batchRunBtn">▶ Run Batch</button>
+        <button class="btn btn-sm btn-secondary" id="batchClearBtn">✕ Clear</button>
+        <span style="margin-left:auto;font-size:0.75rem;color:var(--text-muted)">Click + to add current target</span>
+      </div>
+
+      <!-- Results Area -->
+      <div class="panel" id="resultsPanel">
+        <div class="panel-header">
+          <span class="panel-title" id="resultsTitle">Investigation Results</span>
+          <div class="panel-actions" id="resultsActions" style="display:none;">
+            <!-- Dropdown: Export -->
+            <div class="dropdown" id="exportDropdown">
+              <button class="btn btn-sm btn-secondary dropdown-trigger">📥 Export ▾</button>
+              <div class="dropdown-menu">
+                <button class="dropdown-item" data-export="stix">📄 STIX 2.1</button>
+                <button class="dropdown-item" data-export="misp">📋 MISP Event</button>
+                <button class="dropdown-item" data-export="pdf">📕 PDF Dossier</button>
+                <button class="dropdown-item" data-export="csv">📊 CSV</button>
+                <button class="dropdown-item" data-export="xlsx">📗 XLSX Report</button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" data-export="json">📦 Raw JSON</button>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-secondary" id="copyResultsBtn">📋 Copy</button>
+            <button class="btn btn-sm btn-secondary" id="correlateBtn">🔗 Correlate</button>
+            <button class="btn btn-sm btn-secondary" id="saveInvestigationBtn">💾 Save</button>
+            <button class="btn btn-sm btn-secondary" id="monitorBtn">👁️ Watch</button>
+            <button class="btn btn-sm btn-danger" id="clearResultsBtn">✕ Clear</button>
+          </div>
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div class="spinner" style="width:40px;height:40px;border-width:3px;"></div>
+            <span style="color:var(--text-secondary);font-size:0.85rem;">Running OSINT sources...</span>
+          </div>
+        </div>
+
+        <!-- Tabs within results -->
+        <div class="tabs" id="resultTabs" style="display:none;">
+          <span class="tab active" data-tab="sources">Sources</span>
+          <span class="tab" data-tab="raw">Raw JSON</span>
+          <span class="tab" data-tab="correlation">Correlation</span>
+        </div>
+
+        <!-- Tab content: Sources -->
+        <div class="tab-content" id="tab-sources">
+          <div class="results-grid" id="resultsGrid"></div>
+        </div>
+
+        <!-- Tab content: Raw JSON -->
+        <div class="tab-content" id="tab-raw" style="display:none;">
+          <pre id="rawJsonPre" style="background:var(--bg-primary);padding:16px;border-radius:8px;font-size:0.7rem;line-height:1.4;max-height:500px;overflow:auto;color:var(--text-secondary);font-family:var(--font-mono);white-space:pre-wrap;word-break:break-all;"></pre>
+        </div>
+
+        <!-- Tab content: Correlation -->
+        <div class="tab-content" id="tab-correlation" style="display:none;">
+          <div class="correlation-graph" id="correlationGraph">
+            <div style="text-align:center;">
+              <div style="font-size:2rem;margin-bottom:8px;">🔗</div>
+              <div>Run a correlation to visualize entity connections</div>
+              <button class="btn btn-sm btn-primary" id="runCorrelationBtn" style="margin-top:8px;">Generate Correlation</button>
+            </div>
+          </div>
+          <div id="correlationLeads" style="margin-top:12px;"></div>
+        </div>
+
+        <!-- Empty state (shown when no results) -->
+        <div class="empty-state" id="emptyState">
+          <div class="icon">🔍</div>
+          <h3>No investigation yet</h3>
+          <p>Enter a target above or click one of the quick-action buttons to start an OSINT investigation across 40+ sources.</p>
+        </div>
+      </div>
+
+      <!-- Source Status Panel -->
+      <div class="panel" style="margin-top:0;">
+        <div class="panel-header">
+          <span class="panel-title">Source Health</span>
+          <button class="btn btn-sm btn-ghost" id="refreshHealthBtn">↻ Refresh</button>
+        </div>
+        <div id="sourceHealthGrid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: BATCH (placeholder) ===== -->
+    <section id="section-batch" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Batch Investigation</span>
+          <div class="panel-actions">
+            <button class="btn btn-sm btn-primary" id="batchFileUploadBtn">📁 Upload File (CSV/TXT)</button>
+          </div>
+        </div>
+        <textarea id="batchTextArea" placeholder="Paste targets (one per line):&#10;email@example.com&#10;targetdomain.com&#10;8.8.8.8&#10;username123&#10;+1234567890" style="width:100%;min-height:200px;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:8px;color:var(--text-primary);padding:12px;font-family:var(--font-mono);font-size:0.8rem;resize:vertical;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-primary" id="batchRunBtn2">▶ Run All</button>
+          <button class="btn btn-secondary" id="batchDetectBtn">🔍 Auto-Detect Types</button>
+        </div>
+        <div id="batchResults" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: HISTORY ===== -->
+    <section id="section-history" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Investigation History</span>
+          <div class="panel-actions">
+            <input type="text" id="historySearchFilter" placeholder="Filter..." style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:6px 12px;color:var(--text-primary);font-size:0.8rem;" />
+            <button class="btn btn-sm btn-secondary" id="exportHistoryBtn">📥 Export All</button>
+            <button class="btn btn-sm btn-danger" id="clearHistoryBtn">🗑️ Clear All</button>
+          </div>
+        </div>
+        <table class="results-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Target</th>
+              <th>Type</th>
+              <th>Timestamp</th>
+              <th>Sources Fired</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">No investigations yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: MONITORS ===== -->
+    <section id="section-monitors" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Active Monitors</span>
+          <button class="btn btn-sm btn-primary" id="addMonitorBtn">+ Add Monitor</button>
+        </div>
+        <div id="monitorList" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="text-align:center;padding:32px;color:var(--text-muted);">No active monitors. Click "+ Add Monitor" to start watching a target.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: EXPORT ===== -->
+    <section id="section-export" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Export Reports</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <label style="font-size:0.8rem;color:var(--text-secondary);">Select Investigation:</label>
+            <select id="exportInvestigationSelect" style="background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:8px 12px;color:var(--text-primary);font-size:0.8rem;min-width:240px;">
+              <option value="">— Select saved investigation —</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary" data-export="stix">📄 Export STIX 2.1</button>
+            <button class="btn btn-primary" data-export="misp">📋 Export MISP Event</button>
+            <button class="btn btn-primary" data-export="pdf">📕 Export PDF Dossier</button>
+            <button class="btn btn-secondary" data-export="csv">📊 Export CSV</button>
+            <button class="btn btn-secondary" data-export="xlsx">📗 Export XLSX</button>
+          </div>
+          <div id="exportStatus" style="font-size:0.8rem;color:var(--text-muted);"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: CORRELATION ===== -->
+    <section id="section-correlation" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Entity Correlation Engine</span>
+          <button class="btn btn-sm btn-primary" id="fullCorrelationBtn">▶ Run Full Correlation</button>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:280px;">
+            <label style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:4px;">Target Type</label>
+            <select id="corrType" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:8px 12px;color:var(--text-primary);">
+              <option value="email">Email</option>
+              <option value="domain">Domain</option>
+              <option value="ip">IP</option>
+            </select>
+          </div>
+          <div style="flex:2;min-width:280px;">
+            <label style="font-size:0.75rem;color:var(--text-muted);display:block;margin-bottom:4px;">Target Value</label>
+            <input type="text" id="corrValue" placeholder="target@example.com" style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:8px 12px;color:var(--text-primary);" />
+          </div>
+        </div>
+        <div id="correlationResults" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: SETTINGS ===== -->
+    <section id="section-settings" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">API Keys & Configuration</span>
+          <button class="btn btn-sm btn-primary" id="saveSettingsBtn">💾 Save</button>
+        </div>
+        <div id="settingsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: HEALTH ===== -->
+    <section id="section-health" style="display:none;">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Service Health & Diagnostics</span>
+          <button class="btn btn-sm btn-secondary" id="runDiagnosticsBtn">🩺 Run Diagnostics</button>
+        </div>
+        <div id="healthResults" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ========== TOAST CONTAINER ========== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+// ===================================================================
+// TraceMesh Dashboard — All UI Logic
+// ===================================================================
+
+// ---- State ----
+const state = {
+  currentSection: 'dashboard',
+  currentTarget: null,
+  currentType: null,
+  currentResults: null,
+  batchQueue: [],
+  investigations: JSON.parse(localStorage.getItem('tm_investigations') || '[]'),
+  monitors: JSON.parse(localStorage.getItem('tm_monitors') || '[]'),
+  darkMode: localStorage.getItem('tm_theme') !== 'light',
+  wsConnected: false,
+};
+
+// ---- DOM refs ----
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+const searchInput = $('#searchInput');
+const resultsGrid = $('#resultsGrid');
+const resultsActions = $('#resultsActions');
+const resultsTitle = $('#resultsTitle');
+const emptyState = $('#emptyState');
+const loadingOverlay = $('#loadingOverlay');
+const rawJsonPre = $('#rawJsonPre');
+const correlationGraph = $('#correlationGraph');
+const correlationLeads = $('#correlationLeads');
+const batchBar = $('#batchBar');
+const batchCount = $('#batchCount');
+const historyBody = $('#historyBody');
+const historyCount = $('#historyCount');
+const monitorCount = $('#monitorCount');
+const connIndicator = $('#connIndicator');
+const connText = $('#connText');
+const toastContainer = $('#toastContainer');
+const themeToggle = $('#themeToggle');
+const scrollProgress = $('#scrollProgress');
+const sourceHealthGrid = $('#sourceHealthGrid');
+
+// ---- Toast ---- 
+function showToast(message, type = 'info', duration = 4000) {
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+  toastContainer.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, duration);
+}
+
+// ---- Theme ----
+function applyTheme(dark) {
+  document.body.classList.toggle('light-mode', !dark);
+  themeToggle.textContent = dark ? '🌙' : '☀️';
+  localStorage.setItem('tm_theme', dark ? 'dark' : 'light');
+}
+themeToggle.addEventListener('click', () => { state.darkMode = !state.darkMode; applyTheme(state.darkMode); });
+applyTheme(state.darkMode);
+
+// ---- Sidebar navigation ----
+$$('.sidebar-item').forEach(item => {
+  item.addEventListener('click', () => {
+    $$('.sidebar-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const section = item.dataset.section || 'dashboard';
+    showSection(section);
+    if (window.innerWidth <= 1024) $('#sidebar').classList.remove('mobile-open');
+  });
+});
+$('#mobileMenuToggle')?.addEventListener('click', () => {
+  $('#sidebar').classList.toggle('mobile-open');
+});
+
+function showSection(name) {
+  $$('main > section').forEach(s => s.style.display = 'none');
+  const el = $(`#section-${name}`);
+  if (el) el.style.display = 'block';
+  state.currentSection = name;
+}
+
+// ---- Quick Action Buttons ----
+$$('.quick-action-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const type = btn.dataset.type;
+    const label = btn.dataset.label;
+    // Highlight active
+    $$('.quick-action-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Focus search and set placeholder
+    searchInput.focus();
+    searchInput.placeholder = `Enter ${label} target...`;
+    searchInput.dataset.type = type;
+    // If there's text, auto-run
+    if (searchInput.value.trim()) runInvestigation(type, searchInput.value.trim());
+  });
+});
+
+// ---- Search input ----
+searchInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const type = searchInput.dataset.type || 'email';
+    const val = searchInput.value.trim();
+    if (!val) { showToast('Please enter a target value', 'warning'); return; }
+    runInvestigation(type, val);
+  }
+});
+
+// ---- Global search shortcut ----
+$('#globalSearchTrigger')?.addEventListener('click', () => { searchInput.focus(); });
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchInput.focus(); }
+});
+
+// ---- Scroll progress ----
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  scrollProgress.style.width = h > 0 ? `${(window.scrollY / h) * 100}%` : '0';
+});
+
+// Source health configuration
+const SOURCE_CONFIG = {
+  email: ['Hunter.io', 'HIBP', 'EmailRep', 'Dehashed', 'IntelX'],
+  domain: ['VirusTotal', 'SecurityTrails', 'URLScan', 'BuiltWith', 'Whoxy', 'DNS'],
+  ip: ['Shodan', 'GreyNoise', 'AbuseIPDB', 'VirusTotal', 'IPInfo'],
+  threat: ['URLhaus', 'OpenPhish', 'PhishTank', 'MISP'],
+  crypto: ['Etherscan', 'Blockchair'],
+  social: ['Reddit', 'X/Twitter', 'GitHub', 'Instagram'],
+  phone: ['NumVerify', 'Twilio']
+};
+
+function getSourcesForType(type) {
+  const map = { email: SOURCE_CONFIG.email, domain: SOURCE_CONFIG.domain, ip: SOURCE_CONFIG.ip, username: SOURCE_CONFIG.social, phone: SOURCE_CONFIG.phone, crypto: SOURCE_CONFIG.crypto, social: SOURCE_CONFIG.social };
+  return map[type] || [];
+}
+
+// ---- Main Investigation Runner ----
+async function runInvestigation(type, value) {
+  state.currentType = type;
+  state.currentTarget = value;
+  resultsTitle.textContent = `Investigating: ${value} (${type})`;
+  emptyState.style.display = 'none';
+  resultsActions.style.display = 'flex';
+  $('#resultTabs').style.display = 'flex';
+  loadingOverlay.classList.add('show');
+  resultsGrid.innerHTML = '';
+
+  const sources = getSourcesForType(type);
+  
+  // Build loading cards
+  sources.forEach(src => {
+    const card = document.createElement('div');
+    card.className = 'source-result-card';
+    card.id = `src-${src.replace(/[^a-zA-Z0-9]/g, '')}`;
+    card.innerHTML = `
+      <div class="sr-header">
+        <span class="sr-name">${src}</span>
+        <span class="sr-status"><div class="spinner" style="width:12px;height:12px;border-width:1.5px;"></div> Querying...</span>
+      </div>
+      <div class="sr-data" style="color:var(--text-muted);">Waiting for response...</div>
+    `;
+    resultsGrid.appendChild(card);
+  });
+
+  // Call API
+  try {
+    const resp = await fetch(`/api/investigate/${type}/${encodeURIComponent(value)}`);
+    const data = await resp.json();
+    state.currentResults = data;
+    displayResults(type, value, data, sources);
+    showToast(`Investigation complete — ${sources.length} sources queried`, 'success');
+  } catch (err) {
+    showToast(`API error: ${err.message}`, 'error');
+    // Show partial results from cache or fallback
+    $$('.source-result-card').forEach(card => {
+      const status = card.querySelector('.sr-status');
+      status.innerHTML = '<span style="color:var(--danger);">⚠ Error</span>';
+    });
+  } finally {
+    loadingOverlay.classList.remove('show');
+  }
+
+  // Show the batch "+" option
+  if (!state.batchQueue.find(b => b.value === value)) {
+    // Add a small bar
+  }
+}
+
+// ---- Display Results ----
+function displayResults(type, value, data, sources) {
+  resultsGrid.innerHTML = '';
+  let hitCount = 0;
+
+  sources.forEach(src => {
+    const key = src.toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Try to find data from the response
+    let srcData = null;
+    let status = 'no-data';
+    let color = 'var(--text-muted)';
+
+    // Match source keys in response (fuzzy)
+    for (const [k, v] of Object.entries(data)) {
+      if (k.toLowerCase().includes(key) || key.includes(k.toLowerCase())) {
+        srcData = v; break;
       }
     }
-  </script>
+    // Also check nested "results"
+    if (!srcData && data.results) {
+      for (const [k, v] of Object.entries(data.results)) {
+        if (k.toLowerCase().includes(key) || key.includes(k.toLowerCase())) {
+          srcData = v; break;
+        }
+      }
+    }
+
+    if (srcData && typeof srcData === 'object' && !srcData.error) {
+      hitCount++;
+      if (srcData.malicious || srcData.suspicious) { status = 'malicious'; color = 'var(--danger)'; }
+      else { status = 'clean'; color = 'var(--success)'; }
+    } else if (srcData && srcData.error) {
+      status = 'error'; color = 'var(--warning)';
+    }
+
+    const card = document.createElement('div');
+    card.className = 'source-result-card';
+    
+    // Build data rows
+    let dataHtml = '';
+    if (srcData && typeof srcData === 'object' && !srcData.error) {
+      const entries = Object.entries(srcData).slice(0, 8);
+      entries.forEach(([k, v]) => {
+        let display = v;
+        if (typeof v === 'object') display = JSON.stringify(v).slice(0, 100);
+        else if (Array.isArray(v)) display = v.join(', ').slice(0, 100);
+        if (String(display).length > 100) display = String(display).slice(0, 100) + '...';
+        dataHtml += `<div class="kv"><span class="k">${k}</span><span class="v">${display}</span></div>`;
+      });
+      if (Object.keys(srcData).length > 8) dataHtml += `<div class="kv"><span class="k">...</span><span class="v">+${Object.keys(srcData).length - 8} more fields</span></div>`;
+    } else if (srcData && srcData.error) {
+      dataHtml = `<div style="color:var(--warning);">⚠ ${srcData.error}</div>`;
+    } else {
+      dataHtml = '<div style="color:var(--text-muted);font-style:italic;">No data returned</div>';
+    }
+
+    const statusIcons = { 'clean': '✅', 'malicious': '⚠️', 'error': '⚠️', 'no-data': '➖' };
+
+    card.innerHTML = `
+      <div class="sr-header">
+        <span class="sr-name">${src}</span>
+        <span class="sr-status" style="color:${color};">${statusIcons[status] || ''} ${status}</span>
+      </div>
+      <div class="sr-data">${dataHtml}</div>
+    `;
+    resultsGrid.appendChild(card);
+  });
+
+  // Raw JSON tab
+  rawJsonPre.textContent = JSON.stringify(data, null, 2);
+
+  // Update correlation graph
+  correlationGraph.innerHTML = `<div style="text-align:center;padding:20px;">
+    <div style="font-size:1.5rem;margin-bottom:8px;">🔗</div>
+    <div style="font-size:0.85rem;color:var(--text-secondary);">${hitCount} sources returned data for ${value}</div>
+    <button class="btn btn-sm btn-primary" id="correlateFromResults" style="margin-top:8px;">Generate Correlation Graph</button>
+  </div>`;
+
+  // Save to investigations list
+  const inv = { id: Date.now(), target: value, type, timestamp: new Date().toISOString(), sources: hitCount, results: data };
+  state.investigations.unshift(inv);
+  if (state.investigations.length > 100) state.investigations.pop();
+  localStorage.setItem('tm_investigations', JSON.stringify(state.investigations));
+  updateHistory();
+}
+
+// ---- Tab switching within results ----
+$$('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    $$('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    $$('.tab-content').forEach(tc => tc.style.display = 'none');
+    const target = $(`#tab-${tab.dataset.tab}`);
+    if (target) target.style.display = 'block';
+  });
+});
+
+// ---- Copy Results ----
+$('#copyResultsBtn')?.addEventListener('click', () => {
+  if (!state.currentResults) { showToast('No results to copy', 'warning'); return; }
+  const text = JSON.stringify(state.currentResults, null, 2);
+  navigator.clipboard.writeText(text).then(() => showToast('Results copied to clipboard', 'success'));
+});
+
+// ---- Clear Results ----
+$('#clearResultsBtn')?.addEventListener('click', () => {
+  resultsGrid.innerHTML = '';
+  resultsActions.style.display = 'none';
+  $('#resultTabs').style.display = 'none';
+  rawJsonPre.textContent = '';
+  emptyState.style.display = 'flex';
+  state.currentResults = null;
+  state.currentTarget = null;
+  $$('.tab-content').forEach(tc => tc.style.display = 'none');
+  $('#tab-sources').style.display = 'block';
+  $$('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-tab="sources"]')?.classList.add('active');
+  showToast('Results cleared', 'info');
+});
+
+// ---- Export handlers ----
+$$('[data-export]').forEach(btn => {
+  btn.addEventListener('click', async (e) => {
+    const format = btn.dataset.export;
+    if (!state.currentTarget || !state.currentResults) {
+      showToast('No investigation results to export', 'warning');
+      return;
+    }
+    showToast(`Exporting as ${format.toUpperCase()}...`, 'info');
+    try {
+      const resp = await fetch(`/api/export/${format}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target: state.currentTarget, type: state.currentType, results: state.currentResults })
+      });
+      if (!resp.ok) throw new Error(`Export failed: ${resp.status}`);
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const extMap = { stix: 'json', misp: 'json', pdf: 'pdf', csv: 'csv', xlsx: 'xlsx', json: 'json' };
+      a.download = `tracemesh_${state.currentTarget}_${format}.${extMap[format] || 'bin'}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Exported as ${format.toUpperCase()}`, 'success');
+    } catch (err) {
+      showToast(`Export error: ${err.message}`, 'error');
+    }
+  });
+});
+
+// ---- Dropdown toggle ----
+$$('.dropdown-trigger').forEach(trigger => {
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const menu = trigger.closest('.dropdown').querySelector('.dropdown-menu');
+    menu.classList.toggle('show');
+  });
+});
+document.addEventListener('click', () => {
+  $$('.dropdown-menu').forEach(m => m.classList.remove('show'));
+});
+
+// ---- Save Investigation ----
+$('#saveInvestigationBtn')?.addEventListener('click', () => {
+  if (!state.currentTarget) { showToast('Nothing to save', 'warning'); return; }
+  // Already saved automatically on investigation run
+  showToast('Investigation saved to history', 'success');
+  updateHistory();
+});
+
+// ---- Monitor button ----
+$('#monitorBtn')?.addEventListener('click', () => {
+  if (!state.currentTarget || !state.currentType) { showToast('No target to monitor', 'warning'); return; }
+  const existing = state.monitors.find(m => m.target === state.currentTarget);
+  if (existing) { showToast('Already monitoring this target', 'warning'); return; }
+  const m = { id: Date.now(), target: state.currentTarget, type: state.currentType, interval: 60, added: new Date().toISOString() };
+  state.monitors.push(m);
+  localStorage.setItem('tm_monitors', JSON.stringify(state.monitors));
+  updateMonitorCount();
+  // Notify backend
+  fetch('/api/monitor/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) }).catch(() => {});
+  showToast(`Now watching ${state.currentTarget}`, 'success');
+});
+
+// ---- Correlate button ----
+$('#correlateBtn')?.addEventListener('click', () => {
+  if (!state.currentTarget || !state.currentResults) { showToast('No results to correlate', 'warning'); return; }
+  // Switch to correlation tab
+  document.querySelector('.tab[data-tab="correlation"]')?.click();
+  if (typeof generateCorrelation === 'function') generateCorrelation(state.currentType, state.currentTarget, state.currentResults);
+  showToast('Correlation generated', 'success');
+});
+
+// ---- Update History ----
+function updateHistory() {
+  const tbody = $('#historyBody');
+  if (!state.investigations.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px;">No investigations yet</td></tr>';
+    historyCount.textContent = '0';
+    return;
+  }
+  historyCount.textContent = state.investigations.length;
+  tbody.innerHTML = state.investigations.slice(0, 50).map(inv => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:0.7rem;color:var(--text-muted);">#${String(inv.id).slice(-6)}</td>
+      <td><strong>${inv.target}</strong></td>
+      <td><span class="source-badge">${inv.type}</span></td>
+      <td style="font-size:0.75rem;color:var(--text-muted);">${new Date(inv.timestamp).toLocaleString()}</td>
+      <td>${inv.sources || 0} sources</td>
+      <td>
+        <button class="btn btn-sm btn-ghost" onclick="loadInvestigation(${inv.id})">📂 Load</button>
+        <button class="btn btn-sm btn-ghost" onclick="deleteInvestigation(${inv.id})">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+}
+window.loadInvestigation = function(id) {
+  const inv = state.investigations.find(i => i.id === id);
+  if (!inv) return;
+  state.currentTarget = inv.target;
+  state.currentType = inv.type;
+  state.currentResults = inv.results;
+  searchInput.value = inv.target;
+  searchInput.dataset.type = inv.type;
+  emptyState.style.display = 'none';
+  resultsActions.style.display = 'flex';
+  $('#resultTabs').style.display = 'flex';
+  resultsTitle.textContent = `Investigation: ${inv.target} (${inv.type})`;
+  const sources = getSourcesForType(inv.type);
+  displayResults(inv.type, inv.target, inv.results, sources);
+  showSection('dashboard');
+  showToast('Investigation loaded from history', 'info');
+};
+window.deleteInvestigation = function(id) {
+  state.investigations = state.investigations.filter(i => i.id !== id);
+  localStorage.setItem('tm_investigations', JSON.stringify(state.investigations));
+  updateHistory();
+  showToast('Investigation deleted', 'info');
+};
+
+function updateMonitorCount() {
+  monitorCount.textContent = state.monitors.length;
+  const list = $('#monitorList');
+  if (!state.monitors.length) {
+    list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-muted);">No active monitors.</div>';
+    return;
+  }
+  list.innerHTML = state.monitors.map(m => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;">
+      <div>
+        <strong>${m.target}</strong>
+        <span class="source-badge" style="margin-left:8px;">${m.type}</span>
+        <span style="font-size:0.7rem;color:var(--text-muted);margin-left:8px;">Every ${m.interval}m</span>
+      </div>
+      <button class="btn btn-sm btn-danger" onclick="removeMonitor(${m.id})">Remove</button>
+    </div>
+  `).join('');
+}
+window.removeMonitor = function(id) {
+  state.monitors = state.monitors.filter(m => m.id !== id);
+  localStorage.setItem('tm_monitors', JSON.stringify(state.monitors));
+  updateMonitorCount();
+  fetch(`/api/monitor/remove/${id}`, { method: 'DELETE' }).catch(() => {});
+  showToast('Monitor removed', 'info');
+};
+
+updateHistory();
+updateMonitorCount();
+
+// ---- Source Health Display ----
+function renderHealth() {
+  const allSources = [...new Set(Object.values(SOURCE_CONFIG).flat())];
+  sourceHealthGrid.innerHTML = allSources.map(s => `
+    <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:4px;font-size:0.7rem;">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 4px var(--success);"></span>
+      ${s}
+    </span>
+  `).join('');
+}
+renderHealth();
+$('#refreshHealthBtn')?.addEventListener('click', () => {
+  showToast('Health refreshed', 'success');
+});
+
+// ---- API Key Settings ----
+function renderSettings() {
+  const grid = $('#settingsGrid');
+  const defaultKeys = ['HUNTER_API_KEY', 'HIBP_API_KEY', 'DEHASHED_API_KEY', 'INTELX_API_KEY',
+    'SECURITYTRAILS_API_KEY', 'URLSCAN_API_KEY', 'BUILTWITH_API_KEY', 'VIRUSTOTAL_API_KEY',
+    'SHODAN_API_KEY', 'ABUSEIPDB_API_KEY', 'GREYNOISE_API_KEY', 'CENSYS_API_ID', 'CENSYS_API_SECRET',
+    'ETHERSCAN_API_KEY', 'GOOGLE_CSE_KEY', 'GOOGLE_CSE_CX', 'DISCORD_WEBHOOK', 'SLACK_WEBHOOK'];
+  grid.innerHTML = defaultKeys.map(key => {
+    const saved = localStorage.getItem(`tm_key_${key}`) || '';
+    return `<div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:12px;">
+      <label style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px;">${key}</label>
+      <input type="password" class="api-key-input" data-key="${key}" value="${saved}" placeholder="Enter API key..." style="width:100%;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:8px 12px;color:var(--text-primary);font-size:0.75rem;font-family:var(--font-mono);" />
+      <div style="display:flex;gap:4px;margin-top:4px;">
+        <button class="btn btn-sm btn-ghost toggle-key-vis" style="font-size:0.6rem;">👁 Show</button>
+        <span style="font-size:0.6rem;color:var(--text-muted);margin-left:auto;">${saved ? '✓ configured' : '○ missing'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Show/Hide key visibility
+  grid.querySelectorAll('.toggle-key-vis').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = btn.closest('div').querySelector('.api-key-input');
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'text' ? '🙈 Hide' : '👁 Show';
+    });
+  });
+}
+renderSettings();
+
+$('#saveSettingsBtn')?.addEventListener('click', () => {
+  $$('.api-key-input').forEach(input => {
+    const key = input.dataset.key;
+    const val = input.value.trim();
+    if (val) localStorage.setItem(`tm_key_${key}`, val);
+    else localStorage.removeItem(`tm_key_${key}`);
+  });
+  showToast('API keys saved locally. Restart the backend to apply.', 'success');
+});
+
+// ---- Diagnostics ----
+$('#runDiagnosticsBtn')?.addEventListener('click', async () => {
+  const container = $('#healthResults');
+  container.innerHTML = '<div style="text-align:center;"><div class="spinner" style="width:24px;height:24px;"></div><div style="margin-top:8px;">Running diagnostics...</div></div>';
+  try {
+    const resp = await fetch('/api/diagnostics');
+    const data = await resp.json();
+    container.innerHTML = Object.entries(data).map(([k, v]) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:6px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${v.status === 'ok' ? 'var(--success)' : 'var(--danger)'};"></span>
+        <span style="font-weight:600;font-size:0.8rem;">${k}</span>
+        <span style="font-size:0.75rem;color:var(--text-muted);margin-left:auto;">${v.status}${v.latency ? ` — ${v.latency}ms` : ''}</span>
+      </div>
+    `).join('');
+  } catch (err) {
+    container.innerHTML = `<div style="color:var(--danger);padding:16px;">Diagnostics error: ${err.message}</div>`;
+  }
+  showToast('Diagnostics complete', 'success');
+});
+
+// ---- WebSocket Simulation ----
+let ws;
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const url = `${proto}//${location.host}/ws/dashboard`;
+  try {
+    ws = new WebSocket(url);
+    ws.onopen = () => { state.wsConnected = true; connIndicator.className = 'conn-indicator connected'; connText.textContent = 'Live'; };
+    ws.onclose = () => { state.wsConnected = false; connIndicator.className = 'conn-indicator disconnected'; connText.textContent = 'Offline'; setTimeout(connectWS, 5000); };
+    ws.onerror = () => { ws?.close(); };
+  } catch { setTimeout(connectWS, 5000); }
+}
+connectWS();
+
+// ---- Initial state cleanup ----
+emptyState.style.display = 'flex';
+resultsActions.style.display = 'none';
+
+// ---- Search type detection (auto-detect) ----
+searchInput.addEventListener('input', () => {
+  const val = searchInput.value.trim();
+  if (!val) return;
+  // Auto-detect type
+  if (val.includes('@')) searchInput.dataset.type = 'email';
+  else if (val.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) searchInput.dataset.type = 'ip';
+  else if (val.startsWith('+') && val.match(/^\+\d{7,15}$/)) searchInput.dataset.type = 'phone';
+  else if (val.startsWith('0x') && val.length >= 40) searchInput.dataset.type = 'crypto';
+  else if (val.includes('.')) searchInput.dataset.type = 'domain';
+  else searchInput.dataset.type = 'username';
+});
+
+console.log('TraceMesh Dashboard v2.0 loaded');
+console.log(`📊 ${state.investigations.length} investigations in history`);
+console.log(`👁️ ${state.monitors.length} active monitors`);
+console.log(`🔌 WebSocket: ${state.wsConnected ? 'connected' : 'disconnected'}`);
+</script>
 </body>
 </html>
