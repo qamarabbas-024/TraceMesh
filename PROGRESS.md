@@ -173,3 +173,11 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 11.0 — Abuse.ch ThreatFox live malware payload & botnet C2 IOC scanner (`threatfox_ioc`)
 - [x] 11.1 — Direct TLS 1.3 socket handshake certificate deep inspector (`ssl_inspector`) for Subject Alternative Names (SANs) and CA chain extraction
 - [x] 11.2 — 100% Real network probes across Sherlock, Blackbird, Holehe, DomainRecon, Subfinder, IPinfo, and Ahmia with zero synthetic modulo fallbacks
+
+---
+
+## Phase 24 — TraceMesh OSINT Expansion v2.0 & Cyberpunk Dashboard HUD (v13.0 - v13.2)
+- [x] 13.0 — Interactive Cyberpunk OSINT Dashboard HUD (`dashboard.html`) with dark/light themes, keyboard shortcuts (`⌘K`), quick-action target selectors, live WebSocket streaming, and source health monitors.
+- [x] 13.1 — Unified Investigation API & Multi-Format Exporter Gateway (`/api/investigate/*`, `/api/export/*`, `/api/diagnostics`, `/api/monitor/*`).
+- [x] 13.2 — End-to-end 16-suite verification covering auto-detect input parsing, STIX 2.1, MISP, PDF, CSV, XLSX, SQLite investigations database, and real-time WebSocket telemetry.
+
