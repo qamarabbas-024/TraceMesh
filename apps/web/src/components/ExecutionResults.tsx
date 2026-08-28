@@ -280,6 +280,57 @@ export function ExecutionResults({
             </div>
           ))}
         </div>
+
+        {/* Autonomous AI Lead Suggestions Banner */}
+        {report.smartLeadSuggestions && report.smartLeadSuggestions.length > 0 && (
+          <div className="p-4 bg-bg-surface-raised/90 border border-accent-cyan/40 rounded-lg space-y-3 shadow-cyan-glow">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-accent-cyan">
+              <Sparkles className="w-4 h-4 text-accent-amber animate-pulse" />
+              <span>Autonomous Recon AI // Strategic Investigation Leads</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              {report.smartLeadSuggestions.map((sug, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-bg-base/70 border border-accent-cyan-dim/30 rounded flex flex-col justify-between gap-2.5 hover:border-accent-cyan transition-all"
+                >
+                  <div className="space-y-1 text-left">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-bold text-text-primary font-mono">{sug.title}</span>
+                      <span className={`text-[8px] font-mono uppercase px-1.5 py-0.5 rounded font-bold border ${
+                        sug.priority === 'HIGH'
+                          ? 'bg-status-error/15 border-status-error/40 text-status-error'
+                          : 'bg-accent-cyan/15 border-accent-cyan/40 text-accent-cyan'
+                      }`}>
+                        {sug.priority} PRIORITY
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-mono text-text-secondary leading-relaxed">
+                      {sug.rationale}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-accent-cyan-dim/15">
+                    <span className="text-[9px] font-mono text-text-muted">
+                      Target: <strong className="text-accent-cyan">{sug.suggestedInput}</strong>
+                    </span>
+                    <button
+                      onClick={() => {
+                        soundFx.playBlip();
+                        onFanOutSearch(sug.suggestedInput, sug.suggestedType);
+                      }}
+                      className="flex items-center gap-1 px-2.5 py-1 bg-accent-cyan text-bg-base text-[10px] font-mono font-bold uppercase rounded hover:bg-cyan-300 transition-all shadow-cyan-glow"
+                    >
+                      <span>Pivot & Execute</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Discovered Correlated Entities Section */}

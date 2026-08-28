@@ -126,5 +126,13 @@ export interface AggregatedReport {
     entityCount: number;
     toolsExecuted: number;
   }[];
+  smartLeadSuggestions?: {
+    title: string;
+    rationale: string;
+    suggestedInput: string;
+    suggestedType: InputType;
+    recommendedTools: string[];
+    priority: 'HIGH' | 'MEDIUM' | 'INFO';
+  }[];
   createdAt: string;
 }

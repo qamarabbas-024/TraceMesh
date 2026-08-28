@@ -91,6 +91,51 @@ export class AggregationService {
         toolsExecuted: stats.tools,
       }));
 
+    // Generate Autonomous AI/Heuristic Recon Lead Suggestions
+    const smartLeadSuggestions: NonNullable<AggregatedReport['smartLeadSuggestions']> = [];
+
+    // 1. If high-value domain entities found, suggest deep TLS & Subfinder recon
+    const discoveredDomains = uniqueEntities.filter((e) => e.type === 'domain');
+    if (discoveredDomains.length > 0) {
+      const topDomain = discoveredDomains[0].value;
+      smartLeadSuggestions.push({
+        title: `Deep Asset Discovery on "${topDomain}"`,
+        rationale: `Discovered authoritative domain/host. Recommended to probe all issued SSL/TLS certificates, DNS records, and ThreatFox malware feeds.`,
+        suggestedInput: topDomain,
+        suggestedType: 'domain',
+        recommendedTools: ['ssl_inspector', 'subfinder', 'threatfox_ioc', 'rdap_whois'],
+        priority: 'HIGH',
+      });
+    }
+
+    // 2. If IP entities discovered, suggest ASN infrastructure & port exposure mapping
+    const discoveredIps = uniqueEntities.filter((e) => e.type === 'ip');
+    if (discoveredIps.length > 0) {
+      const targetIp = discoveredIps[0].value;
+      smartLeadSuggestions.push({
+        title: `Host Exposure & ASN Geolocation on "${targetIp}"`,
+        rationale: `Live origin IP detected in entity graph. Recommended to query Shodan banners, AbuseIPDB reputation, and BGP routing.`,
+        suggestedInput: targetIp,
+        suggestedType: 'ip',
+        recommendedTools: ['shodan_api', 'abuseipdb', 'ipinfo', 'threatfox_ioc'],
+        priority: 'HIGH',
+      });
+    }
+
+    // 3. If username handles found, suggest cross-platform identity verification
+    const discoveredUsernames = uniqueEntities.filter((e) => e.type === 'username');
+    if (discoveredUsernames.length > 0 && inputType !== 'username') {
+      const topUser = discoveredUsernames[0].value;
+      smartLeadSuggestions.push({
+        title: `Pivot Identity Trace on Handle "${topUser}"`,
+        rationale: `Extracted username handle from email/social record. Recommended to run Sherlock + Blackbird multi-platform presence checks.`,
+        suggestedInput: topUser,
+        suggestedType: 'username',
+        recommendedTools: ['sherlock', 'blackbird', 'github_recon'],
+        priority: 'MEDIUM',
+      });
+    }
+
     return {
       runId,
       root: {
@@ -119,6 +164,7 @@ export class AggregationService {
       opsecScore,
       threatLevel,
       hopSummary: hopSummary.length > 0 ? hopSummary : [{ hop: 1, entityCount: uniqueEntities.length, toolsExecuted: toolExecutions.length }],
+      smartLeadSuggestions,
       createdAt: new Date().toISOString(),
     };
   }
