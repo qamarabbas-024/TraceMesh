@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ToolRunner } from './runner.interface';
 import { InputType, NormalizedResult, DiscoveredEntity } from '@tracemesh/shared';
+import * as dns from 'dns/promises';
 
 @Injectable()
 export class IPInfoRunner implements ToolRunner {
@@ -23,136 +24,116 @@ export class IPInfoRunner implements ToolRunner {
     }
 
     const entities: DiscoveredEntity[] = [];
-    const token = process.env.IPINFO_TOKEN;
+
+    // If domain provided, resolve primary IP first
+    let targetIp = cleanTarget;
+    if (inputType === 'domain') {
+      try {
+        const ips = await dns.resolve4(cleanTarget);
+        if (ips.length > 0) {
+          targetIp = ips[0];
+          entities.push({
+            type: 'ip',
+            value: targetIp,
+            label: `Primary Target Host IPv4 (${targetIp})`,
+            sourceTool: 'ipinfo',
+            confidence: 1.0,
+          });
+        }
+      } catch (e: any) {
+        this.logger.debug(`Could not resolve domain ${cleanTarget} to IP: ${e.message}`);
+      }
+    }
 
     try {
-      // 1. Try IPinfo.io with user token if present
-      if (token) {
-        const ipinfoUrl = `https://ipinfo.io/${encodeURIComponent(cleanTarget)}/json?token=${token}`;
-        const res = await fetch(ipinfoUrl, { signal: AbortSignal.timeout(5000) });
+      // Query high-precision open IP geolocation endpoint
+      const queryUrl = `http://ip-api.com/json/${encodeURIComponent(targetIp)}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query,reverse,mobile,proxy,hosting`;
+      const res = await fetch(queryUrl, {
+        headers: { 'User-Agent': 'TraceMesh-OSINT/1.0' },
+        signal: AbortSignal.timeout(4000),
+      });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.ip) {
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.status === 'success') {
+          // 1. IP Origin
+          if (data.query && !entities.some((e) => e.value === data.query)) {
             entities.push({
               type: 'ip',
-              value: data.ip,
-              label: `IPinfo Verified Origin IPv4 (${data.ip})`,
+              value: data.query,
+              label: `Origin IPv4: ${data.query}`,
               sourceTool: 'ipinfo',
               confidence: 1.0,
             });
           }
 
-          if (data.city || data.region || data.country) {
-            entities.push({
-              type: 'metadata',
-              value: `Location: ${data.city || ''}, ${data.region || ''}, ${data.country || ''} (${data.loc || 'GPS'})`,
-              label: `High-Precision Geolocation & Timezone (${data.timezone || 'UTC'})`,
-              sourceTool: 'ipinfo',
-              confidence: 0.99,
-              metadata: {
-                city: data.city,
-                region: data.region,
-                country: data.country,
-                loc: data.loc,
-                postal: data.postal,
-                timezone: data.timezone,
-              },
-            });
-          }
+          // 2. Geolocation Metadata Node
+          entities.push({
+            type: 'metadata',
+            value: `${data.city || 'Unknown City'}, ${data.regionName || ''}, ${data.country} (${data.countryCode})`,
+            label: `Geolocation: ${data.city}, ${data.country} [${data.lat}, ${data.lon}]`,
+            sourceTool: 'ipinfo',
+            confidence: 1.0,
+            metadata: {
+              city: data.city,
+              region: data.regionName,
+              country: data.country,
+              countryCode: data.countryCode,
+              postal: data.zip,
+              lat: data.lat,
+              lon: data.lon,
+              latitude: data.lat,
+              longitude: data.lon,
+              timezone: data.timezone,
+            },
+          });
 
-          if (data.org) {
+          // 3. Autonomous System & ISP Provider
+          if (data.as || data.isp || data.org) {
+            const asnDesc = data.as || data.org || data.isp;
             entities.push({
               type: 'record',
-              value: `BGP Autonomous System & ISP: ${data.org}`,
-              label: `Network Routing & Carrier Attribution`,
+              value: `${asnDesc} (ISP: ${data.isp})`,
+              label: `ASN & Network Carrier: ${asnDesc}`,
               sourceTool: 'ipinfo',
-              confidence: 0.99,
+              confidence: 1.0,
               metadata: {
+                category: 'Network Carrier / ASN',
+                asn: data.as,
+                isp: data.isp,
                 org: data.org,
-                hostname: data.hostname,
+                isHosting: data.hosting,
+                isProxy: data.proxy,
               },
             });
           }
-        }
-      }
 
-      // 2. Fallback to public ip-api if no entities populated
-      if (entities.length === 0) {
-        const queryEndpoint = `http://ip-api.com/json/${encodeURIComponent(cleanTarget)}?fields=status,message,country,countryCode,regionName,city,zip,lat,lon,timezone,isp,org,as,query`;
-        const res = await fetch(queryEndpoint, { signal: AbortSignal.timeout(5000) });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status === 'success') {
-            if (data.query && data.query !== cleanTarget) {
-              entities.push({
-                type: 'ip',
-                value: data.query,
-                label: `Resolved Origin IPv4 (${data.query})`,
-                sourceTool: 'ipinfo',
-                confidence: 0.99,
-              });
-            }
-
+          // 4. Reverse DNS (PTR)
+          if (data.reverse && data.reverse !== targetIp) {
             entities.push({
-              type: 'metadata',
-              value: `Location: ${data.city}, ${data.regionName}, ${data.country} (${data.countryCode})`,
-              label: `Geographic Location (${data.lat}, ${data.lon}) • ${data.timezone}`,
+              type: 'domain',
+              value: data.reverse,
+              label: `Reverse DNS Hostname: ${data.reverse}`,
               sourceTool: 'ipinfo',
-              confidence: 0.98,
-              metadata: {
-                city: data.city,
-                region: data.regionName,
-                country: data.country,
-                lat: data.lat,
-                lon: data.lon,
-                timezone: data.timezone,
-              },
+              confidence: 1.0,
+              metadata: { category: 'Reverse DNS' },
             });
-
-            if (data.as) {
-              entities.push({
-                type: 'record',
-                value: `BGP Autonomous System: ${data.as}`,
-                label: `ISP & Network Routing: ${data.isp || data.org}`,
-                sourceTool: 'ipinfo',
-                confidence: 0.99,
-                metadata: {
-                  as: data.as,
-                  isp: data.isp,
-                  org: data.org,
-                },
-              });
-            }
           }
         }
       }
     } catch (err: any) {
-      this.logger.warn(`IPInfo lookup error: ${err.message}. Using passive geo attribution.`);
-    }
-
-    // Passive fallback
-    if (entities.length === 0) {
-      entities.push({
-        type: 'metadata',
-        value: `Network Operator: Global Transit Provider`,
-        label: `Autonomous System & Geolocation Profile`,
-        sourceTool: 'ipinfo',
-        confidence: 0.85,
-      });
+      this.logger.warn(`ip-api query failed for ${targetIp}: ${err.message}`);
     }
 
     const durationMs = Date.now() - startTime;
     return {
       status: 'success',
-      summary: `IPInfo resolved live geolocation, ISP attribution, and BGP Autonomous System (ASN) routes for ${cleanTarget}.`,
+      summary: `IPinfo resolved physical geolocation, BGP Autonomous System routing, and carrier attribution for ${targetIp}`,
       entities,
       durationMs,
       raw: {
-        target: cleanTarget,
-        liveApiKeyUsed: !!token,
-        findingsCount: entities.length,
+        target: targetIp,
+        entitiesCount: entities.length,
       },
     };
   }

@@ -8,14 +8,14 @@ export class AhmiaRunner implements ToolRunner {
   readonly supportedInputTypes: InputType[] = ['domain', 'email', 'username'];
   private readonly logger = new Logger(AhmiaRunner.name);
 
-  async execute(inputValue: string, inputType: InputType): Promise<NormalizedResult> {
+  async execute(targetInput: string, inputType: InputType): Promise<NormalizedResult> {
     const startTime = Date.now();
-    const clean = inputValue.trim().toLowerCase();
+    const cleanTarget = targetInput.trim().toLowerCase();
 
-    if (!clean) {
+    if (!cleanTarget) {
       return {
         status: 'error',
-        summary: 'Invalid target identifier provided to Ahmia',
+        summary: 'Target query required for Ahmia search',
         entities: [],
         error: 'Target required',
         durationMs: Date.now() - startTime,
@@ -23,41 +23,48 @@ export class AhmiaRunner implements ToolRunner {
     }
 
     const entities: DiscoveredEntity[] = [];
-    const hash = clean.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
 
-    // Darknet Tor hidden-service clearnet gateway index
-    const onionHash = Math.abs(hash * 48271).toString(36).padEnd(16, 'a').slice(0, 16);
-    const onionAddress = `${onionHash}v3darknet.onion`;
+    try {
+      const res = await fetch(`https://ahmia.fi/search/?q=${encodeURIComponent(cleanTarget)}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) TraceMesh-OSINT/1.0' },
+        signal: AbortSignal.timeout(5000),
+      });
 
-    entities.push({
-      type: 'record',
-      value: `Tor Hidden Service Mention: http://${onionAddress}`,
-      label: `Ahmia Darknet Clearnet Index Match`,
-      sourceTool: 'ahmia',
-      confidence: 0.88,
-      metadata: {
-        network: 'Tor Hidden Services',
-        engine: 'Ahmia.fi Clearnet Gateway',
-      },
-    });
+      if (res.status === 200) {
+        const html = await res.text();
+        // Parse onion link matches from html (<cite>...</cite> or href="...onion...")
+        const onionRegex = /([a-z2-7]{16,56}\.onion)/gi;
+        const matches = Array.from(new Set(html.match(onionRegex) || []));
 
-    entities.push({
-      type: 'breach',
-      value: `Underground Forum / Marketplace Thread Mention`,
-      label: `Darknet Forum Thread Indexing Match`,
-      sourceTool: 'ahmia',
-      confidence: 0.85,
-    });
+        for (const onion of matches.slice(0, 5)) {
+          entities.push({
+            type: 'record',
+            value: `http://${onion}`,
+            label: `Ahmia Indexed Tor Hidden Service: ${onion}`,
+            sourceTool: 'ahmia',
+            confidence: 0.95,
+            metadata: {
+              network: 'Tor',
+              hiddenService: onion,
+              query: cleanTarget,
+              category: 'Darknet Index Match',
+            },
+          });
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(`Ahmia live query timed out: ${err.message}`);
+    }
 
     const durationMs = Date.now() - startTime;
     return {
       status: 'success',
-      summary: `Ahmia indexed clearnet Tor gateways and extracted ${entities.length} hidden-service & darknet references for ${clean}.`,
+      summary: `Ahmia searched clearnet Tor indexing gateways for "${cleanTarget}" and discovered ${entities.length} hidden service references`,
       entities,
       durationMs,
       raw: {
-        target: clean,
-        onionMatches: [onionAddress],
+        query: cleanTarget,
+        matchesCount: entities.length,
       },
     };
   }

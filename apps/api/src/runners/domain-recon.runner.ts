@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ToolRunner } from './runner.interface';
 import { InputType, NormalizedResult, DiscoveredEntity } from '@tracemesh/shared';
+import * as dns from 'dns/promises';
 
 @Injectable()
 export class DomainReconRunner implements ToolRunner {
@@ -25,130 +26,141 @@ export class DomainReconRunner implements ToolRunner {
     const entities: DiscoveredEntity[] = [];
 
     if (inputType === 'domain') {
+      // 1. Resolve IPv4 (A Records)
       try {
-        // 1. Live DNS-over-HTTPS: Resolve A Records
-        const aRes = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleanTarget)}&type=A`, {
-          headers: { Accept: 'application/dns-json' },
-          signal: AbortSignal.timeout(4000),
-        });
-
-        if (aRes.ok) {
-          const aData = await aRes.json();
-          if (aData.Answer && Array.isArray(aData.Answer)) {
-            for (const ans of aData.Answer) {
-              if (ans.type === 1 && ans.data) {
-                entities.push({
-                  type: 'ip',
-                  value: ans.data,
-                  label: `Live DNS A-Record IPv4 Resolution (${ans.data})`,
-                  sourceTool: 'domainrecon',
-                  confidence: 1.0,
-                  metadata: { recordType: 'A', ttl: ans.TTL },
-                });
-              }
-            }
-          }
+        const aRecords = await dns.resolve4(cleanTarget);
+        for (const ip of aRecords) {
+          entities.push({
+            type: 'ip',
+            value: ip,
+            label: `DNS A Record: ${ip}`,
+            sourceTool: 'domainrecon',
+            confidence: 1.0,
+            metadata: { recordType: 'A', ip },
+          });
         }
-
-        // 2. Live DNS-over-HTTPS: Resolve MX Records
-        const mxRes = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleanTarget)}&type=MX`, {
-          headers: { Accept: 'application/dns-json' },
-          signal: AbortSignal.timeout(4000),
-        });
-
-        if (mxRes.ok) {
-          const mxData = await mxRes.json();
-          if (mxData.Answer && Array.isArray(mxData.Answer)) {
-            for (const ans of mxData.Answer) {
-              if (ans.type === 15 && ans.data) {
-                const mxHost = ans.data.split(' ')[1] || ans.data;
-                entities.push({
-                  type: 'domain',
-                  value: mxHost.replace(/\.$/, ''),
-                  label: `Live Mail Exchange (MX) Server: ${mxHost.replace(/\.$/, '')}`,
-                  sourceTool: 'domainrecon',
-                  confidence: 0.98,
-                  metadata: { recordType: 'MX', priority: ans.data.split(' ')[0] },
-                });
-              }
-            }
-          }
-        }
-
-        // 3. Live DNS-over-HTTPS: Resolve TXT / SPF / DMARC Records
-        const txtRes = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(cleanTarget)}&type=TXT`, {
-          headers: { Accept: 'application/dns-json' },
-          signal: AbortSignal.timeout(4000),
-        });
-
-        if (txtRes.ok) {
-          const txtData = await txtRes.json();
-          if (txtData.Answer && Array.isArray(txtData.Answer)) {
-            for (const ans of txtData.Answer.slice(0, 4)) {
-              if (ans.type === 16 && ans.data) {
-                const cleanTxt = ans.data.replace(/"/g, '');
-                entities.push({
-                  type: 'metadata',
-                  value: cleanTxt.length > 80 ? `${cleanTxt.substring(0, 80)}...` : cleanTxt,
-                  label: `DNS TXT Verification / SPF / Security Policy`,
-                  sourceTool: 'domainrecon',
-                  confidence: 0.95,
-                });
-              }
-            }
-          }
-        }
-      } catch (err: any) {
-        this.logger.warn(`DoH query failed: ${err.message}. Using passive DNS mapping.`);
+      } catch (e: any) {
+        this.logger.debug(`A records not resolved for ${cleanTarget}: ${e.message}`);
       }
 
-      // Passive fallback if DoH returned empty
-      if (entities.length === 0) {
-        entities.push({
-          type: 'ip',
-          value: '104.21.45.12',
-          label: `Primary DNS A-Record IPv4 (104.21.45.12)`,
-          sourceTool: 'domainrecon',
-          confidence: 0.85,
-        });
+      // 2. Resolve IPv6 (AAAA Records)
+      try {
+        const aaaaRecords = await dns.resolve6(cleanTarget);
+        for (const ip6 of aaaaRecords.slice(0, 2)) {
+          entities.push({
+            type: 'ip',
+            value: ip6,
+            label: `DNS AAAA Record: ${ip6}`,
+            sourceTool: 'domainrecon',
+            confidence: 1.0,
+            metadata: { recordType: 'AAAA', ip6 },
+          });
+        }
+      } catch {}
 
-        entities.push({
-          type: 'domain',
-          value: `mail.${cleanTarget}`,
-          label: `Enumerated Active Subdomain: mail.${cleanTarget}`,
-          sourceTool: 'domainrecon',
-          confidence: 0.85,
-        });
-      }
+      // 3. Resolve Mail Exchangers (MX Records)
+      try {
+        const mxRecords = await dns.resolveMx(cleanTarget);
+        if (Array.isArray(mxRecords) && mxRecords.length > 0) {
+          mxRecords.sort((a, b) => a.priority - b.priority);
+          for (const mx of mxRecords.slice(0, 4)) {
+            const host = mx.exchange.toLowerCase().replace(/\.$/, '');
+            entities.push({
+              type: 'domain',
+              value: host,
+              label: `MX Host: ${host} (Priority ${mx.priority})`,
+              sourceTool: 'domainrecon',
+              confidence: 1.0,
+              metadata: { recordType: 'MX', priority: mx.priority },
+            });
+          }
+        }
+      } catch {}
+
+      // 4. Resolve Authoritative Name Servers (NS Records)
+      try {
+        const nsRecords = await dns.resolveNs(cleanTarget);
+        if (Array.isArray(nsRecords)) {
+          for (const ns of nsRecords.slice(0, 4)) {
+            const nsClean = ns.toLowerCase().replace(/\.$/, '');
+            entities.push({
+              type: 'domain',
+              value: nsClean,
+              label: `Name Server: ${nsClean}`,
+              sourceTool: 'domainrecon',
+              confidence: 1.0,
+              metadata: { recordType: 'NS' },
+            });
+          }
+        }
+      } catch {}
+
+      // 5. Resolve TXT & SPF Records
+      try {
+        const txtRecords = await dns.resolveTxt(cleanTarget);
+        if (Array.isArray(txtRecords)) {
+          for (const chunk of txtRecords) {
+            const txt = chunk.join('');
+            if (txt.startsWith('v=spf1') || txt.includes('verification') || txt.includes('docusign') || txt.includes('stripe')) {
+              entities.push({
+                type: 'metadata',
+                value: txt.length > 100 ? `${txt.substring(0, 100)}...` : txt,
+                label: `DNS TXT Security Policy / SPF`,
+                sourceTool: 'domainrecon',
+                confidence: 1.0,
+                metadata: { recordType: 'TXT', fullText: txt },
+              });
+            }
+          }
+        }
+      } catch {}
+
+      // 6. Check DMARC Policy Enforcement
+      try {
+        const dmarcRecords = await dns.resolveTxt(`_dmarc.${cleanTarget}`);
+        if (Array.isArray(dmarcRecords) && dmarcRecords.length > 0) {
+          const dmarcStr = dmarcRecords.flat().join('');
+          entities.push({
+            type: 'record',
+            value: dmarcStr.length > 80 ? `${dmarcStr.substring(0, 80)}...` : dmarcStr,
+            label: `DMARC Email Security Policy Active`,
+            sourceTool: 'domainrecon',
+            confidence: 1.0,
+            metadata: {
+              category: 'Email Authentication',
+              dmarc: dmarcStr,
+            },
+          });
+        }
+      } catch {}
     } else {
-      // Input is IP
-      entities.push({
-        type: 'metadata',
-        value: `Network Operator & Routing Intelligence`,
-        label: `BGP Autonomous System & Transit Fabric`,
-        sourceTool: 'domainrecon',
-        confidence: 0.95,
-      });
-
-      entities.push({
-        type: 'record',
-        value: `Open Services: 80 (HTTP), 443 (HTTPS), 8443 (Alt-HTTPS)`,
-        label: `Standard Web Ports & Cryptographic Ingress`,
-        sourceTool: 'domainrecon',
-        confidence: 0.92,
-      });
+      // IP Reverse DNS (PTR)
+      try {
+        const hostnames = await dns.reverse(cleanTarget);
+        for (const host of hostnames) {
+          entities.push({
+            type: 'domain',
+            value: host,
+            label: `Reverse DNS (PTR): ${host}`,
+            sourceTool: 'domainrecon',
+            confidence: 1.0,
+            metadata: { recordType: 'PTR', hostname: host },
+          });
+        }
+      } catch (e: any) {
+        this.logger.debug(`PTR reverse lookup failed for ${cleanTarget}: ${e.message}`);
+      }
     }
 
     const durationMs = Date.now() - startTime;
     return {
       status: 'success',
-      summary: `DomainRecon performed live DNS-over-HTTPS resolution, MX extraction, and security TXT policy parsing for ${cleanTarget}.`,
+      summary: `DomainRecon performed live DNS resolution across A, AAAA, MX, NS, TXT, SPF, and DMARC records for ${cleanTarget}`,
       entities,
       durationMs,
       raw: {
         target: cleanTarget,
-        type: inputType,
-        totalEntities: entities.length,
+        entitiesCount: entities.length,
       },
     };
   }
