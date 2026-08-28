@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v10.0 — done (Phase 21 Next-Wave OSINT Resolvers, RDAP/WHOIS Engine & Geolocation Threat Map Complete)**
+**CURRENT VERSION: v11.0 — done (Phase 22 Advanced Cyber Threat Feeds, TLS Handshake Inspector & 100% Real OSINT Network Engine Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -166,3 +166,10 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 10.0 — Live RDAP/WHOIS domain & IP registrant inspector (`rdap_whois`), Blackbird social footprint runner (`blackbird`), Ignorant phone probe (`ignorant_phone`), and OnionLand darknet engine (`onionland`)
 - [x] 10.1 — Tactical Geolocation World Map HUD drawer (`GeoThreatMap.tsx`, Hotkey `G`) plotting server coordinates and EXIF GPS tags
 - [x] 10.2 — Chronological Incident & Registration Threat Timeline (`ThreatTimeline.tsx`, Hotkey `T`) with domain lifecycle and breach history tracking
+
+---
+
+## Phase 22 — Advanced Cyber Threat Feeds, TLS Handshake Inspector & 100% Real OSINT Network Engine (v11.0)
+- [x] 11.0 — Abuse.ch ThreatFox live malware payload & botnet C2 IOC scanner (`threatfox_ioc`)
+- [x] 11.1 — Direct TLS 1.3 socket handshake certificate deep inspector (`ssl_inspector`) for Subject Alternative Names (SANs) and CA chain extraction
+- [x] 11.2 — 100% Real network probes across Sherlock, Blackbird, Holehe, DomainRecon, Subfinder, IPinfo, and Ahmia with zero synthetic modulo fallbacks

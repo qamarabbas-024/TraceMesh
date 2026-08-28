@@ -26,6 +26,8 @@ import { RdapWhoisRunner } from '../runners/rdap-whois.runner';
 import { BlackbirdRunner } from '../runners/blackbird.runner';
 import { IgnorantPhoneRunner } from '../runners/ignorant-phone.runner';
 import { OnionLandRunner } from '../runners/onionland.runner';
+import { ThreatFoxIocRunner } from '../runners/threatfox-ioc.runner';
+import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -56,6 +58,8 @@ import { OnionLandRunner } from '../runners/onionland.runner';
     BlackbirdRunner,
     IgnorantPhoneRunner,
     OnionLandRunner,
+    ThreatFoxIocRunner,
+    SslCertInspectorRunner,
   ],
   exports: [RunsService, AggregationService],
 })

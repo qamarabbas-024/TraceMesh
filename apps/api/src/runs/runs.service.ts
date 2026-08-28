@@ -25,6 +25,8 @@ import { RdapWhoisRunner } from '../runners/rdap-whois.runner';
 import { BlackbirdRunner } from '../runners/blackbird.runner';
 import { IgnorantPhoneRunner } from '../runners/ignorant-phone.runner';
 import { OnionLandRunner } from '../runners/onionland.runner';
+import { ThreatFoxIocRunner } from '../runners/threatfox-ioc.runner';
+import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -69,6 +71,8 @@ export class RunsService {
     private readonly blackbirdRunner: BlackbirdRunner,
     private readonly ignorantPhoneRunner: IgnorantPhoneRunner,
     private readonly onionLandRunner: OnionLandRunner,
+    private readonly threatFoxIocRunner: ThreatFoxIocRunner,
+    private readonly sslCertInspectorRunner: SslCertInspectorRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -94,6 +98,8 @@ export class RunsService {
     this.runnerMap.set('blackbird', this.blackbirdRunner);
     this.runnerMap.set('ignorant_phone', this.ignorantPhoneRunner);
     this.runnerMap.set('onionland', this.onionLandRunner);
+    this.runnerMap.set('threatfox_ioc', this.threatFoxIocRunner);
+    this.runnerMap.set('ssl_inspector', this.sslCertInspectorRunner);
   }
 
   private detectType(val: string): InputType {
@@ -113,9 +119,9 @@ export class RunsService {
       case 'username':
         return ['sherlock', 'blackbird', 'maigret', 'github_recon', 'onionland'];
       case 'domain':
-        return ['rdap_whois', 'subfinder', 'crtsh', 'alienvault_otx', 'domainrecon', 'onionland'];
+        return ['rdap_whois', 'ssl_inspector', 'subfinder', 'crtsh', 'alienvault_otx', 'threatfox_ioc', 'domainrecon', 'onionland'];
       case 'ip':
-        return ['shodan_api', 'abuseipdb', 'ipinfo', 'rdap_whois'];
+        return ['shodan_api', 'abuseipdb', 'ipinfo', 'threatfox_ioc', 'rdap_whois'];
       case 'phone':
         return ['phoneinfoga', 'ignorant_phone'];
       case 'image':
