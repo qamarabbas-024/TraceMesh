@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v9.3 — done (Phase 20 Autonomous Multi-Hop Recursive Reconnaissance Engine Complete)**
+**CURRENT VERSION: v10.0 — done (Phase 21 Next-Wave OSINT Resolvers, RDAP/WHOIS Engine & Geolocation Threat Map Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -159,3 +159,10 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 9.1 — Client-side hydration discrepancies resolved and SSR lifecycle guards implemented
 - [x] 9.2 — Live OPSEC data redaction mode with real-time PII masking & sanitized env template
 - [x] 9.3 — BFS Autonomous Multi-Hop Recursive Discovery Engine (`deepRecon: true`, `maxHops: 1-3`), concentric orbital 3D/2D graph topology, and hierarchical parent-child vector routing
+
+---
+
+## Phase 21 — Next-Wave OSINT Resolvers, Live RDAP/WHOIS Engine & Geolocation Threat Map (v10.0)
+- [x] 10.0 — Live RDAP/WHOIS domain & IP registrant inspector (`rdap_whois`), Blackbird social footprint runner (`blackbird`), Ignorant phone probe (`ignorant_phone`), and OnionLand darknet engine (`onionland`)
+- [x] 10.1 — Tactical Geolocation World Map HUD drawer (`GeoThreatMap.tsx`, Hotkey `G`) plotting server coordinates and EXIF GPS tags
+- [x] 10.2 — Chronological Incident & Registration Threat Timeline (`ThreatTimeline.tsx`, Hotkey `T`) with domain lifecycle and breach history tracking

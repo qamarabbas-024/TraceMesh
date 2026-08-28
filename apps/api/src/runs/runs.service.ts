@@ -21,6 +21,10 @@ import { IPInfoRunner } from '../runners/ipinfo.runner';
 import { ShodanRunner } from '../runners/shodan.runner';
 import { AbuseIPDBRunner } from '../runners/abuseipdb.runner';
 import { AlienVaultOTXRunner } from '../runners/alienvault-otx.runner';
+import { RdapWhoisRunner } from '../runners/rdap-whois.runner';
+import { BlackbirdRunner } from '../runners/blackbird.runner';
+import { IgnorantPhoneRunner } from '../runners/ignorant-phone.runner';
+import { OnionLandRunner } from '../runners/onionland.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -61,6 +65,10 @@ export class RunsService {
     private readonly shodanRunner: ShodanRunner,
     private readonly abuseIPDBRunner: AbuseIPDBRunner,
     private readonly alienVaultOTXRunner: AlienVaultOTXRunner,
+    private readonly rdapWhoisRunner: RdapWhoisRunner,
+    private readonly blackbirdRunner: BlackbirdRunner,
+    private readonly ignorantPhoneRunner: IgnorantPhoneRunner,
+    private readonly onionLandRunner: OnionLandRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -82,6 +90,10 @@ export class RunsService {
     this.runnerMap.set('shodan_api', this.shodanRunner);
     this.runnerMap.set('abuseipdb', this.abuseIPDBRunner);
     this.runnerMap.set('alienvault_otx', this.alienVaultOTXRunner);
+    this.runnerMap.set('rdap_whois', this.rdapWhoisRunner);
+    this.runnerMap.set('blackbird', this.blackbirdRunner);
+    this.runnerMap.set('ignorant_phone', this.ignorantPhoneRunner);
+    this.runnerMap.set('onionland', this.onionLandRunner);
   }
 
   private detectType(val: string): InputType {
@@ -97,19 +109,19 @@ export class RunsService {
   private getMatchingToolsForType(type: InputType): string[] {
     switch (type) {
       case 'email':
-        return ['holehe', 'h8mail', 'theharvester'];
+        return ['holehe', 'h8mail', 'theharvester', 'onionland'];
       case 'username':
-        return ['sherlock', 'maigret', 'github_recon'];
+        return ['sherlock', 'blackbird', 'maigret', 'github_recon', 'onionland'];
       case 'domain':
-        return ['subfinder', 'crtsh', 'alienvault_otx', 'domainrecon'];
+        return ['rdap_whois', 'subfinder', 'crtsh', 'alienvault_otx', 'domainrecon', 'onionland'];
       case 'ip':
-        return ['shodan_api', 'abuseipdb', 'ipinfo'];
+        return ['shodan_api', 'abuseipdb', 'ipinfo', 'rdap_whois'];
       case 'phone':
-        return ['phoneinfoga'];
+        return ['phoneinfoga', 'ignorant_phone'];
       case 'image':
         return ['exiftool'];
       default:
-        return ['sherlock'];
+        return ['sherlock', 'blackbird'];
     }
   }
 

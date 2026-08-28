@@ -22,6 +22,10 @@ import { IPInfoRunner } from '../runners/ipinfo.runner';
 import { ShodanRunner } from '../runners/shodan.runner';
 import { AbuseIPDBRunner } from '../runners/abuseipdb.runner';
 import { AlienVaultOTXRunner } from '../runners/alienvault-otx.runner';
+import { RdapWhoisRunner } from '../runners/rdap-whois.runner';
+import { BlackbirdRunner } from '../runners/blackbird.runner';
+import { IgnorantPhoneRunner } from '../runners/ignorant-phone.runner';
+import { OnionLandRunner } from '../runners/onionland.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -48,6 +52,10 @@ import { AlienVaultOTXRunner } from '../runners/alienvault-otx.runner';
     ShodanRunner,
     AbuseIPDBRunner,
     AlienVaultOTXRunner,
+    RdapWhoisRunner,
+    BlackbirdRunner,
+    IgnorantPhoneRunner,
+    OnionLandRunner,
   ],
   exports: [RunsService, AggregationService],
 })

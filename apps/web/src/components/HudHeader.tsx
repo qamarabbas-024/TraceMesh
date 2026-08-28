@@ -17,6 +17,8 @@ import {
   GitCompare,
   Eye,
   EyeOff,
+  Globe2,
+  Calendar,
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
 import { DecryptText } from '@/components/DecryptText';
@@ -28,6 +30,8 @@ interface HudHeaderProps {
   onOpenImport: () => void;
   onOpenCases: () => void;
   onOpenCompare: () => void;
+  onOpenGeoMap?: () => void;
+  onOpenTimeline?: () => void;
   onOpenShortcuts: () => void;
   onOpenAuth: () => void;
   user: any | null;
@@ -43,6 +47,8 @@ export function HudHeader({
   onOpenImport,
   onOpenCases,
   onOpenCompare,
+  onOpenGeoMap,
+  onOpenTimeline,
   onOpenShortcuts,
   onOpenAuth,
   user,
@@ -198,6 +204,30 @@ export function HudHeader({
           >
             <FileText className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Import</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenGeoMap && onOpenGeoMap();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
+            title="Open Tactical Geolocation Coordinate Map (G)"
+          >
+            <Globe2 className="w-3.5 h-3.5 text-accent-cyan" />
+            <span className="hidden sm:inline">Geo Map</span>
+          </button>
+
+          <button
+            onClick={() => {
+              soundFx.playBlip();
+              onOpenTimeline && onOpenTimeline();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs border border-accent-cyan-dim/40 hover:border-accent-cyan bg-bg-surface-raised text-text-secondary hover:text-accent-cyan rounded transition-all"
+            title="Open Threat & Incident Chronological Timeline (T)"
+          >
+            <Calendar className="w-3.5 h-3.5 text-accent-cyan" />
+            <span className="hidden sm:inline">Timeline</span>
           </button>
 
           <button

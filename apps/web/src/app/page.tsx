@@ -15,6 +15,8 @@ import { ActivityTicker } from '@/components/ActivityTicker';
 import { CaseManagerDrawer } from '@/components/CaseManagerDrawer';
 import { KeyboardShortcutsModal } from '@/components/KeyboardShortcutsModal';
 import { ComparisonMatrix } from '@/components/ComparisonMatrix';
+import { GeoThreatMap } from '@/components/GeoThreatMap';
+import { ThreatTimeline } from '@/components/ThreatTimeline';
 import { DecryptText } from '@/components/DecryptText';
 import { CyberGrid3D } from '@/components/CyberGrid3D';
 import { soundFx } from '@/lib/soundFx';
@@ -38,6 +40,8 @@ export default function Home() {
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isCasesOpen, setIsCasesOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isGeoMapOpen, setIsGeoMapOpen] = useState(false);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
   // Global Tactical Keyboard Shortcuts
@@ -52,11 +56,22 @@ export default function Home() {
         setIsHistoryOpen(false);
         setIsImportOpen(false);
         setIsCasesOpen(false);
+        setIsCompareOpen(false);
+        setIsGeoMapOpen(false);
+        setIsTimelineOpen(false);
         setIsShortcutsOpen(false);
       } else if (e.key === 'c' || e.key === 'C') {
         e.preventDefault();
         soundFx.playBlip();
         setIsCasesOpen((prev) => !prev);
+      } else if (e.key === 'g' || e.key === 'G') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setIsGeoMapOpen((prev) => !prev);
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        soundFx.playBlip();
+        setIsTimelineOpen((prev) => !prev);
       } else if (e.key === 'h' || e.key === 'H') {
         e.preventDefault();
         soundFx.playBlip();
@@ -185,6 +200,8 @@ export default function Home() {
         onOpenImport={() => setIsImportOpen(true)}
         onOpenCases={() => setIsCasesOpen(true)}
         onOpenCompare={() => setIsCompareOpen(true)}
+        onOpenGeoMap={() => setIsGeoMapOpen(true)}
+        onOpenTimeline={() => setIsTimelineOpen(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenAuth={() => (user ? handleLogout() : setIsAuthOpen(true))}
         user={user}
@@ -192,7 +209,7 @@ export default function Home() {
         onToggleMotion={() => setReduceMotion(!reduceMotion)}
         redactMode={redactMode}
         onToggleRedact={() => setRedactMode(!redactMode)}
-        activeWorkerCount={18}
+        activeWorkerCount={22}
       />
 
       {/* Main Viewport Container */}
@@ -304,6 +321,20 @@ export default function Home() {
       <ImportModal
         isOpen={isImportOpen}
         onClose={() => setIsImportOpen(false)}
+        onSelectEntity={handleFanOutSearch}
+      />
+
+      <GeoThreatMap
+        isOpen={isGeoMapOpen}
+        onClose={() => setIsGeoMapOpen(false)}
+        report={report}
+        onSelectEntity={handleFanOutSearch}
+      />
+
+      <ThreatTimeline
+        isOpen={isTimelineOpen}
+        onClose={() => setIsTimelineOpen(false)}
+        report={report}
         onSelectEntity={handleFanOutSearch}
       />
     </div>
