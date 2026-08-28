@@ -1,0 +1,31 @@
+{
+  "data": {
+    "domain": "example.com",
+    "securitytrails": {
+      "error": "No SecurityTrails API key"
+    },
+    "urlscan": {
+      "error": "No URLScan API key"
+    },
+    "builtwith": {
+      "error": "No BuiltWith API key"
+    },
+    "virustotal": {
+      "error": "No VT API key"
+    },
+    "urlhaus": {
+      "error": "URLhaus connection error: "
+    },
+    "openphish": {
+      "error": "OpenPhish connection error: "
+    },
+    "correlation": {
+      "entities": {},
+      "leads": []
+    }
+  },
+  "cached_at": 1787957402.5047965,
+  "expires_at": 1787961002.5047972,
+  "service": "domain_recon",
+  "key": "example.com"
+}

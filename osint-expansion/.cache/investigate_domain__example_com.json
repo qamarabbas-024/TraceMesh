@@ -1,0 +1,26 @@
+{
+  "data": {
+    "virustotal": {
+      "error": "No VT API key"
+    },
+    "securitytrails": {
+      "error": "No SecurityTrails API key"
+    },
+    "urlscan": {
+      "error": "No URLScan API key"
+    },
+    "builtwith": {
+      "error": "No BuiltWith API key"
+    },
+    "urlhaus": {
+      "error": "URLhaus HTTP 401"
+    },
+    "openphish": {
+      "error": "OpenPhish HTTP 302"
+    }
+  },
+  "cached_at": 1787953002.03751,
+  "expires_at": 1787954802.0375106,
+  "service": "investigate_domain",
+  "key": "example.com"
+}

@@ -305,6 +305,11 @@ async def get_dashboard():
     return "<h1>TraceMesh Dashboard</h1>"
 
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "TraceMesh OSINT Expansion API"}
+
+
 @app.get("/")
 async def root():
     return {

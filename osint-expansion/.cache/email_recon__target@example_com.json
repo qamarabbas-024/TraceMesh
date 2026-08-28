@@ -1,0 +1,35 @@
+{
+  "data": {
+    "email": "target@example.com",
+    "hunter": {
+      "error": "No Hunter API key configured"
+    },
+    "emailrep": {
+      "error": "EmailRep HTTP 429"
+    },
+    "hibp": {
+      "error": "No HIBP API key"
+    },
+    "dehashed": {
+      "error": "No Dehashed credentials configured"
+    },
+    "intelx": {
+      "error": "No IntelX API key"
+    },
+    "correlation": {
+      "entities": {
+        "emails": [],
+        "domains": [],
+        "names": [],
+        "breaches": [],
+        "services_registered": [],
+        "social_profiles": []
+      },
+      "leads": []
+    }
+  },
+  "cached_at": 1787957376.5510156,
+  "expires_at": 1787960976.551016,
+  "service": "email_recon",
+  "key": "target@example.com"
+}

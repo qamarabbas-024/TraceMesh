@@ -1,0 +1,21 @@
+{
+  "data": {
+    "ip": "1.1.1.1",
+    "virustotal": {
+      "error": "No VT API key"
+    },
+    "greynoise": {
+      "error": "No GreyNoise API key"
+    },
+    "censys": {
+      "error": "No Censys credentials"
+    },
+    "shodan": {
+      "error": "No Shodan API key"
+    }
+  },
+  "cached_at": 1787956402.8522532,
+  "expires_at": 1787960002.8522537,
+  "service": "ip_recon",
+  "key": "1.1.1.1"
+}

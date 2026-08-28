@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "task_id": "101",
+      "target_type": "domain",
+      "target": "example.com",
+      "interval_minutes": 30,
+      "enabled": true,
+      "webhook_enabled": true,
+      "tags": [],
+      "last_run": null,
+      "last_result_hash": null
+    }
+  ],
+  "updated": "2026-08-28T21:36:42.254560+00:00"
+}

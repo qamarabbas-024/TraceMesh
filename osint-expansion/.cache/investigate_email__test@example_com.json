@@ -1,0 +1,23 @@
+{
+  "data": {
+    "hunter": {
+      "error": "No Hunter API key configured"
+    },
+    "emailrep": {
+      "error": "EmailRep HTTP 429"
+    },
+    "hibp": {
+      "error": "No HIBP API key"
+    },
+    "dehashed": {
+      "error": "No Dehashed credentials configured"
+    },
+    "intelx": {
+      "error": "No IntelX API key"
+    }
+  },
+  "cached_at": 1787952987.3919165,
+  "expires_at": 1787954787.3919175,
+  "service": "investigate_email",
+  "key": "test@example.com"
+}
