@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  tracemesh-expansion:
+    build: .
+    container_name: tracemesh-osint-expansion
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    volumes:
+      - ./.cache:/app/.cache
+      - ./.db:/app/.db

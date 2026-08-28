@@ -1,0 +1,10 @@
+{
+  "name": "TraceMesh OSINT Telemetry",
+  "type": "json",
+  "access": "proxy",
+  "url": "http://localhost:3001",
+  "jsonData": {
+    "apiType": "tracemesh-expansion",
+    "version": "2.0.0"
+  }
+}
