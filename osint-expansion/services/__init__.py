@@ -8,13 +8,13 @@ from .external_phone_osint import PhoneOSINT
 from .self_hosted_tool_wrappers import SelfHostedExtendedTools
 from .telegram_scraper import TelegramOSINT
 from .webhook_notifier import WebhookNotifier
-from .correlation import correlate_results
+from .correlation import CorrelationEngine
 from .websocket_manager import ws_manager
 from . import cache, rate_limiter, batch_executor, database
 
 __all__ = [
     "EmailOSINT", "DomainOSINT", "IPOSINT", "ThreatOSINT",
     "CryptoOSINT", "SocialOSINT", "PhoneOSINT", "SelfHostedExtendedTools",
-    "TelegramOSINT", "WebhookNotifier", "correlate_results", "ws_manager",
+    "TelegramOSINT", "WebhookNotifier", "CorrelationEngine", "ws_manager",
     "cache", "rate_limiter", "batch_executor", "database"
 ]
