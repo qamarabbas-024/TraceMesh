@@ -506,4 +506,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'darknet_forums',
+    displayName: 'Darknet Marketplace & Forum Hunter',
+    description: 'Deep indexed onion search exploring hidden services, underground markets, and breach discussion forums.',
+    category: 'email',
+    inputTypes: ['email', 'username', 'domain', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://ahmia.fi',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

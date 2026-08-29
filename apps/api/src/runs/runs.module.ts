@@ -39,6 +39,7 @@ import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
+import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -82,6 +83,7 @@ import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
     AptAttributionRunner,
     FaviconHashRunner,
     IocFeedSyncerRunner,
+    DarknetForumRunner,
   ],
   exports: [RunsService, AggregationService],
 })

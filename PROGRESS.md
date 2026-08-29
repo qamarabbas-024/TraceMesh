@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v15.5 — done (Phase 26: Real-time IOC Graph Clustering & Threat Feed Syncer Complete)**
+**CURRENT VERSION: v16.0 — done (Phase 27: Darknet Marketplace & Forum Keyword Scraper Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -191,7 +191,6 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 14.4 — Autonomous MITRE ATT&CK Tactics Mapper (`MitreAttackMapper`)
 - [x] 14.5 — Investigation Case Tagging & Entity Timeline Filtering
 
----
 
 ## Phase 26 — Cloud & Infrastructure Reconnaissance (v15.0–v15.5)
 - [x] 15.0 — Cloud Bucket & Public Blob Discovery (AWS S3, GCP Cloud Storage, Azure Blob Scanner)
@@ -204,12 +203,12 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 27 — Deep Web, Social & Identity Intelligence (v16.0–v16.5)
-- [ ] 16.0 — Gravatar & Avatar Reverse Hash Correlator (MD5/SHA256 Profile Unmasker)
-- [ ] 16.1 — GitHub Secret Scanning & Public Commit Crawler
-- [ ] 16.2 — Pastebin & Leak Site Monitor (Dork & Regex Scanner)
-- [ ] 16.3 — Multi-Platform Username Phonetic & Levenshtein Variant Generator
-- [ ] 16.4 — Cross-Platform Social Graph Pivot Visualizer
-- [ ] 16.5 — Automated Entity Dossier Summary with AI-Generated Intel Brief
+- [x] 16.0 — Darknet Marketplace & Forum Keyword Scraper (`DarknetForumHunter`)
+- [ ] 16.1 — Gravatar & Avatar Reverse Hash Correlator (MD5/SHA256 Profile Unmasker)
+- [ ] 16.2 — GitHub Secret Scanning & Public Commit Crawler (`GitHubCommitCrawler`)
+- [ ] 16.3 — Pastebin & Leak Site Dork Crawler (`PasteDumpMonitor`)
+- [ ] 16.4 — Multi-Platform Username Phonetic & Levenshtein Variant Generator (`UsernameFuzzer`)
+- [ ] 16.5 — Cross-Platform Social Graph Pivot Visualizer & Dossier Summary
 
 ---
 
