@@ -44,6 +44,7 @@ import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
 import { TokenGraphRunner } from '../runners/token-graph.runner';
 import { Web3DomainsRunner } from '../runners/web3-domains.runner';
+import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -107,6 +108,7 @@ export class RunsService {
     private readonly ofacAmlScreenerRunner: OfacAmlScreenerRunner,
     private readonly tokenGraphRunner: TokenGraphRunner,
     private readonly web3DomainsRunner: Web3DomainsRunner,
+    private readonly ipfsArweaveRunner: IpfsArweaveRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -151,6 +153,7 @@ export class RunsService {
     this.runnerMap.set('ofac_aml_screener', this.ofacAmlScreenerRunner);
     this.runnerMap.set('token_graph', this.tokenGraphRunner);
     this.runnerMap.set('web3_domains', this.web3DomainsRunner);
+    this.runnerMap.set('ipfs_arweave', this.ipfsArweaveRunner);
   }
 
   private detectType(val: string): InputType {

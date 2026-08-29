@@ -632,4 +632,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'ipfs_arweave',
+    displayName: 'Decentralized Storage (IPFS / Arweave) Resolver',
+    description: 'Immutable content identifier (CID) inspector resolving IPFS and Arweave permaweb storage objects.',
+    category: 'domain',
+    inputTypes: ['domain', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://ipfs.io',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
