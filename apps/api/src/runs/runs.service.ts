@@ -42,6 +42,7 @@ import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
+import { TokenGraphRunner } from '../runners/token-graph.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -103,6 +104,7 @@ export class RunsService {
     private readonly usernameFuzzerRunner: UsernameFuzzerRunner,
     private readonly cryptoFlowRunner: CryptoFlowRunner,
     private readonly ofacAmlScreenerRunner: OfacAmlScreenerRunner,
+    private readonly tokenGraphRunner: TokenGraphRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -145,6 +147,7 @@ export class RunsService {
     this.runnerMap.set('username_fuzzer', this.usernameFuzzerRunner);
     this.runnerMap.set('crypto_flow', this.cryptoFlowRunner);
     this.runnerMap.set('ofac_aml_screener', this.ofacAmlScreenerRunner);
+    this.runnerMap.set('token_graph', this.tokenGraphRunner);
   }
 
   private detectType(val: string): InputType {

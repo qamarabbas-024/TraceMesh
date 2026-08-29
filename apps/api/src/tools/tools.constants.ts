@@ -604,4 +604,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'token_graph',
+    displayName: 'Smart Contract & Token Distribution Graph',
+    description: 'Autonomous EVM smart contract bytecode, deployer originator, and ERC-20 token distribution mapper.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://eth.blockscout.com',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

@@ -47,6 +47,7 @@ import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
+import { TokenGraphRunner } from '../runners/token-graph.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -98,6 +99,7 @@ import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
     UsernameFuzzerRunner,
     CryptoFlowRunner,
     OfacAmlScreenerRunner,
+    TokenGraphRunner,
   ],
   exports: [RunsService, AggregationService],
 })
