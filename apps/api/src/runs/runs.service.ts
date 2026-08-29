@@ -31,6 +31,7 @@ import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
 import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
 import { SecurityHeadersRunner } from '../runners/security-headers.runner';
+import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -81,6 +82,7 @@ export class RunsService {
     private readonly gpgKeyringRunner: GpgKeyringRunner,
     private readonly cloudBucketRunner: CloudBucketRunner,
     private readonly securityHeadersRunner: SecurityHeadersRunner,
+    private readonly asnPeeringRunner: AsnPeeringRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -112,6 +114,7 @@ export class RunsService {
     this.runnerMap.set('gpg_keyring', this.gpgKeyringRunner);
     this.runnerMap.set('cloud_bucket', this.cloudBucketRunner);
     this.runnerMap.set('security_headers', this.securityHeadersRunner);
+    this.runnerMap.set('asn_peering', this.asnPeeringRunner);
   }
 
   private detectType(val: string): InputType {

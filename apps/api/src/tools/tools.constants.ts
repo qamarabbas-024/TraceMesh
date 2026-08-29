@@ -450,4 +450,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'asn_peering',
+    displayName: 'BGP Routing & ASN Peering Graph',
+    description: 'Autonomous System (ASN) prefix mapper, RIR registrar, and upstream BGP transit peering topology.',
+    category: 'ip',
+    inputTypes: ['ip', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://stat.ripe.net',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

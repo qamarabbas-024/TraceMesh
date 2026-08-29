@@ -35,6 +35,7 @@ import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
 import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
 import { SecurityHeadersRunner } from '../runners/security-headers.runner';
+import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -74,6 +75,7 @@ import { SecurityHeadersRunner } from '../runners/security-headers.runner';
     GpgKeyringRunner,
     CloudBucketRunner,
     SecurityHeadersRunner,
+    AsnPeeringRunner,
   ],
   exports: [RunsService, AggregationService],
 })
