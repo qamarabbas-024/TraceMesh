@@ -3,6 +3,7 @@ import { RunsController } from './runs.controller';
 import { RunsService } from './runs.service';
 import { AggregationService } from './aggregation.service';
 import { GraphAnalyticsService } from './graph-analytics.service';
+import { MitreAttackService } from './mitre-attack.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -39,6 +40,7 @@ import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
     RunsService,
     AggregationService,
     GraphAnalyticsService,
+    MitreAttackService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,

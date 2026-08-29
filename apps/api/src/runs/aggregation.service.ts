@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DiscoveredEntity, AggregatedReport, InputType } from '@tracemesh/shared';
 import { GraphAnalyticsService } from './graph-analytics.service';
+import { MitreAttackService } from './mitre-attack.service';
 
 @Injectable()
 export class AggregationService {
-  constructor(private readonly graphAnalyticsService: GraphAnalyticsService) {}
+  constructor(
+    private readonly graphAnalyticsService: GraphAnalyticsService,
+    private readonly mitreAttackService: MitreAttackService,
+  ) {}
 
   aggregate(
     runId: string,
@@ -65,6 +69,9 @@ export class AggregationService {
 
     // Compute Graph Centrality (PageRank & Betweenness) and Community Clusters
     const analytics = this.graphAnalyticsService.analyze(uniqueEntities);
+
+    // Compute Autonomous MITRE ATT&CK Matrix Mapping
+    const mitreAssessment = this.mitreAttackService.mapToMitre(uniqueEntities, inputValue, inputType);
 
     // Calculate OPSEC Exposure Score (0-100%) and Threat Matrix
     let rawScore = 0;

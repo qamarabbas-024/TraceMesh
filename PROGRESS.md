@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v14.3 — done (Phase 25: Autonomous Graph Centrality & Community Detection Complete)**
+**CURRENT VERSION: v14.4 — done (Phase 25: Autonomous MITRE ATT&CK Tactics Mapper Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -188,7 +188,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 14.1 — Subdomain DNS Brute-Forcer & CNAME Takeover Scanner (`DNSBruteTakeover`)
 - [x] 14.2 — OpenPGP / GPG Key Server Keyring Correlator (`GPGKeyringOSINT`)
 - [x] 14.3 — Autonomous Graph Centrality & Community Detection (PageRank & Betweenness Centrality)
-- [ ] 14.4 — Autonomous MITRE ATT&CK Tactics Mapper (`MitreAttackMapper`)
+- [x] 14.4 — Autonomous MITRE ATT&CK Tactics Mapper (`MitreAttackMapper`)
 - [ ] 14.5 — Investigation Case Tagging & Entity Timeline Filtering
 
 ---
