@@ -40,6 +40,7 @@ import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
 import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
+import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -99,6 +100,7 @@ export class RunsService {
     private readonly gitHubCommitCrawlerRunner: GitHubCommitCrawlerRunner,
     private readonly pasteDumpRunner: PasteDumpRunner,
     private readonly usernameFuzzerRunner: UsernameFuzzerRunner,
+    private readonly cryptoFlowRunner: CryptoFlowRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -139,6 +141,7 @@ export class RunsService {
     this.runnerMap.set('github_commit_crawler', this.gitHubCommitCrawlerRunner);
     this.runnerMap.set('paste_dump_monitor', this.pasteDumpRunner);
     this.runnerMap.set('username_fuzzer', this.usernameFuzzerRunner);
+    this.runnerMap.set('crypto_flow', this.cryptoFlowRunner);
   }
 
   private detectType(val: string): InputType {

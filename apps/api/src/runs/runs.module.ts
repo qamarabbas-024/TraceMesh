@@ -45,6 +45,7 @@ import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
 import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
+import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -94,6 +95,7 @@ import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
     GitHubCommitCrawlerRunner,
     PasteDumpRunner,
     UsernameFuzzerRunner,
+    CryptoFlowRunner,
   ],
   exports: [RunsService, AggregationService],
 })

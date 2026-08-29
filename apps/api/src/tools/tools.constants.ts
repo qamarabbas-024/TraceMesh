@@ -576,4 +576,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'crypto_flow',
+    displayName: 'Multi-Chain Crypto Transaction Flow Graph',
+    description: 'Autonomous Bitcoin, Ethereum, and Solana blockchain balance, transaction volume, and counterparty mapper.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://blockstream.info',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
