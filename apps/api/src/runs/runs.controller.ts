@@ -10,16 +10,38 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RunsService } from './runs.service';
-import { BatchRunRequest, AggregatedReport } from '@tracemesh/shared';
+import { TimelineFilterService } from './timeline-filter.service';
+import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
+
+export interface TimelineFilterDto {
+  entities: DiscoveredEntity[];
+  startDate?: string;
+  endDate?: string;
+  tags?: string[];
+}
 
 @Controller('runs')
 export class RunsController {
-  constructor(private readonly runsService: RunsService) {}
+  constructor(
+    private readonly runsService: RunsService,
+    private readonly timelineFilterService: TimelineFilterService,
+  ) {}
 
   @Post('batch')
   @HttpCode(HttpStatus.OK)
   async runBatch(@Body() body: BatchRunRequest): Promise<AggregatedReport> {
     return this.runsService.runBatch(body);
+  }
+
+  @Post('timeline-filter')
+  @HttpCode(HttpStatus.OK)
+  async filterTimeline(@Body() body: TimelineFilterDto) {
+    return this.timelineFilterService.generateTimeline(
+      body.entities || [],
+      body.startDate,
+      body.endDate,
+      body.tags || [],
+    );
   }
 
   @Get('history')
@@ -36,3 +58,4 @@ export class RunsController {
     return report;
   }
 }
+
