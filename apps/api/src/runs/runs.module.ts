@@ -37,6 +37,7 @@ import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
 import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { AptAttributionRunner } from '../runners/apt-attribution.runner';
+import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -78,6 +79,7 @@ import { AptAttributionRunner } from '../runners/apt-attribution.runner';
     SecurityHeadersRunner,
     AsnPeeringRunner,
     AptAttributionRunner,
+    FaviconHashRunner,
   ],
   exports: [RunsService, AggregationService],
 })

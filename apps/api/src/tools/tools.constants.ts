@@ -478,4 +478,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'favicon_hash',
+    displayName: 'Favicon MurmurHash3 (MMH3) Asset Tracker',
+    description: 'Reverse Favicon MMH3 hash calculator and Shodan global internet infrastructure pivot generator.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/favicon-hash',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

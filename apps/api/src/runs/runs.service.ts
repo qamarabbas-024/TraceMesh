@@ -33,6 +33,7 @@ import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
 import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { AptAttributionRunner } from '../runners/apt-attribution.runner';
+import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -85,6 +86,7 @@ export class RunsService {
     private readonly securityHeadersRunner: SecurityHeadersRunner,
     private readonly asnPeeringRunner: AsnPeeringRunner,
     private readonly aptAttributionRunner: AptAttributionRunner,
+    private readonly faviconHashRunner: FaviconHashRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -118,6 +120,7 @@ export class RunsService {
     this.runnerMap.set('security_headers', this.securityHeadersRunner);
     this.runnerMap.set('asn_peering', this.asnPeeringRunner);
     this.runnerMap.set('apt_attribution', this.aptAttributionRunner);
+    this.runnerMap.set('favicon_hash', this.faviconHashRunner);
   }
 
   private detectType(val: string): InputType {
