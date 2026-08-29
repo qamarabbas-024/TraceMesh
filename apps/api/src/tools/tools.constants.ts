@@ -422,4 +422,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'cloud_bucket',
+    displayName: 'Cloud Storage & S3 Bucket Scanner',
+    description: 'Autonomous public blob and storage bucket enumerator for AWS S3, Google Cloud Storage, and Azure Blob.',
+    category: 'domain',
+    inputTypes: ['domain', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/cloud-bucket',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

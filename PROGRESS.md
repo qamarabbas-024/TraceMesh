@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v14.5 — done (Phase 25: Investigation Case Tagging & Entity Timeline Filtering Complete)**
+**CURRENT VERSION: v15.0 — done (Phase 26: Cloud Bucket & Public Storage Discovery Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -194,7 +194,7 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 26 — Cloud & Infrastructure Reconnaissance (v15.0–v15.5)
-- [ ] 15.0 — Cloud Bucket & Public Blob Discovery (AWS S3, GCP Cloud Storage, Azure Blob Scanner)
+- [x] 15.0 — Cloud Bucket & Public Blob Discovery (AWS S3, GCP Cloud Storage, Azure Blob Scanner)
 - [ ] 15.1 — HTTP Security Headers & TLS Cipher Suite Auditor
 - [ ] 15.2 — BGP Route & Autonomous System (ASN) Peering Graph (`ASNPeeringGraph`)
 - [ ] 15.3 — Threat Actor & APT Attribution Engine
