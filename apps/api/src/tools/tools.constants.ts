@@ -646,4 +646,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'crypto_cluster_tagger',
+    displayName: 'High-Risk Cryptocurrency Cluster Tagger',
+    description: 'Autonomous threat actor attribution for ransomware extortion, Web3 drainer, and illicit tumbler clusters.',
+    category: 'username',
+    inputTypes: ['username', 'domain', 'email'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/crypto-cluster',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

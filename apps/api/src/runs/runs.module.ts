@@ -50,6 +50,7 @@ import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
 import { TokenGraphRunner } from '../runners/token-graph.runner';
 import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
+import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -104,6 +105,7 @@ import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
     TokenGraphRunner,
     Web3DomainsRunner,
     IpfsArweaveRunner,
+    CryptoClusterTaggerRunner,
   ],
   exports: [RunsService, AggregationService],
 })
