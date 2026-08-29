@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DiscoveredEntity, AggregatedReport, InputType } from '@tracemesh/shared';
+import { GraphAnalyticsService } from './graph-analytics.service';
 
 @Injectable()
 export class AggregationService {
+  constructor(private readonly graphAnalyticsService: GraphAnalyticsService) {}
+
   aggregate(
     runId: string,
     inputValue: string,
@@ -59,6 +62,9 @@ export class AggregationService {
 
     const uniqueEntities = Array.from(entityMap.values());
     const totalDuration = toolExecutions.reduce((max, t) => Math.max(max, t.durationMs), 0);
+
+    // Compute Graph Centrality (PageRank & Betweenness) and Community Clusters
+    const analytics = this.graphAnalyticsService.analyze(uniqueEntities);
 
     // Calculate OPSEC Exposure Score (0-100%) and Threat Matrix
     let rawScore = 0;
