@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v15.2 — done (Phase 26: BGP Route & Autonomous System ASN Peering Graph Complete)**
+**CURRENT VERSION: v15.3 — done (Phase 26: Threat Actor & APT Attribution Engine Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -197,7 +197,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 15.0 — Cloud Bucket & Public Blob Discovery (AWS S3, GCP Cloud Storage, Azure Blob Scanner)
 - [x] 15.1 — HTTP Security Headers & TLS Cipher Suite Auditor
 - [x] 15.2 — BGP Route & Autonomous System (ASN) Peering Graph (`ASNPeeringGraph`)
-- [ ] 15.3 — Threat Actor & APT Attribution Engine
+- [x] 15.3 — Threat Actor & APT Attribution Engine
 - [ ] 15.4 — Reverse Favicon & MMH3 Hash Shodan Searcher
 - [ ] 15.5 — Real-time IOC Graph Clustering & Threat Feed Syncer
 

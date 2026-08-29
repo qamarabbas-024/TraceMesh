@@ -36,6 +36,7 @@ import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
 import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { AsnPeeringRunner } from '../runners/asn-peering.runner';
+import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -76,6 +77,7 @@ import { AsnPeeringRunner } from '../runners/asn-peering.runner';
     CloudBucketRunner,
     SecurityHeadersRunner,
     AsnPeeringRunner,
+    AptAttributionRunner,
   ],
   exports: [RunsService, AggregationService],
 })

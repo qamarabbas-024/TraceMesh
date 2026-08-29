@@ -464,4 +464,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'apt_attribution',
+    displayName: 'Threat Actor & APT Attribution Engine',
+    description: 'Autonomous cyber espionage attribution correlating targets with nation-state APT groups, TTPs, and malware families.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://attack.mitre.org/groups/',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
