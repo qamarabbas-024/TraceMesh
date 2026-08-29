@@ -34,6 +34,7 @@ import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
 import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
+import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -72,6 +73,7 @@ import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
     DnsTakeoverRunner,
     GpgKeyringRunner,
     CloudBucketRunner,
+    SecurityHeadersRunner,
   ],
   exports: [RunsService, AggregationService],
 })

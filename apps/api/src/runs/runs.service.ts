@@ -30,6 +30,7 @@ import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
 import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { CloudBucketRunner } from '../runners/cloud-bucket.runner';
+import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -79,6 +80,7 @@ export class RunsService {
     private readonly dnsTakeoverRunner: DnsTakeoverRunner,
     private readonly gpgKeyringRunner: GpgKeyringRunner,
     private readonly cloudBucketRunner: CloudBucketRunner,
+    private readonly securityHeadersRunner: SecurityHeadersRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -109,6 +111,7 @@ export class RunsService {
     this.runnerMap.set('dns_takeover', this.dnsTakeoverRunner);
     this.runnerMap.set('gpg_keyring', this.gpgKeyringRunner);
     this.runnerMap.set('cloud_bucket', this.cloudBucketRunner);
+    this.runnerMap.set('security_headers', this.securityHeadersRunner);
   }
 
   private detectType(val: string): InputType {
