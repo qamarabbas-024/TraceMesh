@@ -590,4 +590,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'ofac_aml_screener',
+    displayName: 'OFAC Sanctions & AML Risk Screener',
+    description: 'US Treasury OFAC Specially Designated Nationals (SDN) and high-risk crypto mixer address screening engine.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://sanctionssearch.ofac.treas.gov',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

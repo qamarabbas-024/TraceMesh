@@ -46,6 +46,7 @@ import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runn
 import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
+import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -96,6 +97,7 @@ import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
     PasteDumpRunner,
     UsernameFuzzerRunner,
     CryptoFlowRunner,
+    OfacAmlScreenerRunner,
   ],
   exports: [RunsService, AggregationService],
 })
