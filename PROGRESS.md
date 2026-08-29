@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v11.0 — done (Phase 22 Advanced Cyber Threat Feeds, TLS Handshake Inspector & 100% Real OSINT Network Engine Complete)**
+**CURRENT VERSION: v14.0 — done (Phase 25: Darknet Onion Hunter AhmiaTorEngine Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -180,4 +180,65 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 13.0 — Interactive Cyberpunk OSINT Dashboard HUD (`dashboard.html`) with dark/light themes, keyboard shortcuts (`⌘K`), quick-action target selectors, live WebSocket streaming, and source health monitors.
 - [x] 13.1 — Unified Investigation API & Multi-Format Exporter Gateway (`/api/investigate/*`, `/api/export/*`, `/api/diagnostics`, `/api/monitor/*`).
 - [x] 13.2 — End-to-end 16-suite verification covering auto-detect input parsing, STIX 2.1, MISP, PDF, CSV, XLSX, SQLite investigations database, and real-time WebSocket telemetry.
+
+---
+
+## Phase 25 — Advanced Threat Intelligence & Graph Analytics (v14.0–v14.5)
+- [x] 14.0 — Darknet Onion Hunter (`AhmiaTorEngine` deep crawler for hidden services)
+- [ ] 14.1 — Subdomain DNS Brute-Forcer & CNAME Takeover Scanner (`DNSBruteTakeover`)
+- [ ] 14.2 — OpenPGP / GPG Key Server Keyring Correlator (`GPGKeyringOSINT`)
+- [ ] 14.3 — Autonomous Graph Centrality & Community Detection (PageRank & Betweenness Centrality)
+- [ ] 14.4 — Autonomous MITRE ATT&CK Tactics Mapper (`MitreAttackMapper`)
+- [ ] 14.5 — Investigation Case Tagging & Entity Timeline Filtering
+
+---
+
+## Phase 26 — Cloud & Infrastructure Reconnaissance (v15.0–v15.5)
+- [ ] 15.0 — Cloud Bucket & Public Blob Discovery (AWS S3, GCP Cloud Storage, Azure Blob Scanner)
+- [ ] 15.1 — HTTP Security Headers & TLS Cipher Suite Auditor
+- [ ] 15.2 — BGP Route & Autonomous System (ASN) Peering Graph (`ASNPeeringGraph`)
+- [ ] 15.3 — Threat Actor & APT Attribution Engine
+- [ ] 15.4 — Reverse Favicon & MMH3 Hash Shodan Searcher
+- [ ] 15.5 — Real-time IOC Graph Clustering & Threat Feed Syncer
+
+---
+
+## Phase 27 — Deep Web, Social & Identity Intelligence (v16.0–v16.5)
+- [ ] 16.0 — Gravatar & Avatar Reverse Hash Correlator (MD5/SHA256 Profile Unmasker)
+- [ ] 16.1 — GitHub Secret Scanning & Public Commit Crawler
+- [ ] 16.2 — Pastebin & Leak Site Monitor (Dork & Regex Scanner)
+- [ ] 16.3 — Multi-Platform Username Phonetic & Levenshtein Variant Generator
+- [ ] 16.4 — Cross-Platform Social Graph Pivot Visualizer
+- [ ] 16.5 — Automated Entity Dossier Summary with AI-Generated Intel Brief
+
+---
+
+## Phase 28 — Cryptographic & Financial Intelligence (v17.0–v17.5)
+- [ ] 17.0 — Multi-Chain Crypto Transaction Flow Graph (BTC, ETH, Solana, USDT)
+- [ ] 17.1 — OFAC Sanctions & AML Blacklist Address Screener
+- [ ] 17.2 — Smart Contract Token Holder & Transfer Graph
+- [ ] 17.3 — ENS & Unstoppable Domains Reverse Resolver
+- [ ] 17.4 — Decentralized Web IPFS / Arweave Content Mirror Resolver
+- [ ] 17.5 — High-Risk Cryptocurrency Cluster Tagging
+
+---
+
+## Phase 29 — Advanced OPSEC & Defensive Countermeasures (v18.0–v18.5)
+- [ ] 18.0 — Multi-Hop Proxy & Tor Circuit Router Simulator
+- [ ] 18.1 — Anti-Canary Token & Honeypot Detector
+- [ ] 18.2 — Browser Fingerprint Defeater & User-Agent Rotator
+- [ ] 18.3 — Tactical Evidence Preservation & Cryptographic Hash Timestamper (SHA-256 / Merkle Proof)
+- [ ] 18.4 — Zero-Knowledge Analyst Notes Encryption
+- [ ] 18.5 — Automated Red Team Risk Scoring & Attack Surface Rating
+
+---
+
+## Phase 30 — Automated Intelligence Synthesis & Reporting (v19.0–v19.5)
+- [ ] 19.0 — Executive Threat Brief Generator (HTML5 / Standalone Interactive Dossier)
+- [ ] 19.1 — CybOX 2.1 & OpenCTI STIX Connector
+- [ ] 19.2 — Real-time Multi-Analyst Collaboration Hub & Live Graph Sync
+- [ ] 19.3 — Automated OSINT Scheduled Watchdog Daemon
+- [ ] 19.4 — Global Entity Pivot Search Matrix
+- [ ] 19.5 — Full System Integration Verification & Final Roadmap Certification
+
 
