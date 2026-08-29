@@ -5,6 +5,7 @@ import { AggregationService } from './aggregation.service';
 import { GraphAnalyticsService } from './graph-analytics.service';
 import { MitreAttackService } from './mitre-attack.service';
 import { TimelineFilterService } from './timeline-filter.service';
+import { DossierSummaryService } from './dossier-summary.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -54,6 +55,7 @@ import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
     GraphAnalyticsService,
     MitreAttackService,
     TimelineFilterService,
+    DossierSummaryService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,

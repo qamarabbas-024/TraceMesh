@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { DiscoveredEntity, AggregatedReport, InputType } from '@tracemesh/shared';
 import { GraphAnalyticsService } from './graph-analytics.service';
 import { MitreAttackService } from './mitre-attack.service';
+import { DossierSummaryService } from './dossier-summary.service';
 
 @Injectable()
 export class AggregationService {
   constructor(
     private readonly graphAnalyticsService: GraphAnalyticsService,
     private readonly mitreAttackService: MitreAttackService,
+    private readonly dossierSummaryService: DossierSummaryService,
   ) {}
 
   aggregate(
@@ -95,6 +97,15 @@ export class AggregationService {
     if (opsecScore >= 80) threatLevel = 'CRITICAL';
     else if (opsecScore >= 55) threatLevel = 'HIGH';
     else if (opsecScore >= 30) threatLevel = 'MEDIUM';
+
+    // Generate Autonomous Intelligence Dossier Summary
+    const dossier = this.dossierSummaryService.generateDossier(
+      uniqueEntities,
+      inputValue,
+      inputType,
+      opsecScore,
+      threatLevel,
+    );
 
     const hopSummary = Array.from(hopStats.entries())
       .sort(([a], [b]) => a - b)
