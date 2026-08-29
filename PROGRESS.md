@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v16.1 — done (Phase 27: Gravatar Profile & Avatar Hash Unmasker Complete)**
+**CURRENT VERSION: v16.2 — done (Phase 27: GitHub Secret Scanning & Public Commit Crawler Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -205,7 +205,7 @@ Update the line above at the end of every session. That single line is the sourc
 ## Phase 27 — Deep Web, Social & Identity Intelligence (v16.0–v16.5)
 - [x] 16.0 — Darknet Marketplace & Forum Keyword Scraper (`DarknetForumHunter`)
 - [x] 16.1 — Gravatar & Avatar Reverse Hash Correlator (MD5/SHA256 Profile Unmasker)
-- [ ] 16.2 — GitHub Secret Scanning & Public Commit Crawler (`GitHubCommitCrawler`)
+- [x] 16.2 — GitHub Secret Scanning & Public Commit Crawler (`GitHubCommitCrawler`)
 - [ ] 16.3 — Pastebin & Leak Site Dork Crawler (`PasteDumpMonitor`)
 - [ ] 16.4 — Multi-Platform Username Phonetic & Levenshtein Variant Generator (`UsernameFuzzer`)
 - [ ] 16.5 — Cross-Platform Social Graph Pivot Visualizer & Dossier Summary

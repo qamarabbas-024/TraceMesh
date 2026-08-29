@@ -41,6 +41,7 @@ import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
+import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -86,6 +87,7 @@ import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
     IocFeedSyncerRunner,
     DarknetForumRunner,
     GravatarUnmaskerRunner,
+    GitHubCommitCrawlerRunner,
   ],
   exports: [RunsService, AggregationService],
 })

@@ -534,4 +534,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'github_commit_crawler',
+    displayName: 'GitHub Commit & Secret Crawler',
+    description: 'Autonomous Git commit log explorer extracting author emails and detecting exposed API credentials in public repos.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://api.github.com',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
