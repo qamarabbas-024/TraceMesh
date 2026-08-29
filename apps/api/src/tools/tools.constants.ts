@@ -408,4 +408,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'gpg_keyring',
+    displayName: 'OpenPGP Key Server Correlator',
+    description: 'Global cryptographic keyring search unmasking real-name aliases, secondary emails, and PGP key fingerprints.',
+    category: 'email',
+    inputTypes: ['email', 'username', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://keyserver.ubuntu.com',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

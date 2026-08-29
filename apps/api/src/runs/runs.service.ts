@@ -28,6 +28,7 @@ import { OnionLandRunner } from '../runners/onionland.runner';
 import { ThreatFoxIocRunner } from '../runners/threatfox-ioc.runner';
 import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
+import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -75,6 +76,7 @@ export class RunsService {
     private readonly threatFoxIocRunner: ThreatFoxIocRunner,
     private readonly sslCertInspectorRunner: SslCertInspectorRunner,
     private readonly dnsTakeoverRunner: DnsTakeoverRunner,
+    private readonly gpgKeyringRunner: GpgKeyringRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -103,6 +105,7 @@ export class RunsService {
     this.runnerMap.set('threatfox_ioc', this.threatFoxIocRunner);
     this.runnerMap.set('ssl_inspector', this.sslCertInspectorRunner);
     this.runnerMap.set('dns_takeover', this.dnsTakeoverRunner);
+    this.runnerMap.set('gpg_keyring', this.gpgKeyringRunner);
   }
 
   private detectType(val: string): InputType {

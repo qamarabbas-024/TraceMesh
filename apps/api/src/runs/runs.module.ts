@@ -29,6 +29,7 @@ import { OnionLandRunner } from '../runners/onionland.runner';
 import { ThreatFoxIocRunner } from '../runners/threatfox-ioc.runner';
 import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
 import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
+import { GpgKeyringRunner } from '../runners/gpg-keyring.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -62,6 +63,7 @@ import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
     ThreatFoxIocRunner,
     SslCertInspectorRunner,
     DnsTakeoverRunner,
+    GpgKeyringRunner,
   ],
   exports: [RunsService, AggregationService],
 })
