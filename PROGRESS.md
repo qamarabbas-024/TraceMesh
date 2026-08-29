@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v14.0 — done (Phase 25: Darknet Onion Hunter AhmiaTorEngine Complete)**
+**CURRENT VERSION: v14.1 — done (Phase 25: Subdomain DNS Brute-Forcer & CNAME Takeover Scanner Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -185,7 +185,7 @@ Update the line above at the end of every session. That single line is the sourc
 
 ## Phase 25 — Advanced Threat Intelligence & Graph Analytics (v14.0–v14.5)
 - [x] 14.0 — Darknet Onion Hunter (`AhmiaTorEngine` deep crawler for hidden services)
-- [ ] 14.1 — Subdomain DNS Brute-Forcer & CNAME Takeover Scanner (`DNSBruteTakeover`)
+- [x] 14.1 — Subdomain DNS Brute-Forcer & CNAME Takeover Scanner (`DNSBruteTakeover`)
 - [ ] 14.2 — OpenPGP / GPG Key Server Keyring Correlator (`GPGKeyringOSINT`)
 - [ ] 14.3 — Autonomous Graph Centrality & Community Detection (PageRank & Betweenness Centrality)
 - [ ] 14.4 — Autonomous MITRE ATT&CK Tactics Mapper (`MitreAttackMapper`)

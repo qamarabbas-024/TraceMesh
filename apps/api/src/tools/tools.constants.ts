@@ -394,4 +394,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'dns_takeover',
+    displayName: 'DNS Brute & CNAME Takeover',
+    description: 'Subdomain brute-force enumerator with dangling CNAME pointer audit for AWS S3, GitHub Pages, Heroku, Azure, and Vercel.',
+    category: 'domain',
+    inputTypes: ['domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/dns-takeover',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

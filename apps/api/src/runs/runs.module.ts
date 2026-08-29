@@ -28,6 +28,7 @@ import { IgnorantPhoneRunner } from '../runners/ignorant-phone.runner';
 import { OnionLandRunner } from '../runners/onionland.runner';
 import { ThreatFoxIocRunner } from '../runners/threatfox-ioc.runner';
 import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
+import { DnsTakeoverRunner } from '../runners/dns-takeover.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -60,6 +61,7 @@ import { SslCertInspectorRunner } from '../runners/ssl-cert-inspector.runner';
     OnionLandRunner,
     ThreatFoxIocRunner,
     SslCertInspectorRunner,
+    DnsTakeoverRunner,
   ],
   exports: [RunsService, AggregationService],
 })
