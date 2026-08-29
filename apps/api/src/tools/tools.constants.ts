@@ -520,4 +520,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'gravatar_unmasker',
+    displayName: 'Gravatar Profile & Avatar Unmasker',
+    description: 'Cryptographic MD5/SHA-256 avatar hash resolution unmasking display names, verified social links, and public profile bios.',
+    category: 'email',
+    inputTypes: ['email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://gravatar.com',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

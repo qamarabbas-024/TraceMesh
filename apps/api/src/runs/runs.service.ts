@@ -36,6 +36,7 @@ import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { DarknetForumRunner } from '../runners/darknet-forum.runner';
+import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -91,6 +92,7 @@ export class RunsService {
     private readonly faviconHashRunner: FaviconHashRunner,
     private readonly iocFeedSyncerRunner: IocFeedSyncerRunner,
     private readonly darknetForumRunner: DarknetForumRunner,
+    private readonly gravatarUnmaskerRunner: GravatarUnmaskerRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -127,6 +129,7 @@ export class RunsService {
     this.runnerMap.set('favicon_hash', this.faviconHashRunner);
     this.runnerMap.set('ioc_feed_syncer', this.iocFeedSyncerRunner);
     this.runnerMap.set('darknet_forums', this.darknetForumRunner);
+    this.runnerMap.set('gravatar_unmasker', this.gravatarUnmaskerRunner);
   }
 
   private detectType(val: string): InputType {

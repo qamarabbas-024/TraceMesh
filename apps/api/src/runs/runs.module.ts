@@ -40,6 +40,7 @@ import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 import { FaviconHashRunner } from '../runners/favicon-hash.runner';
 import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { DarknetForumRunner } from '../runners/darknet-forum.runner';
+import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -84,6 +85,7 @@ import { DarknetForumRunner } from '../runners/darknet-forum.runner';
     FaviconHashRunner,
     IocFeedSyncerRunner,
     DarknetForumRunner,
+    GravatarUnmaskerRunner,
   ],
   exports: [RunsService, AggregationService],
 })
