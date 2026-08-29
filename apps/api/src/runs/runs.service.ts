@@ -34,6 +34,7 @@ import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 import { FaviconHashRunner } from '../runners/favicon-hash.runner';
+import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -87,6 +88,7 @@ export class RunsService {
     private readonly asnPeeringRunner: AsnPeeringRunner,
     private readonly aptAttributionRunner: AptAttributionRunner,
     private readonly faviconHashRunner: FaviconHashRunner,
+    private readonly iocFeedSyncerRunner: IocFeedSyncerRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -121,6 +123,7 @@ export class RunsService {
     this.runnerMap.set('asn_peering', this.asnPeeringRunner);
     this.runnerMap.set('apt_attribution', this.aptAttributionRunner);
     this.runnerMap.set('favicon_hash', this.faviconHashRunner);
+    this.runnerMap.set('ioc_feed_syncer', this.iocFeedSyncerRunner);
   }
 
   private detectType(val: string): InputType {

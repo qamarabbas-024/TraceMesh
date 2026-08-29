@@ -38,6 +38,7 @@ import { SecurityHeadersRunner } from '../runners/security-headers.runner';
 import { AsnPeeringRunner } from '../runners/asn-peering.runner';
 import { AptAttributionRunner } from '../runners/apt-attribution.runner';
 import { FaviconHashRunner } from '../runners/favicon-hash.runner';
+import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -80,6 +81,7 @@ import { FaviconHashRunner } from '../runners/favicon-hash.runner';
     AsnPeeringRunner,
     AptAttributionRunner,
     FaviconHashRunner,
+    IocFeedSyncerRunner,
   ],
   exports: [RunsService, AggregationService],
 })

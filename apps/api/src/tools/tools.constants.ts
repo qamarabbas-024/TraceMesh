@@ -492,4 +492,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'ioc_feed_syncer',
+    displayName: 'Real-time IOC Threat Feed Syncer',
+    description: 'Real-time cyber threat feed correlation querying ThreatFox, URLhaus, Feodo, and OpenPhish malware IOCs.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://threatfox.abuse.ch',
+    trackedVersion: '1.0.0',
+    license: 'CC0-1.0',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
