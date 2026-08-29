@@ -39,6 +39,7 @@ import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
 import { PasteDumpRunner } from '../runners/paste-dump.runner';
+import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -97,6 +98,7 @@ export class RunsService {
     private readonly gravatarUnmaskerRunner: GravatarUnmaskerRunner,
     private readonly gitHubCommitCrawlerRunner: GitHubCommitCrawlerRunner,
     private readonly pasteDumpRunner: PasteDumpRunner,
+    private readonly usernameFuzzerRunner: UsernameFuzzerRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -136,6 +138,7 @@ export class RunsService {
     this.runnerMap.set('gravatar_unmasker', this.gravatarUnmaskerRunner);
     this.runnerMap.set('github_commit_crawler', this.gitHubCommitCrawlerRunner);
     this.runnerMap.set('paste_dump_monitor', this.pasteDumpRunner);
+    this.runnerMap.set('username_fuzzer', this.usernameFuzzerRunner);
   }
 
   private detectType(val: string): InputType {

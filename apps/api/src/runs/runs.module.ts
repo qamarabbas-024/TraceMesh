@@ -43,6 +43,7 @@ import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
 import { PasteDumpRunner } from '../runners/paste-dump.runner';
+import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -90,6 +91,7 @@ import { PasteDumpRunner } from '../runners/paste-dump.runner';
     GravatarUnmaskerRunner,
     GitHubCommitCrawlerRunner,
     PasteDumpRunner,
+    UsernameFuzzerRunner,
   ],
   exports: [RunsService, AggregationService],
 })
