@@ -548,4 +548,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'paste_dump_monitor',
+    displayName: 'Pastebin & Leak Repository Monitor',
+    description: 'Autonomous dork crawler monitoring Pastebin, Rentry, ControlC, JustPaste, and Gists for leaked credentials.',
+    category: 'email',
+    inputTypes: ['email', 'domain', 'username', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://pastebin.com',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

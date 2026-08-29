@@ -42,6 +42,7 @@ import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
+import { PasteDumpRunner } from '../runners/paste-dump.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -88,6 +89,7 @@ import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runn
     DarknetForumRunner,
     GravatarUnmaskerRunner,
     GitHubCommitCrawlerRunner,
+    PasteDumpRunner,
   ],
   exports: [RunsService, AggregationService],
 })

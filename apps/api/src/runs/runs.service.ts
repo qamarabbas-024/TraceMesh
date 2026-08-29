@@ -38,6 +38,7 @@ import { IocFeedSyncerRunner } from '../runners/ioc-feed-syncer.runner';
 import { DarknetForumRunner } from '../runners/darknet-forum.runner';
 import { GravatarUnmaskerRunner } from '../runners/gravatar-unmasker.runner';
 import { GitHubCommitCrawlerRunner } from '../runners/github-commit-crawler.runner';
+import { PasteDumpRunner } from '../runners/paste-dump.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -95,6 +96,7 @@ export class RunsService {
     private readonly darknetForumRunner: DarknetForumRunner,
     private readonly gravatarUnmaskerRunner: GravatarUnmaskerRunner,
     private readonly gitHubCommitCrawlerRunner: GitHubCommitCrawlerRunner,
+    private readonly pasteDumpRunner: PasteDumpRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -133,6 +135,7 @@ export class RunsService {
     this.runnerMap.set('darknet_forums', this.darknetForumRunner);
     this.runnerMap.set('gravatar_unmasker', this.gravatarUnmaskerRunner);
     this.runnerMap.set('github_commit_crawler', this.gitHubCommitCrawlerRunner);
+    this.runnerMap.set('paste_dump_monitor', this.pasteDumpRunner);
   }
 
   private detectType(val: string): InputType {
