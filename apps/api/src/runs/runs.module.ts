@@ -48,6 +48,7 @@ import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
 import { TokenGraphRunner } from '../runners/token-graph.runner';
+import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -100,6 +101,7 @@ import { TokenGraphRunner } from '../runners/token-graph.runner';
     CryptoFlowRunner,
     OfacAmlScreenerRunner,
     TokenGraphRunner,
+    Web3DomainsRunner,
   ],
   exports: [RunsService, AggregationService],
 })

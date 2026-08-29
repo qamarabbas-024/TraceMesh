@@ -618,4 +618,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'web3_domains',
+    displayName: 'Web3 & Decentralized Domain Resolver',
+    description: 'Autonomous forward and reverse resolution for Ethereum ENS (.eth), Unstoppable Domains, and Solana SNS.',
+    category: 'domain',
+    inputTypes: ['domain', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://ens.domains',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v17.2 — done (Phase 28: Smart Contract Token Holder & Transfer Graph Complete)**
+**CURRENT VERSION: v17.3 — done (Phase 28: ENS & Unstoppable Domains Reverse Resolver Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -216,7 +216,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 17.0 — Multi-Chain Crypto Transaction Flow Graph (BTC, ETH, Solana, USDT)
 - [x] 17.1 — OFAC Sanctions & AML Blacklist Address Screener
 - [x] 17.2 — Smart Contract Token Holder & Transfer Graph
-- [ ] 17.3 — ENS & Unstoppable Domains Reverse Resolver
+- [x] 17.3 — ENS & Unstoppable Domains Reverse Resolver
 - [ ] 17.4 — Decentralized Web IPFS / Arweave Content Mirror Resolver
 - [ ] 17.5 — High-Risk Cryptocurrency Cluster Tagging
 

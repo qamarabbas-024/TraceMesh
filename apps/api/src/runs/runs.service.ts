@@ -43,6 +43,7 @@ import { UsernameFuzzerRunner } from '../runners/username-fuzzer.runner';
 import { CryptoFlowRunner } from '../runners/crypto-flow.runner';
 import { OfacAmlScreenerRunner } from '../runners/ofac-aml-screener.runner';
 import { TokenGraphRunner } from '../runners/token-graph.runner';
+import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -105,6 +106,7 @@ export class RunsService {
     private readonly cryptoFlowRunner: CryptoFlowRunner,
     private readonly ofacAmlScreenerRunner: OfacAmlScreenerRunner,
     private readonly tokenGraphRunner: TokenGraphRunner,
+    private readonly web3DomainsRunner: Web3DomainsRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -130,7 +132,7 @@ export class RunsService {
     this.runnerMap.set('blackbird', this.blackbirdRunner);
     this.runnerMap.set('ignorant_phone', this.ignorantPhoneRunner);
     this.runnerMap.set('onionland', this.onionLandRunner);
-    this.runnerMap.set('threatfox_ioc', this.threatFoxIocRunner);
+    this.threatFoxIocRunner && this.runnerMap.set('threatfox_ioc', this.threatFoxIocRunner);
     this.runnerMap.set('ssl_inspector', this.sslCertInspectorRunner);
     this.runnerMap.set('dns_takeover', this.dnsTakeoverRunner);
     this.runnerMap.set('gpg_keyring', this.gpgKeyringRunner);
@@ -148,6 +150,7 @@ export class RunsService {
     this.runnerMap.set('crypto_flow', this.cryptoFlowRunner);
     this.runnerMap.set('ofac_aml_screener', this.ofacAmlScreenerRunner);
     this.runnerMap.set('token_graph', this.tokenGraphRunner);
+    this.runnerMap.set('web3_domains', this.web3DomainsRunner);
   }
 
   private detectType(val: string): InputType {
