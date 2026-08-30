@@ -35,6 +35,8 @@ const SUPPORTED_INPUT_TYPES: { type: InputType; label: string }[] = [
 ];
 
 interface ToolSelectorProps {
+  initialValue?: string;
+  initialType?: InputType;
   onRun?: (
     inputValue: string,
     inputType: InputType,
@@ -151,9 +153,9 @@ function ToolCard({
   );
 }
 
-export function ToolSelector({ onRun }: ToolSelectorProps) {
-  const [inputValue, setInputValue] = useState('');
-  const [manualInputType, setManualInputType] = useState<InputType | null>(null);
+export function ToolSelector({ initialValue = '', initialType, onRun }: ToolSelectorProps) {
+  const [inputValue, setInputValue] = useState(initialValue);
+  const [manualInputType, setManualInputType] = useState<InputType | null>(initialType || null);
   const [tools, setTools] = useState<ToolDTO[]>([]);
   const [selectedToolIds, setSelectedToolIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);

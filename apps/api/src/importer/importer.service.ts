@@ -166,6 +166,14 @@ export class ImporterService {
     };
 
     extractText(jsonContent);
+    if (!combinedText.trim()) {
+      return {
+        totalEntities: 0,
+        entities: [],
+        preview: 'No extractable text found in chat export structure',
+        sourceType: 'chat_export',
+      };
+    }
     return this.extractEntitiesFromText(combinedText, 'chat_export');
   }
 }

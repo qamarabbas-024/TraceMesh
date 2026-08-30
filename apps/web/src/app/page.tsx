@@ -245,6 +245,8 @@ export default function Home() {
         {/* Main Tool Selector & Search Bar */}
         <ToolSelector
           key={fanOutTarget ? `${fanOutTarget.value}-${fanOutTarget.type}` : 'default'}
+          initialValue={fanOutTarget?.value}
+          initialType={fanOutTarget?.type}
           onRun={handleRun}
         />
 
