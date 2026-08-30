@@ -189,6 +189,9 @@ export class AggregationService {
       threatLevel,
       hopSummary: hopSummary.length > 0 ? hopSummary : [{ hop: 1, entityCount: uniqueEntities.length, toolsExecuted: toolExecutions.length }],
       smartLeadSuggestions,
+      dossierSummary: dossier,
+      mitreAssessment,
+      graphAnalytics: analytics,
       createdAt: new Date().toISOString(),
     };
   }

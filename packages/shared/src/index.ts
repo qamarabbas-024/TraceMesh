@@ -134,5 +134,8 @@ export interface AggregatedReport {
     recommendedTools: string[];
     priority: 'HIGH' | 'MEDIUM' | 'INFO';
   }[];
+  dossierSummary?: Record<string, any>;
+  mitreAssessment?: Record<string, any>;
+  graphAnalytics?: Record<string, any>;
   createdAt: string;
 }

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ToolRunner } from './runner.interface';
 import { InputType, NormalizedResult, DiscoveredEntity } from '@tracemesh/shared';
 import * as dns from 'dns/promises';
+import { isInternalOrBlockedTarget } from '../common/utils/ssrf-protection';
 
 @Injectable()
 export class DomainReconRunner implements ToolRunner {
@@ -13,12 +14,12 @@ export class DomainReconRunner implements ToolRunner {
     const startTime = Date.now();
     const cleanTarget = targetInput.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
-    if (!cleanTarget) {
+    if (!cleanTarget || isInternalOrBlockedTarget(cleanTarget)) {
       return {
         status: 'error',
-        summary: 'Invalid domain or IP target provided',
+        summary: `Target "${cleanTarget || targetInput}" is private, internal, or invalid (SSRF protection active).`,
         entities: [],
-        error: 'Invalid target format',
+        error: 'Invalid or restricted internal target format',
         durationMs: Date.now() - startTime,
       };
     }

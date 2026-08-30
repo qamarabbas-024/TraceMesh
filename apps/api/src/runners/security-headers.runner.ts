@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ToolRunner } from './runner.interface';
 import { InputType, NormalizedResult, DiscoveredEntity } from '@tracemesh/shared';
+import { isInternalOrBlockedTarget } from '../common/utils/ssrf-protection';
 
 interface HeaderCheck {
   name: string;
@@ -21,12 +22,12 @@ export class SecurityHeadersRunner implements ToolRunner {
     const startTime = Date.now();
     const cleanTarget = targetInput.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
 
-    if (!cleanTarget) {
+    if (!cleanTarget || isInternalOrBlockedTarget(cleanTarget)) {
       return {
         status: 'error',
-        summary: 'Target domain or IP required for Security Headers audit',
+        summary: `Target "${cleanTarget || targetInput}" is private, internal, or invalid (SSRF protection active).`,
         entities: [],
-        error: 'Invalid target',
+        error: 'Invalid or restricted internal target',
         durationMs: Date.now() - startTime,
       };
     }
