@@ -331,6 +331,78 @@ export function ExecutionResults({
             </div>
           </div>
         )}
+
+        {/* Autonomous Intelligence Dossier Summary Card */}
+        {report.dossierSummary && (
+          <div className="p-4 bg-bg-surface-raised border border-accent-cyan-dim/40 rounded-lg space-y-3 font-mono text-xs shadow-sm">
+            <div className="flex items-center justify-between border-b border-accent-cyan-dim/20 pb-2">
+              <div className="flex items-center gap-2 text-accent-cyan font-bold uppercase tracking-wider">
+                <Database className="w-4 h-4 text-accent-cyan" />
+                <span>Executive Intelligence Dossier</span>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold border bg-accent-cyan/10 border-accent-cyan/40 text-accent-cyan">
+                RISK: {report.dossierSummary.opsecRiskRating || report.threatLevel}
+              </span>
+            </div>
+
+            <p className="text-text-secondary text-[11px] leading-relaxed">
+              {report.dossierSummary.executiveSummary}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <div className="p-2 rounded bg-bg-base/60 border border-accent-cyan-dim/20 space-y-1">
+                <span className="text-[10px] text-text-muted uppercase font-bold block">Identity Vectors</span>
+                <div className="text-text-primary text-[11px]">
+                  <strong>{report.dossierSummary.identityFootprint?.primaryAliases?.length || 0}</strong> Aliases &bull;{' '}
+                  <strong>{report.dossierSummary.identityFootprint?.confirmedEmails?.length || 0}</strong> Emails
+                </div>
+              </div>
+
+              <div className="p-2 rounded bg-bg-base/60 border border-accent-cyan-dim/20 space-y-1">
+                <span className="text-[10px] text-text-muted uppercase font-bold block">Infrastructure Nodes</span>
+                <div className="text-text-primary text-[11px]">
+                  <strong>{report.dossierSummary.infrastructureFootprint?.associatedDomains?.length || 0}</strong> Domains &bull;{' '}
+                  <strong>{report.dossierSummary.infrastructureFootprint?.originIps?.length || 0}</strong> IPs
+                </div>
+              </div>
+
+              <div className="p-2 rounded bg-bg-base/60 border border-accent-cyan-dim/20 space-y-1">
+                <span className="text-[10px] text-text-muted uppercase font-bold block">Threat Indicators</span>
+                <div className="text-status-error text-[11px]">
+                  <strong>{report.dossierSummary.threatExposure?.breachesCount || 0}</strong> Breaches &bull;{' '}
+                  <strong>{report.dossierSummary.threatExposure?.leakedSecretsCount || 0}</strong> Leaked Secrets
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MITRE ATT&CK Matrix Mapping Card */}
+        {report.mitreAssessment?.tactics && report.mitreAssessment.tactics.length > 0 && (
+          <div className="p-4 bg-bg-surface-raised border border-status-error/30 rounded-lg space-y-3 font-mono text-xs shadow-sm">
+            <div className="flex items-center justify-between border-b border-status-error/20 pb-2">
+              <div className="flex items-center gap-2 text-status-error font-bold uppercase tracking-wider">
+                <ShieldAlert className="w-4 h-4 text-status-error" />
+                <span>MITRE ATT&CK Enterprise Matrix Mapping</span>
+              </div>
+              <span className="text-[10px] text-text-muted">
+                {report.mitreAssessment.tactics.length} Tactics Mapped
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {report.mitreAssessment.tactics.map((tac: any, i: number) => (
+                <div
+                  key={i}
+                  className="px-2.5 py-1 rounded bg-status-error/10 border border-status-error/30 text-status-error text-[10px] flex items-center gap-1.5"
+                >
+                  <span className="font-bold">{tac.tacticId || tac.id}:</span>
+                  <span>{tac.tacticName || tac.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Discovered Correlated Entities Section */}
