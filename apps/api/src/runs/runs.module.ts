@@ -9,6 +9,7 @@ import { DossierSummaryService } from './dossier-summary.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { StixOpenCtiService } from './stix-opencti.service';
 import { GraphPathfinderService } from './graph-pathfinder.service';
+import { PdfBriefingService } from './pdf-briefing.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -81,6 +82,7 @@ import { SteganographyExtractorRunner } from '../runners/steganography-extractor
     HtmlDossierExporterService,
     StixOpenCtiService,
     GraphPathfinderService,
+    PdfBriefingService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,

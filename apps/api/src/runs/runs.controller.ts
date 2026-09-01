@@ -15,6 +15,7 @@ import { TimelineFilterService } from './timeline-filter.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { StixOpenCtiService } from './stix-opencti.service';
 import { GraphPathfinderService } from './graph-pathfinder.service';
+import { PdfBriefingService } from './pdf-briefing.service';
 import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
 
 export interface TimelineFilterDto {
@@ -38,6 +39,7 @@ export class RunsController {
     private readonly htmlDossierExporterService: HtmlDossierExporterService,
     private readonly stixOpenCtiService: StixOpenCtiService,
     private readonly graphPathfinderService: GraphPathfinderService,
+    private readonly pdfBriefingService: PdfBriefingService,
   ) {}
 
   @Post('batch')
@@ -70,6 +72,16 @@ export class RunsController {
   @Get('history')
   async getHistory(@Headers('x-user-id') userId?: string) {
     return this.runsService.getHistory(userId);
+  }
+
+  @Get(':id/export/pdf')
+  @Header('Content-Type', 'text/html')
+  async exportPdf(@Param('id') id: string): Promise<string> {
+    const report = await this.runsService.getRunById(id);
+    if (!report) {
+      throw new NotFoundException(`Run with ID '${id}' not found`);
+    }
+    return this.pdfBriefingService.generatePdfBriefing(report);
   }
 
   @Get(':id/export/html')
