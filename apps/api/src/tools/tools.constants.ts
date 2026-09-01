@@ -772,4 +772,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'sybil_cluster',
+    displayName: 'Sybil Persona & Astroturfing Botnet Identifier',
+    description: 'Autonomous cluster analysis detecting coordinated sockpuppets, avatar visual hashes, and timing rings.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/sybil-cluster',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

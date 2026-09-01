@@ -61,6 +61,7 @@ import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
 import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
 import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.runner';
 import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
+import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -126,6 +127,7 @@ import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
     RedTeamRiskRunner,
     RecursiveOrchestratorRunner,
     NlpThreatIntentRunner,
+    SybilClusterRunner,
   ],
   exports: [RunsService, AggregationService],
 })

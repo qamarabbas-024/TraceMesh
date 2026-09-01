@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v20.1 — done (Phase 31: NLP Sentiment & Threat Intent Classifier Complete)**
+**CURRENT VERSION: v20.2 — done (Phase 31: Deep Recon Graph Pattern Recognizer & Sybil Identifier Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -245,7 +245,7 @@ Update the line above at the end of every session. That single line is the sourc
 ## Phase 31 — Autonomous Reconnaissance Agents & AI Co-Pilot (v20.0–v20.3)
 - [x] 20.0 — Autonomous Recursive Fan-Out Crawl Orchestrator (Multi-Tier Expansion)
 - [x] 20.1 — NLP Sentiment & Threat Intent Classifier for Leaked Dumps and Pastes
-- [ ] 20.2 — Deep Recon Graph Pattern Recognizer & Sybil / Astroturfing Cluster Identifier
+- [x] 20.2 — Deep Recon Graph Pattern Recognizer & Sybil / Astroturfing Cluster Identifier
 - [ ] 20.3 — Enterprise Air-Gapped Export & Hardware Security Key Authenticator (WebAuthn FIDO2)
 
 
