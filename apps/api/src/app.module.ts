@@ -7,6 +7,7 @@ import { HealthModule } from './health/health.module';
 import { ToolsModule } from './tools/tools.module';
 import { RunsModule } from './runs/runs.module';
 import { ImporterModule } from './importer/importer.module';
+import { CollaborationModule } from './collaboration/collaboration.module';
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware';
 import { RateLimiterMiddleware } from './common/middleware/rate-limiter.middleware';
 
@@ -18,6 +19,7 @@ import { RateLimiterMiddleware } from './common/middleware/rate-limiter.middlewa
     ToolsModule,
     RunsModule,
     ImporterModule,
+    CollaborationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
