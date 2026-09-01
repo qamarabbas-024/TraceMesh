@@ -56,6 +56,7 @@ import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.r
 import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
+import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -131,6 +132,7 @@ export class RunsService {
     private readonly nlpThreatIntentRunner: NlpThreatIntentRunner,
     private readonly sybilClusterRunner: SybilClusterRunner,
     private readonly fido2AuthenticatorRunner: Fido2AuthenticatorRunner,
+    private readonly geoIpInfrastructureRunner: GeoIpInfrastructureRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -187,6 +189,7 @@ export class RunsService {
     this.runnerMap.set('nlp_threat_intent', this.nlpThreatIntentRunner);
     this.runnerMap.set('sybil_cluster', this.sybilClusterRunner);
     this.runnerMap.set('fido2_authenticator', this.fido2AuthenticatorRunner);
+    this.runnerMap.set('geoip_infrastructure', this.geoIpInfrastructureRunner);
   }
 
   private detectType(val: string): InputType {

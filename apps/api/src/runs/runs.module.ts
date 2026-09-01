@@ -63,6 +63,7 @@ import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.r
 import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
+import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -130,6 +131,7 @@ import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner'
     NlpThreatIntentRunner,
     SybilClusterRunner,
     Fido2AuthenticatorRunner,
+    GeoIpInfrastructureRunner,
   ],
   exports: [RunsService, AggregationService],
 })

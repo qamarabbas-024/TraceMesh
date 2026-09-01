@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v20.3 — done (Phase 31: FIDO2 Hardware Key Authenticator Complete)**
+**CURRENT VERSION: v21.0 — done (Phase 32: Geographic GeoIP Infrastructure Visualizer Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -247,6 +247,27 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 20.1 — NLP Sentiment & Threat Intent Classifier for Leaked Dumps and Pastes
 - [x] 20.2 — Deep Recon Graph Pattern Recognizer & Sybil / Astroturfing Cluster Identifier
 - [x] 20.3 — Enterprise Air-Gapped Export & Hardware Security Key Authenticator (WebAuthn FIDO2)
+
+---
+
+## Phase 32 — Tactical Graph Visualizations & Intelligence Services (v21.0–v21.5)
+- [x] 21.0 — Geographic GeoIP & Telecom Infrastructure Visualizer Engine
+- [ ] 21.1 — Tactical Shortest-Path & Graph Linkage Pathfinder Calculator
+- [ ] 21.2 — Deep DarkWeb Hidden-Service Threat Scraper Engine
+- [ ] 21.3 — Steganography & Exif Deep Payload Forensic Extractor
+- [ ] 21.4 — Printable Executive PDF Intelligence Dossier Generator
+- [ ] 21.5 — Autonomous APT & Diamond Model Threat Attribution Engine
+
+---
+
+## Phase 33 — Tactical Command Center UI Components (v22.0–v22.5)
+- [ ] 22.0 — Interactive Tactical GeoIP Coordinate Map Component
+- [ ] 22.1 — Live Graph Pathfinder Link Traversal Component
+- [ ] 22.2 — DarkWeb Threat Feed & Leak Results Explorer
+- [ ] 22.3 — Steganography Image Payload Forensic Inspector
+- [ ] 22.4 — One-Click Executive PDF Briefing Downloader
+- [ ] 22.5 — Diamond Model APT Threat Visualizer Card
+
 
 
 
