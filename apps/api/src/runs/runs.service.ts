@@ -49,6 +49,7 @@ import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runn
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
+import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -117,6 +118,7 @@ export class RunsService {
     private readonly torCircuitRunner: TorCircuitRunner,
     private readonly canaryDetectorRunner: CanaryDetectorRunner,
     private readonly fingerprintDefeaterRunner: FingerprintDefeaterRunner,
+    private readonly evidenceTimestamperRunner: EvidenceTimestamperRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -166,6 +168,7 @@ export class RunsService {
     this.runnerMap.set('tor_circuit', this.torCircuitRunner);
     this.runnerMap.set('canary_detector', this.canaryDetectorRunner);
     this.runnerMap.set('fingerprint_defeater', this.fingerprintDefeaterRunner);
+    this.runnerMap.set('evidence_timestamper', this.evidenceTimestamperRunner);
   }
 
   private detectType(val: string): InputType {

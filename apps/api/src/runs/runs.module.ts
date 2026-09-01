@@ -54,6 +54,7 @@ import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runn
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
+import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -112,6 +113,7 @@ import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runne
     TorCircuitRunner,
     CanaryDetectorRunner,
     FingerprintDefeaterRunner,
+    EvidenceTimestamperRunner,
   ],
   exports: [RunsService, AggregationService],
 })

@@ -702,4 +702,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'evidence_timestamper',
+    displayName: 'Cryptographic Evidence Timestamper & Merkle Sealer',
+    description: 'Forensic evidence custody seal generating SHA-256/512 checksums, Merkle roots, and RFC-3161 audit proofs.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'email', 'username', 'image'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/evidence-seal',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
