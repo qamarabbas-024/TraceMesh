@@ -674,4 +674,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'canary_detector',
+    displayName: 'Anti-Canary Token & Honeypot Detector',
+    description: 'Autonomous tripwire detection identifying CanaryTokens, OAST DNS callbacks, and tracking web bugs.',
+    category: 'domain',
+    inputTypes: ['domain', 'email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://canarytokens.org',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

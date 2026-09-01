@@ -52,6 +52,7 @@ import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
+import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -108,6 +109,7 @@ import { TorCircuitRunner } from '../runners/tor-circuit.runner';
     IpfsArweaveRunner,
     CryptoClusterTaggerRunner,
     TorCircuitRunner,
+    CanaryDetectorRunner,
   ],
   exports: [RunsService, AggregationService],
 })

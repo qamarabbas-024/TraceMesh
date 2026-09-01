@@ -47,6 +47,7 @@ import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
+import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -113,6 +114,7 @@ export class RunsService {
     private readonly ipfsArweaveRunner: IpfsArweaveRunner,
     private readonly cryptoClusterTaggerRunner: CryptoClusterTaggerRunner,
     private readonly torCircuitRunner: TorCircuitRunner,
+    private readonly canaryDetectorRunner: CanaryDetectorRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -160,6 +162,7 @@ export class RunsService {
     this.runnerMap.set('ipfs_arweave', this.ipfsArweaveRunner);
     this.runnerMap.set('crypto_cluster_tagger', this.cryptoClusterTaggerRunner);
     this.runnerMap.set('tor_circuit', this.torCircuitRunner);
+    this.runnerMap.set('canary_detector', this.canaryDetectorRunner);
   }
 
   private detectType(val: string): InputType {
