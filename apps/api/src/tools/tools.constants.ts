@@ -688,4 +688,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'fingerprint_defeater',
+    displayName: 'Browser Fingerprint Defeater & UA Rotator',
+    description: 'Canvas/WebGL entropy noise injection, WebRTC local leak mitigation, and Sec-CH-UA client hints rotator.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/fp-defeater',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

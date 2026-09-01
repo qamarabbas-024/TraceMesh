@@ -48,6 +48,7 @@ import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
+import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -115,6 +116,7 @@ export class RunsService {
     private readonly cryptoClusterTaggerRunner: CryptoClusterTaggerRunner,
     private readonly torCircuitRunner: TorCircuitRunner,
     private readonly canaryDetectorRunner: CanaryDetectorRunner,
+    private readonly fingerprintDefeaterRunner: FingerprintDefeaterRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -163,6 +165,7 @@ export class RunsService {
     this.runnerMap.set('crypto_cluster_tagger', this.cryptoClusterTaggerRunner);
     this.runnerMap.set('tor_circuit', this.torCircuitRunner);
     this.runnerMap.set('canary_detector', this.canaryDetectorRunner);
+    this.runnerMap.set('fingerprint_defeater', this.fingerprintDefeaterRunner);
   }
 
   private detectType(val: string): InputType {

@@ -53,6 +53,7 @@ import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
 import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
+import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -110,6 +111,7 @@ import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
     CryptoClusterTaggerRunner,
     TorCircuitRunner,
     CanaryDetectorRunner,
+    FingerprintDefeaterRunner,
   ],
   exports: [RunsService, AggregationService],
 })
