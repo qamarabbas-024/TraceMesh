@@ -51,6 +51,7 @@ import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
 import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
+import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -121,6 +122,7 @@ export class RunsService {
     private readonly fingerprintDefeaterRunner: FingerprintDefeaterRunner,
     private readonly evidenceTimestamperRunner: EvidenceTimestamperRunner,
     private readonly zkNotesCryptRunner: ZkNotesCryptRunner,
+    private readonly redTeamRiskRunner: RedTeamRiskRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -172,6 +174,7 @@ export class RunsService {
     this.runnerMap.set('fingerprint_defeater', this.fingerprintDefeaterRunner);
     this.runnerMap.set('evidence_timestamper', this.evidenceTimestamperRunner);
     this.runnerMap.set('zk_notes_crypt', this.zkNotesCryptRunner);
+    this.runnerMap.set('red_team_risk', this.redTeamRiskRunner);
   }
 
   private detectType(val: string): InputType {

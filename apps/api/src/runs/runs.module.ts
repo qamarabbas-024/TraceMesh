@@ -56,6 +56,7 @@ import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
 import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
+import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -116,6 +117,7 @@ import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
     FingerprintDefeaterRunner,
     EvidenceTimestamperRunner,
     ZkNotesCryptRunner,
+    RedTeamRiskRunner,
   ],
   exports: [RunsService, AggregationService],
 })

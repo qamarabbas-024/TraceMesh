@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v18.4 — done (Phase 29: Zero-Knowledge Analyst Notes Encryption Complete)**
+**CURRENT VERSION: v18.5 — done (Phase 29: Automated Red Team Risk Scoring & Attack Surface Rating Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -228,7 +228,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 18.2 — Browser Fingerprint Defeater & User-Agent Rotator
 - [x] 18.3 — Tactical Evidence Preservation & Cryptographic Hash Timestamper (SHA-256 / Merkle Proof)
 - [x] 18.4 — Zero-Knowledge Analyst Notes Encryption
-- [ ] 18.5 — Automated Red Team Risk Scoring & Attack Surface Rating
+- [x] 18.5 — Automated Red Team Risk Scoring & Attack Surface Rating
 
 ---
 

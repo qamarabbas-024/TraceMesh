@@ -730,4 +730,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'red_team_risk',
+    displayName: 'Automated Red Team Attack Surface Rater',
+    description: 'Adversary emulation model calculating CVSS/DREAD exploitability scores and perimeter vulnerability metrics.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/red-team-risk',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
