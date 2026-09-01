@@ -9,6 +9,7 @@ import { RunsModule } from './runs/runs.module';
 import { ImporterModule } from './importer/importer.module';
 import { CollaborationModule } from './collaboration/collaboration.module';
 import { WatchdogModule } from './watchdog/watchdog.module';
+import { PivotMatrixModule } from './matrix/pivot-matrix.module';
 import { SecurityHeadersMiddleware } from './common/middleware/security-headers.middleware';
 import { RateLimiterMiddleware } from './common/middleware/rate-limiter.middleware';
 
@@ -22,6 +23,7 @@ import { RateLimiterMiddleware } from './common/middleware/rate-limiter.middlewa
     ImporterModule,
     CollaborationModule,
     WatchdogModule,
+    PivotMatrixModule,
   ],
   controllers: [AppController],
   providers: [AppService],
