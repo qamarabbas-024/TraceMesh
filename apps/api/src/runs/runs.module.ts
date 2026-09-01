@@ -51,6 +51,7 @@ import { TokenGraphRunner } from '../runners/token-graph.runner';
 import { Web3DomainsRunner } from '../runners/web3-domains.runner';
 import { IpfsArweaveRunner } from '../runners/ipfs-arweave.runner';
 import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runner';
+import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -106,6 +107,7 @@ import { CryptoClusterTaggerRunner } from '../runners/crypto-cluster-tagger.runn
     Web3DomainsRunner,
     IpfsArweaveRunner,
     CryptoClusterTaggerRunner,
+    TorCircuitRunner,
   ],
   exports: [RunsService, AggregationService],
 })

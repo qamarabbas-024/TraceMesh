@@ -660,4 +660,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'tor_circuit',
+    displayName: 'Multi-Hop Tor Circuit & Exit Relay Router',
+    description: 'Autonomous 3-hop onion circuit simulation evaluating relay consensus flags, latency, and exit jurisdiction.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://metrics.torproject.org',
+    trackedVersion: '1.0.0',
+    license: 'Open Access',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
