@@ -758,4 +758,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'nlp_threat_intent',
+    displayName: 'NLP Threat Intent & Extortion Classifier',
+    description: 'Lexical analysis categorizing paste dumps into extortion, credential stuffing, and data exfiltration vectors.',
+    category: 'domain',
+    inputTypes: ['domain', 'username', 'email', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/nlp-threat-intent',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

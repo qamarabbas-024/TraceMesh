@@ -60,6 +60,7 @@ import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runne
 import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
 import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
 import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.runner';
+import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -124,6 +125,7 @@ import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.r
     ZkNotesCryptRunner,
     RedTeamRiskRunner,
     RecursiveOrchestratorRunner,
+    NlpThreatIntentRunner,
   ],
   exports: [RunsService, AggregationService],
 })
