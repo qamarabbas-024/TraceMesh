@@ -52,6 +52,7 @@ import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runne
 import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
 import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
+import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -123,6 +124,7 @@ export class RunsService {
     private readonly evidenceTimestamperRunner: EvidenceTimestamperRunner,
     private readonly zkNotesCryptRunner: ZkNotesCryptRunner,
     private readonly redTeamRiskRunner: RedTeamRiskRunner,
+    private readonly recursiveOrchestratorRunner: RecursiveOrchestratorRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -175,6 +177,7 @@ export class RunsService {
     this.runnerMap.set('evidence_timestamper', this.evidenceTimestamperRunner);
     this.runnerMap.set('zk_notes_crypt', this.zkNotesCryptRunner);
     this.runnerMap.set('red_team_risk', this.redTeamRiskRunner);
+    this.runnerMap.set('recursive_orchestrator', this.recursiveOrchestratorRunner);
   }
 
   private detectType(val: string): InputType {

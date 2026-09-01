@@ -744,4 +744,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'recursive_orchestrator',
+    displayName: 'Autonomous Recursive Crawl Orchestrator',
+    description: 'Autonomous multi-hop depth traverser generating dynamic 3-hop expansion plans with cycle mitigation.',
+    category: 'email',
+    inputTypes: ['email', 'username', 'domain', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/recursive-agent',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

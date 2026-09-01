@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v19.5 — done (Phase 30: Full System Integration Verification & Final Roadmap Certification Complete)**
+**CURRENT VERSION: v20.0 — done (Phase 31: Autonomous Recursive Fan-Out Crawl Orchestrator Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -239,5 +239,14 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 19.3 — Automated OSINT Scheduled Watchdog Daemon
 - [x] 19.4 — Global Entity Pivot Search Matrix
 - [x] 19.5 — Full System Integration Verification & Final Roadmap Certification
+
+---
+
+## Phase 31 — Autonomous Reconnaissance Agents & AI Co-Pilot (v20.0–v20.3)
+- [x] 20.0 — Autonomous Recursive Fan-Out Crawl Orchestrator (Multi-Tier Expansion)
+- [ ] 20.1 — NLP Sentiment & Threat Intent Classifier for Leaked Dumps and Pastes
+- [ ] 20.2 — Deep Recon Graph Pattern Recognizer & Sybil / Astroturfing Cluster Identifier
+- [ ] 20.3 — Enterprise Air-Gapped Export & Hardware Security Key Authenticator (WebAuthn FIDO2)
+
 
 

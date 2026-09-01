@@ -59,6 +59,7 @@ import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runne
 import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
 import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
 import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
+import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -122,6 +123,7 @@ import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
     EvidenceTimestamperRunner,
     ZkNotesCryptRunner,
     RedTeamRiskRunner,
+    RecursiveOrchestratorRunner,
   ],
   exports: [RunsService, AggregationService],
 })
