@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v22.1 — done (Phase 33: Live Graph Pathfinder Component Complete)**
+**CURRENT VERSION: v22.2 — done (Phase 33: DarkWeb Threat Feed Explorer Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -263,7 +263,7 @@ Update the line above at the end of every session. That single line is the sourc
 ## Phase 33 — Tactical Command Center UI Components (v22.0–v22.5)
 - [x] 22.0 — Interactive Tactical GeoIP Coordinate Map Component
 - [x] 22.1 — Live Graph Pathfinder Link Traversal Component
-- [ ] 22.2 — DarkWeb Threat Feed & Leak Results Explorer
+- [x] 22.2 — DarkWeb Threat Feed & Leak Results Explorer
 - [ ] 22.3 — Steganography Image Payload Forensic Inspector
 - [ ] 22.4 — One-Click Executive PDF Briefing Downloader
 - [ ] 22.5 — Diamond Model APT Threat Visualizer Card
