@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v22.4 — done (Phase 33: Quick Executive PDF Downloader Complete)**
+**CURRENT VERSION: v22.5 — done (Phase 33: Diamond Model APT Threat Visualizer Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -266,7 +266,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 22.2 — DarkWeb Threat Feed & Leak Results Explorer
 - [x] 22.3 — Steganography Image Payload Forensic Inspector
 - [x] 22.4 — One-Click Executive PDF Briefing Downloader
-- [ ] 22.5 — Diamond Model APT Threat Visualizer Card
+- [x] 22.5 — Diamond Model APT Threat Visualizer Card
 
 
 
