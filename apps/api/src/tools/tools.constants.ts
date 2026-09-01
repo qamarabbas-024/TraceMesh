@@ -786,4 +786,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'fido2_authenticator',
+    displayName: 'FIDO2 WebAuthn Hardware Key Validator',
+    description: 'Cryptographic authentication verifier checking ES256 attestation flags (UP=1, UV=1) and tamper-proof seals.',
+    category: 'username',
+    inputTypes: ['username', 'email', 'domain'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/fido2-authenticator',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

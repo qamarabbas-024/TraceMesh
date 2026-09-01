@@ -62,6 +62,7 @@ import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
 import { RecursiveOrchestratorRunner } from '../runners/recursive-orchestrator.runner';
 import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
+import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -128,6 +129,7 @@ import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
     RecursiveOrchestratorRunner,
     NlpThreatIntentRunner,
     SybilClusterRunner,
+    Fido2AuthenticatorRunner,
   ],
   exports: [RunsService, AggregationService],
 })
