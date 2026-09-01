@@ -55,6 +55,7 @@ import { TorCircuitRunner } from '../runners/tor-circuit.runner';
 import { CanaryDetectorRunner } from '../runners/canary-detector.runner';
 import { FingerprintDefeaterRunner } from '../runners/fingerprint-defeater.runner';
 import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runner';
+import { ZkNotesCryptRunner } from '../runners/zk-notes-crypt.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -114,6 +115,7 @@ import { EvidenceTimestamperRunner } from '../runners/evidence-timestamper.runne
     CanaryDetectorRunner,
     FingerprintDefeaterRunner,
     EvidenceTimestamperRunner,
+    ZkNotesCryptRunner,
   ],
   exports: [RunsService, AggregationService],
 })

@@ -716,4 +716,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'zk_notes_crypt',
+    displayName: 'Zero-Knowledge Analyst Notes Cryptographer',
+    description: 'Client-side zero-knowledge AES-256-GCM envelope encryption with 100k-iteration PBKDF2-SHA512 key derivation.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/zk-notes',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];
