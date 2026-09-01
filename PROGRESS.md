@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v18.5 — done (Phase 29: Automated Red Team Risk Scoring & Attack Surface Rating Complete)**
+**CURRENT VERSION: v19.0 — done (Phase 30: Executive Threat Brief Generator Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -233,7 +233,7 @@ Update the line above at the end of every session. That single line is the sourc
 ---
 
 ## Phase 30 — Automated Intelligence Synthesis & Reporting (v19.0–v19.5)
-- [ ] 19.0 — Executive Threat Brief Generator (HTML5 / Standalone Interactive Dossier)
+- [x] 19.0 — Executive Threat Brief Generator (HTML5 / Standalone Interactive Dossier)
 - [ ] 19.1 — CybOX 2.1 & OpenCTI STIX Connector
 - [ ] 19.2 — Real-time Multi-Analyst Collaboration Hub & Live Graph Sync
 - [ ] 19.3 — Automated OSINT Scheduled Watchdog Daemon

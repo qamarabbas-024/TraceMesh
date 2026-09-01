@@ -6,6 +6,7 @@ import { GraphAnalyticsService } from './graph-analytics.service';
 import { MitreAttackService } from './mitre-attack.service';
 import { TimelineFilterService } from './timeline-filter.service';
 import { DossierSummaryService } from './dossier-summary.service';
+import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -68,6 +69,7 @@ import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
     MitreAttackService,
     TimelineFilterService,
     DossierSummaryService,
+    HtmlDossierExporterService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,

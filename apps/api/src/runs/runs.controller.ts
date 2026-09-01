@@ -8,9 +8,11 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Header,
 } from '@nestjs/common';
 import { RunsService } from './runs.service';
 import { TimelineFilterService } from './timeline-filter.service';
+import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
 
 export interface TimelineFilterDto {
@@ -25,6 +27,7 @@ export class RunsController {
   constructor(
     private readonly runsService: RunsService,
     private readonly timelineFilterService: TimelineFilterService,
+    private readonly htmlDossierExporterService: HtmlDossierExporterService,
   ) {}
 
   @Post('batch')
@@ -47,6 +50,16 @@ export class RunsController {
   @Get('history')
   async getHistory(@Headers('x-user-id') userId?: string) {
     return this.runsService.getHistory(userId);
+  }
+
+  @Get(':id/export/html')
+  @Header('Content-Type', 'text/html')
+  async exportHtml(@Param('id') id: string): Promise<string> {
+    const report = await this.runsService.getRunById(id);
+    if (!report) {
+      throw new NotFoundException(`Run with ID '${id}' not found`);
+    }
+    return this.htmlDossierExporterService.generateHtmlDossier(report);
   }
 
   @Get(':id')
