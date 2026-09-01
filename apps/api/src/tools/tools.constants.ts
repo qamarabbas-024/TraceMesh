@@ -828,4 +828,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'steganography_extractor',
+    displayName: 'Steganography & Hidden Payload Forensic Extractor',
+    description: 'Digital forensics tool detecting LSB embedded payloads, appended archive bytes, and tampering.',
+    category: 'image',
+    inputTypes: ['image', 'domain', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/steganography-extractor',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

@@ -66,6 +66,7 @@ import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
 import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
 import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
+import { SteganographyExtractorRunner } from '../runners/steganography-extractor.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -136,6 +137,7 @@ import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
     Fido2AuthenticatorRunner,
     GeoIpInfrastructureRunner,
     DarkwebScraperRunner,
+    SteganographyExtractorRunner,
   ],
   exports: [RunsService, AggregationService],
 })
