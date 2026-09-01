@@ -8,6 +8,7 @@ import { TimelineFilterService } from './timeline-filter.service';
 import { DossierSummaryService } from './dossier-summary.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { StixOpenCtiService } from './stix-opencti.service';
+import { GraphPathfinderService } from './graph-pathfinder.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -77,6 +78,7 @@ import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runne
     DossierSummaryService,
     HtmlDossierExporterService,
     StixOpenCtiService,
+    GraphPathfinderService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,

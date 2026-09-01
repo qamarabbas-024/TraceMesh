@@ -14,6 +14,7 @@ import { RunsService } from './runs.service';
 import { TimelineFilterService } from './timeline-filter.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { StixOpenCtiService } from './stix-opencti.service';
+import { GraphPathfinderService } from './graph-pathfinder.service';
 import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
 
 export interface TimelineFilterDto {
@@ -23,6 +24,12 @@ export interface TimelineFilterDto {
   tags?: string[];
 }
 
+export interface PathfinderDto {
+  entities: DiscoveredEntity[];
+  sourceValue: string;
+  targetValue: string;
+}
+
 @Controller('runs')
 export class RunsController {
   constructor(
@@ -30,12 +37,23 @@ export class RunsController {
     private readonly timelineFilterService: TimelineFilterService,
     private readonly htmlDossierExporterService: HtmlDossierExporterService,
     private readonly stixOpenCtiService: StixOpenCtiService,
+    private readonly graphPathfinderService: GraphPathfinderService,
   ) {}
 
   @Post('batch')
   @HttpCode(HttpStatus.OK)
   async runBatch(@Body() body: BatchRunRequest): Promise<AggregatedReport> {
     return this.runsService.runBatch(body);
+  }
+
+  @Post('pathfinder')
+  @HttpCode(HttpStatus.OK)
+  findPath(@Body() body: PathfinderDto) {
+    return this.graphPathfinderService.findShortestPath(
+      body.entities || [],
+      body.sourceValue,
+      body.targetValue,
+    );
   }
 
   @Post('timeline-filter')
