@@ -13,6 +13,7 @@ import {
 import { RunsService } from './runs.service';
 import { TimelineFilterService } from './timeline-filter.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
+import { StixOpenCtiService } from './stix-opencti.service';
 import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
 
 export interface TimelineFilterDto {
@@ -28,6 +29,7 @@ export class RunsController {
     private readonly runsService: RunsService,
     private readonly timelineFilterService: TimelineFilterService,
     private readonly htmlDossierExporterService: HtmlDossierExporterService,
+    private readonly stixOpenCtiService: StixOpenCtiService,
   ) {}
 
   @Post('batch')
@@ -60,6 +62,16 @@ export class RunsController {
       throw new NotFoundException(`Run with ID '${id}' not found`);
     }
     return this.htmlDossierExporterService.generateHtmlDossier(report);
+  }
+
+  @Get(':id/export/stix')
+  @Header('Content-Type', 'application/json')
+  async exportStix(@Param('id') id: string) {
+    const report = await this.runsService.getRunById(id);
+    if (!report) {
+      throw new NotFoundException(`Run with ID '${id}' not found`);
+    }
+    return this.stixOpenCtiService.generateStixBundle(report);
   }
 
   @Get(':id')

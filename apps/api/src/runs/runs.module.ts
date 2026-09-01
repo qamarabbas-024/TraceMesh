@@ -7,6 +7,7 @@ import { MitreAttackService } from './mitre-attack.service';
 import { TimelineFilterService } from './timeline-filter.service';
 import { DossierSummaryService } from './dossier-summary.service';
 import { HtmlDossierExporterService } from './html-dossier-exporter.service';
+import { StixOpenCtiService } from './stix-opencti.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -70,6 +71,7 @@ import { RedTeamRiskRunner } from '../runners/red-team-risk.runner';
     TimelineFilterService,
     DossierSummaryService,
     HtmlDossierExporterService,
+    StixOpenCtiService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,
