@@ -842,4 +842,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'diamond_model',
+    displayName: 'Diamond Model APT Threat Attribution Engine',
+    description: 'Cyber threat model correlating Adversary, Capability, Infrastructure, and Victim vertices.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip', 'email', 'username'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/diamond-model',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

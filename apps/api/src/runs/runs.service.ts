@@ -59,6 +59,7 @@ import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner'
 import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
 import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
 import { SteganographyExtractorRunner } from '../runners/steganography-extractor.runner';
+import { DiamondModelRunner } from '../runners/diamond-model.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -137,6 +138,7 @@ export class RunsService {
     private readonly geoIpInfrastructureRunner: GeoIpInfrastructureRunner,
     private readonly darkwebScraperRunner: DarkwebScraperRunner,
     private readonly steganographyExtractorRunner: SteganographyExtractorRunner,
+    private readonly diamondModelRunner: DiamondModelRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -196,6 +198,7 @@ export class RunsService {
     this.runnerMap.set('geoip_infrastructure', this.geoIpInfrastructureRunner);
     this.runnerMap.set('darkweb_scraper', this.darkwebScraperRunner);
     this.runnerMap.set('steganography_extractor', this.steganographyExtractorRunner);
+    this.runnerMap.set('diamond_model', this.diamondModelRunner);
   }
 
   private detectType(val: string): InputType {

@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v21.4 — done (Phase 32: Printable Executive PDF Dossier Generator Complete)**
+**CURRENT VERSION: v21.5 — done (Phase 32: Diamond Model Threat Attribution Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -256,7 +256,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 21.2 — Deep DarkWeb Hidden-Service Threat Scraper Engine
 - [x] 21.3 — Steganography & Exif Deep Payload Forensic Extractor
 - [x] 21.4 — Printable Executive PDF Intelligence Dossier Generator
-- [ ] 21.5 — Autonomous APT & Diamond Model Threat Attribution Engine
+- [x] 21.5 — Autonomous APT & Diamond Model Threat Attribution Engine
 
 ---
 
