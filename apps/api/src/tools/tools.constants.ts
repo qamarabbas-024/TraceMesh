@@ -814,4 +814,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'darkweb_scraper',
+    displayName: 'Deep DarkWeb Hidden-Service Scraper',
+    description: 'Tor onion multi-engine scraper querying Ahmia, Torch, and leak sites for target credentials and mentions.',
+    category: 'domain',
+    inputTypes: ['domain', 'username', 'email', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://github.com/tracemesh/darkweb-scraper',
+    trackedVersion: '1.0.0',
+    license: 'MIT',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

@@ -65,6 +65,7 @@ import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
 import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
+import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -134,6 +135,7 @@ import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runne
     SybilClusterRunner,
     Fido2AuthenticatorRunner,
     GeoIpInfrastructureRunner,
+    DarkwebScraperRunner,
   ],
   exports: [RunsService, AggregationService],
 })

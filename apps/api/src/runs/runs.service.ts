@@ -57,6 +57,7 @@ import { NlpThreatIntentRunner } from '../runners/nlp-threat-intent.runner';
 import { SybilClusterRunner } from '../runners/sybil-cluster.runner';
 import { Fido2AuthenticatorRunner } from '../runners/fido2-authenticator.runner';
 import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runner';
+import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -133,6 +134,7 @@ export class RunsService {
     private readonly sybilClusterRunner: SybilClusterRunner,
     private readonly fido2AuthenticatorRunner: Fido2AuthenticatorRunner,
     private readonly geoIpInfrastructureRunner: GeoIpInfrastructureRunner,
+    private readonly darkwebScraperRunner: DarkwebScraperRunner,
   ) {
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
@@ -190,6 +192,7 @@ export class RunsService {
     this.runnerMap.set('sybil_cluster', this.sybilClusterRunner);
     this.runnerMap.set('fido2_authenticator', this.fido2AuthenticatorRunner);
     this.runnerMap.set('geoip_infrastructure', this.geoIpInfrastructureRunner);
+    this.runnerMap.set('darkweb_scraper', this.darkwebScraperRunner);
   }
 
   private detectType(val: string): InputType {
