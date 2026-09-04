@@ -1,0 +1,20 @@
+{
+  "mock_dataset": "darkweb_breach_telemetry_v1",
+  "generated_at": "2026-09-04T20:00:00Z",
+  "records": [
+    {
+      "record_id": "MOCK-REC-9011",
+      "threat_actor": "ShadowBroker-Synthetic",
+      "leaked_schema": "user_credentials",
+      "record_count": 4200,
+      "reliability_score": 0.88
+    },
+    {
+      "record_id": "MOCK-REC-9012",
+      "threat_actor": "PhantomLocker-Test",
+      "leaked_schema": "network_topology",
+      "record_count": 150,
+      "reliability_score": 0.94
+    }
+  ]
+}
