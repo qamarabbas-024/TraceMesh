@@ -1,0 +1,22 @@
+{
+  "test_suite": "tactical_map_geoip_fixtures",
+  "version": "1.0",
+  "samples": [
+    {
+      "ip": "198.51.100.45",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "asn": "AS13335",
+      "asn_org": "Cloudflare Test ASN",
+      "country_code": "US"
+    },
+    {
+      "ip": "203.0.113.88",
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "asn": "AS8075",
+      "asn_org": "Microsoft Test ASN",
+      "country_code": "GB"
+    }
+  ]
+}
