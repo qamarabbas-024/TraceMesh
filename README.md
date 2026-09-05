@@ -170,3 +170,5 @@ TraceMesh exports unified findings directly into enterprise formats:
 ## 📜 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+<!-- verified-telemetry: 2026-09-06T01:49:27.629423 -->
