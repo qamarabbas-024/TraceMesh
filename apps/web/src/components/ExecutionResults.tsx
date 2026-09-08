@@ -23,6 +23,9 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import { RadialGauge } from '@/components/RadialGauge';
 import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
+import { DiamondModelCard } from '@/components/DiamondModelCard';
+import { DarkwebFeedViewer } from '@/components/DarkwebFeedViewer';
+import { PdfExportButton } from '@/components/PdfExportButton';
 import { soundFx } from '@/lib/soundFx';
 import { maskSensitiveValue } from '@/lib/redact';
 import { animate, stagger } from 'animejs';
@@ -218,6 +221,7 @@ export function ExecutionResults({
               >
                 PDF Dossier
               </button>
+              <PdfExportButton runId={report.runId} />
             </div>
           </div>
         </div>
@@ -403,6 +407,12 @@ export function ExecutionResults({
             </div>
           </div>
         )}
+
+        {/* Diamond Model APT Threat Attribution */}
+        <DiamondModelCard entities={report.entities} />
+
+        {/* Deep DarkWeb & Hidden Service Threat Feed */}
+        <DarkwebFeedViewer entities={report.entities} />
       </div>
 
       {/* Discovered Correlated Entities Section */}
