@@ -44,3 +44,6 @@ docker-compose.override.yml
 tools/
 osint-expansion/venv/
 osint-expansion/.db/
+
+# AI workspace configuration
+.project-ai/
