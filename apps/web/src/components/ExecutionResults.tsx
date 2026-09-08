@@ -18,6 +18,7 @@ import {
   Flame,
   Network,
   Filter,
+  Globe2,
 } from 'lucide-react';
 
 import { useState, useEffect, useRef } from 'react';
@@ -25,6 +26,9 @@ import { RadialGauge } from '@/components/RadialGauge';
 import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
 import { DiamondModelCard } from '@/components/DiamondModelCard';
 import { DarkwebFeedViewer } from '@/components/DarkwebFeedViewer';
+import { SteganographyInspector } from '@/components/SteganographyInspector';
+import { GraphPathfinderModal } from '@/components/GraphPathfinderModal';
+import { GeoIpMapModal, type GeoLocationData } from '@/components/GeoIpMapModal';
 import { PdfExportButton } from '@/components/PdfExportButton';
 import { soundFx } from '@/lib/soundFx';
 import { maskSensitiveValue } from '@/lib/redact';
@@ -114,6 +118,8 @@ export function ExecutionResults({
 }: ExecutionResultsProps) {
   const [inspectedEntity, setInspectedEntity] = useState<DiscoveredEntity | null>(null);
   const [hopFilter, setHopFilter] = useState<number | 'all'>('all');
+  const [isPathfinderOpen, setIsPathfinderOpen] = useState(false);
+  const [geoModalData, setGeoModalData] = useState<GeoLocationData | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -413,16 +419,33 @@ export function ExecutionResults({
 
         {/* Deep DarkWeb & Hidden Service Threat Feed */}
         <DarkwebFeedViewer entities={report.entities} />
+
+        {/* Steganography & Digital Forensics Payload Inspector */}
+        <SteganographyInspector entities={report.entities} />
       </div>
 
       {/* Discovered Correlated Entities Section */}
       <div className="border border-accent-cyan-dim/40 bg-bg-surface/85 backdrop-blur-md p-5 rounded space-y-4 shadow-cyan-glow">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-accent-cyan-dim/20 pb-3">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-accent-cyan" />
-            <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
-              Correlated Entity Nodes ({report.entities.length})
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Layers className="w-4 h-4 text-accent-cyan" />
+              <span className="text-xs uppercase tracking-wider font-mono text-accent-cyan font-semibold">
+                Correlated Entity Nodes ({report.entities.length})
+              </span>
+            </div>
+
+            <button
+              onClick={() => {
+                soundFx.playBlip();
+                setIsPathfinderOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 rounded font-mono text-[10px] uppercase font-bold transition-all shadow-cyan-glow"
+              title="Calculate shortest path between any two discovered entities"
+            >
+              <Network className="w-3 h-3 text-cyan-400" />
+              <span>Pathfinder</span>
+            </button>
           </div>
 
           {/* Hop Filter Switcher */}
@@ -553,25 +576,49 @@ export function ExecutionResults({
                     </p>
                   </div>
 
-                  {/* Fan-out / Secondary Search Button */}
+                  {/* Fan-out / Secondary Search Button & GeoIP Telemetry */}
                   <div className="pt-2 border-t border-accent-cyan-dim/15 flex items-center justify-between">
                     <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-bg-base text-text-muted uppercase">
                       {entity.type}
                     </span>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFanOutSearch(
-                          entity.value,
-                          (entity.type as InputType) || 'username',
-                        );
-                      }}
-                      className="flex items-center gap-1 px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan/50 hover:bg-accent-cyan hover:text-bg-base text-accent-cyan text-[10px] font-mono font-semibold rounded transition-all shadow-cyan-glow"
-                    >
-                      <span>Fan-Out</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      {(entity.type === 'ip' || entity.type === 'domain' || entity.metadata?.latitude) && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            soundFx.playBlip();
+                            setGeoModalData({
+                              latitude: entity.metadata?.latitude || 37.7749,
+                              longitude: entity.metadata?.longitude || -122.4194,
+                              city: entity.metadata?.city || 'Origin Gateway',
+                              country: entity.metadata?.country || 'Global ASN',
+                              asn: entity.metadata?.asn || 'AS15169',
+                              isp: entity.metadata?.isp || 'Cloudflare / Edge Backbone',
+                            });
+                          }}
+                          className="flex items-center gap-1 px-2 py-1 bg-bg-base border border-accent-cyan-dim/40 hover:border-accent-cyan text-text-secondary hover:text-accent-cyan text-[10px] font-mono rounded transition-all"
+                          title="Plot coordinates on tactical world map"
+                        >
+                          <Globe2 className="w-3 h-3 text-accent-cyan" />
+                          <span>GeoIP</span>
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onFanOutSearch(
+                            entity.value,
+                            (entity.type as InputType) || 'username',
+                          );
+                        }}
+                        className="flex items-center gap-1 px-2.5 py-1 bg-accent-cyan/15 border border-accent-cyan/50 hover:bg-accent-cyan hover:text-bg-base text-accent-cyan text-[10px] font-mono font-semibold rounded transition-all shadow-cyan-glow"
+                      >
+                        <span>Fan-Out</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -586,6 +633,20 @@ export function ExecutionResults({
         isOpen={!!inspectedEntity}
         onClose={() => setInspectedEntity(null)}
         onFanOutSearch={onFanOutSearch}
+      />
+
+      {/* Graph Pathfinder Modal */}
+      <GraphPathfinderModal
+        isOpen={isPathfinderOpen}
+        onClose={() => setIsPathfinderOpen(false)}
+        entities={report.entities}
+      />
+
+      {/* Tactical GeoIP World Telemetry Map */}
+      <GeoIpMapModal
+        isOpen={!!geoModalData}
+        onClose={() => setGeoModalData(null)}
+        geoData={geoModalData}
       />
     </div>
   );
