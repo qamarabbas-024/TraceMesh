@@ -39,3 +39,8 @@ coverage/
 
 # Docker
 docker-compose.override.yml
+
+# External tool sandboxes & Python virtual environments
+tools/
+osint-expansion/venv/
+osint-expansion/.db/

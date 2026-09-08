@@ -139,3 +139,30 @@ export interface AggregatedReport {
   graphAnalytics?: Record<string, any>;
   createdAt: string;
 }
+
+export interface PathStep {
+  fromEntity: string;
+  toEntity: string;
+  relationType: string;
+  confidence: number;
+}
+
+export interface ShortestPathResult {
+  sourceEntity: string;
+  targetEntity: string;
+  pathFound: boolean;
+  degreesOfSeparation: number;
+  pathNodes: string[];
+  steps: PathStep[];
+  bridgeEntities: string[];
+}
+
+export interface GeoLocationData {
+  latitude: number;
+  longitude: number;
+  city: string;
+  country: string;
+  asn?: string;
+  isp?: string;
+  cable?: string;
+}

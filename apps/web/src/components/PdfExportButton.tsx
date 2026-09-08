@@ -11,7 +11,8 @@ export const PdfExportButton: React.FC<PdfExportButtonProps> = ({ runId }) => {
 
   const handleExportPdf = () => {
     setDownloading(true);
-    const pdfUrl = `http://localhost:3001/runs/${runId}/export/pdf`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const pdfUrl = `${apiUrl}/runs/${runId}/export/pdf`;
     const win = window.open(pdfUrl, '_blank');
     if (win) {
       win.focus();
