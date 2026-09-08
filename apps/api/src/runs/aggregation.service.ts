@@ -3,6 +3,7 @@ import { DiscoveredEntity, AggregatedReport, InputType } from '@tracemesh/shared
 import { GraphAnalyticsService } from './graph-analytics.service';
 import { MitreAttackService } from './mitre-attack.service';
 import { DossierSummaryService } from './dossier-summary.service';
+import { KillChainService } from './killchain.service';
 
 @Injectable()
 export class AggregationService {
@@ -10,6 +11,7 @@ export class AggregationService {
     private readonly graphAnalyticsService: GraphAnalyticsService,
     private readonly mitreAttackService: MitreAttackService,
     private readonly dossierSummaryService: DossierSummaryService,
+    private readonly killChainService: KillChainService,
   ) {}
 
   aggregate(
@@ -74,6 +76,9 @@ export class AggregationService {
 
     // Compute Autonomous MITRE ATT&CK Matrix Mapping
     const mitreAssessment = this.mitreAttackService.mapToMitre(uniqueEntities, inputValue, inputType);
+
+    // Compute Lockheed Martin Cyber Kill Chain Threat Progression Assessment
+    const killChainAssessment = this.killChainService.evaluateKillChain(uniqueEntities);
 
     // Calculate OPSEC Exposure Score (0-100%) and Threat Matrix
     let rawScore = 0;
@@ -192,6 +197,7 @@ export class AggregationService {
       dossierSummary: dossier,
       mitreAssessment,
       graphAnalytics: analytics,
+      killChainAssessment,
       createdAt: new Date().toISOString(),
     };
   }

@@ -10,6 +10,7 @@ import { HtmlDossierExporterService } from './html-dossier-exporter.service';
 import { StixOpenCtiService } from './stix-opencti.service';
 import { GraphPathfinderService } from './graph-pathfinder.service';
 import { PdfBriefingService } from './pdf-briefing.service';
+import { KillChainService } from './killchain.service';
 import { ToolsModule } from '../tools/tools.module';
 import { HoleheRunner } from '../runners/holehe.runner';
 import { SherlockRunner } from '../runners/sherlock.runner';
@@ -84,6 +85,7 @@ import { DiamondModelRunner } from '../runners/diamond-model.runner';
     StixOpenCtiService,
     GraphPathfinderService,
     PdfBriefingService,
+    KillChainService,
     HoleheRunner,
     SherlockRunner,
     ExifToolRunner,
@@ -143,6 +145,6 @@ import { DiamondModelRunner } from '../runners/diamond-model.runner';
     SteganographyExtractorRunner,
     DiamondModelRunner,
   ],
-  exports: [RunsService, AggregationService],
+  exports: [RunsService, AggregationService, KillChainService],
 })
 export class RunsModule {}

@@ -137,7 +137,35 @@ export interface AggregatedReport {
   dossierSummary?: Record<string, any>;
   mitreAssessment?: Record<string, any>;
   graphAnalytics?: Record<string, any>;
+  killChainAssessment?: KillChainAssessment;
   createdAt: string;
+}
+
+export type KillChainStage =
+  | 'reconnaissance'
+  | 'weaponization'
+  | 'delivery'
+  | 'exploitation'
+  | 'installation'
+  | 'command_and_control'
+  | 'actions_on_objectives';
+
+export interface KillChainPhaseAssessment {
+  stage: KillChainStage;
+  name: string;
+  status: 'DETECTED' | 'SUSPECTED' | 'CLEAN';
+  confidence: number;
+  iocCount: number;
+  indicators: string[];
+  description: string;
+}
+
+export interface KillChainAssessment {
+  progressionScore: number;
+  maxStageReached: KillChainStage;
+  activeStagesCount: number;
+  phases: KillChainPhaseAssessment[];
+  threatAdvisory: string;
 }
 
 export interface PathStep {
