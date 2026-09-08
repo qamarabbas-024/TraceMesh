@@ -27,6 +27,7 @@ import { EntityInspectorDrawer } from '@/components/EntityInspectorDrawer';
 import { DiamondModelCard } from '@/components/DiamondModelCard';
 import { DarkwebFeedViewer } from '@/components/DarkwebFeedViewer';
 import { SteganographyInspector } from '@/components/SteganographyInspector';
+import { KillChainRadar } from '@/components/KillChainRadar';
 import { GraphPathfinderModal } from '@/components/GraphPathfinderModal';
 import { GeoIpMapModal, type GeoLocationData } from '@/components/GeoIpMapModal';
 import { PdfExportButton } from '@/components/PdfExportButton';
@@ -413,6 +414,9 @@ export function ExecutionResults({
             </div>
           </div>
         )}
+
+        {/* Lockheed Martin Cyber Kill Chain Radar */}
+        {report.killChainAssessment && <KillChainRadar assessment={report.killChainAssessment} />}
 
         {/* Diamond Model APT Threat Attribution */}
         <DiamondModelCard entities={report.entities} />

@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v22.5 — done (Phase 33: Diamond Model APT Threat Visualizer Complete)**
+**CURRENT VERSION: v23.4 — done (Phase 34: Tactical Operations Center Integration & Advanced Telemetry Complete)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -268,6 +268,12 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 22.4 — One-Click Executive PDF Briefing Downloader
 - [x] 22.5 — Diamond Model APT Threat Visualizer Card
 
+---
 
-
+## Phase 34 — Tactical Operations Center Integration & Advanced Telemetry (v23.0–v23.4)
+- [x] 23.0 — Dynamic API gateway resolution & tools sandbox isolation
+- [x] 23.1 — Diamond Model APT & DarkWeb Threat Intel Cards integration
+- [x] 23.2 — Steganography payload inspector & Tactical Graph Pathfinder integration
+- [x] 23.3 — Cyber Kill Chain 7-phase threat progression evaluation engine
+- [x] 23.4 — Cyber Kill Chain Radar HUD component & Command Center telemetry release
 
