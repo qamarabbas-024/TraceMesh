@@ -9,15 +9,33 @@ interface PdfExportButtonProps {
 export const PdfExportButton: React.FC<PdfExportButtonProps> = ({ runId }) => {
   const [downloading, setDownloading] = useState(false);
 
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
     setDownloading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const pdfUrl = `${apiUrl}/runs/${runId}/export/pdf`;
-    const win = window.open(pdfUrl, '_blank');
-    if (win) {
-      win.focus();
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const pdfUrl = `${apiUrl}/runs/${runId}/export/pdf`;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('tracemesh_token') : null;
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(pdfUrl, { headers });
+      if (!res.ok) {
+        throw new Error(`Export failed with HTTP ${res.status}`);
+      }
+      const htmlText = await res.text();
+      const blob = new Blob([htmlText], { type: 'text/html' });
+      const blobUrl = URL.createObjectURL(blob);
+      const win = window.open(blobUrl, '_blank');
+      if (win) {
+        win.focus();
+      }
+    } catch (err) {
+      console.error('PDF Briefing download error:', err);
+    } finally {
+      setDownloading(false);
     }
-    setTimeout(() => setDownloading(false), 1500);
   };
 
   return (
