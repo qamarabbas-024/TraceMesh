@@ -9,6 +9,7 @@ import {
   HttpStatus,
   NotFoundException,
   Header,
+  UseGuards,
 } from '@nestjs/common';
 import { RunsService } from './runs.service';
 import { TimelineFilterService } from './timeline-filter.service';
@@ -17,6 +18,7 @@ import { StixOpenCtiService } from './stix-opencti.service';
 import { GraphPathfinderService } from './graph-pathfinder.service';
 import { PdfBriefingService } from './pdf-briefing.service';
 import { BatchRunRequest, AggregatedReport, DiscoveredEntity } from '@tracemesh/shared';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 export interface TimelineFilterDto {
   entities: DiscoveredEntity[];
@@ -70,11 +72,13 @@ export class RunsController {
   }
 
   @Get('history')
+  @UseGuards(JwtAuthGuard)
   async getHistory(@Headers('x-user-id') userId?: string) {
     return this.runsService.getHistory(userId);
   }
 
   @Get(':id/export/pdf')
+  @UseGuards(JwtAuthGuard)
   @Header('Content-Type', 'text/html')
   async exportPdf(@Param('id') id: string): Promise<string> {
     const report = await this.runsService.getRunById(id);
@@ -85,6 +89,7 @@ export class RunsController {
   }
 
   @Get(':id/export/html')
+  @UseGuards(JwtAuthGuard)
   @Header('Content-Type', 'text/html')
   async exportHtml(@Param('id') id: string): Promise<string> {
     const report = await this.runsService.getRunById(id);
@@ -95,6 +100,7 @@ export class RunsController {
   }
 
   @Get(':id/export/stix')
+  @UseGuards(JwtAuthGuard)
   @Header('Content-Type', 'application/json')
   async exportStix(@Param('id') id: string) {
     const report = await this.runsService.getRunById(id);
