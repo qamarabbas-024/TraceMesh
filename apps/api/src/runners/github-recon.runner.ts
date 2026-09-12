@@ -28,8 +28,9 @@ export class GitHubReconRunner implements ToolRunner {
       Accept: 'application/vnd.github.v3+json',
     };
 
-    if (process.env.GITHUB_TOKEN) {
-      headers.Authorization = `token ${process.env.GITHUB_TOKEN}`;
+    const githubToken = process.env.GITHUB_TOKEN || process.env.GITHUB_API_TOKEN;
+    if (githubToken) {
+      headers.Authorization = `token ${githubToken}`;
     }
 
     try {

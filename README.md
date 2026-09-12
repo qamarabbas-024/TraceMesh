@@ -119,6 +119,29 @@ cd TraceMesh
 # 2. Configure environment
 cp .env.example .env
 
+# Edit .env with your own API keys (see section below)
+```
+
+### 🔑 OSINT API Keys & Operational Security
+
+> [!IMPORTANT]
+> **No API keys are shipped with TraceMesh.**  
+> To protect operator identity and prevent unauthorized quota consumption, **TraceMesh does not bundle private API keys**.
+> 
+> Passive reconnaissance modules (Sherlock, Holehe, crt.sh, DomainRecon, PhoneInfoga, ExifTool, Subfinder, Ahmia) function immediately out of the box with zero configuration. For authenticated threat intelligence resolvers, you must register for your own free or paid API keys and set them in your local `.env` file (which is strictly `.gitignored`).
+
+#### Obtaining Your Own API Keys:
+
+| Provider | Environment Variable | Registration / Dashboard | Tier |
+| :--- | :--- | :--- | :--- |
+| **AlienVault OTX** | `OTX_API_KEY` | [otx.alienvault.com](https://otx.alienvault.com) | Free Community Account |
+| **Shodan** | `SHODAN_API_KEY` | [account.shodan.io](https://account.shodan.io/register) | Free / Academic / Paid |
+| **AbuseIPDB** | `ABUSEIPDB_API_KEY` | [abuseipdb.com/register](https://www.abuseipdb.com/register) | Free Webmaster Tier |
+| **IPinfo** | `IPINFO_TOKEN` | [ipinfo.io/signup](https://ipinfo.io/signup) | Free Tier (50k req/mo) |
+| **Censys** | `CENSYS_API_ID`, `CENSYS_API_SECRET` | [search.censys.io/register](https://search.censys.io/register) | Free Community Account |
+| **GitHub** | `GITHUB_TOKEN` | [github.com/settings/tokens](https://github.com/settings/tokens) | Free Personal Access Token |
+
+```bash
 # 3. Install workspace dependencies
 pnpm install
 
