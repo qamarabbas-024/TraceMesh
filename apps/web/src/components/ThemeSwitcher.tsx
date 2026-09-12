@@ -25,8 +25,11 @@ export function ThemeSwitcher() {
     if (typeof document === 'undefined') return;
     const theme = TACTICAL_THEMES.find((t) => t.id === themeId) || TACTICAL_THEMES[0];
     document.documentElement.style.setProperty('--accent-cyan', theme.accent);
+    document.documentElement.style.setProperty('--accent-cyan-dim', theme.accentDim);
+    document.documentElement.style.setProperty('--accent-glow', theme.accentGlow);
     document.documentElement.style.setProperty('--bg-base', theme.bgBase);
     document.documentElement.style.setProperty('--bg-surface', theme.bgSurface);
+    document.documentElement.style.setProperty('--bg-surface-raised', theme.bgSurfaceRaised);
   };
 
   const handleSelect = (themeId: string) => {
