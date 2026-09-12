@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v23.4 — done (Phase 34: Tactical Operations Center Integration & Advanced Telemetry Complete)**
+**CURRENT VERSION: v24.0 — in progress (Phase 35: Enterprise Hardening & 100-Point Security Audit Remediation)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -276,4 +276,15 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 23.2 — Steganography payload inspector & Tactical Graph Pathfinder integration
 - [x] 23.3 — Cyber Kill Chain 7-phase threat progression evaluation engine
 - [x] 23.4 — Cyber Kill Chain Radar HUD component & Command Center telemetry release
+
+---
+
+## Phase 35 — Enterprise Hardening & 100-Point Security Audit Remediation (v24.0–v24.5)
+- [x] 24.0 — Strict CORS lockdown, security headers injection, and OPSEC API key isolation
+- [x] 24.1 — Constant-time authentication comparisons, JWT export guards, and SSRF IPv6/CGNAT protection
+- [x] 24.2 — Binary/executable artifact extraction, cryptographic hash parsing, and 25MB body streaming
+- [x] 24.3 — Degraded mode in-memory history ring buffers, bounded LRU caching, and SSE leak prevention
+- [x] 24.4 — International phone normalization, ITU jurisdiction resolution, and AlienVault OTX hash pivots
+- [ ] 24.5 — Final 100-problem remediation completion, Playwright headless E2E verification, and production certification
+
 
