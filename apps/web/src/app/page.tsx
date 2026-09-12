@@ -47,10 +47,6 @@ export default function Home() {
   // Global Tactical Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Avoid hotkeys when typing inside inputs or textareas
-      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
-      if (tag === 'input' || tag === 'textarea') return;
-
       if (e.key === 'Escape') {
         setIsAuthOpen(false);
         setIsHistoryOpen(false);
@@ -60,7 +56,14 @@ export default function Home() {
         setIsGeoMapOpen(false);
         setIsTimelineOpen(false);
         setIsShortcutsOpen(false);
-      } else if (e.key === 'c' || e.key === 'C') {
+        return;
+      }
+
+      // Avoid triggering single-key tactical shortcuts when typing inside inputs or textareas
+      const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (e.target as HTMLElement)?.isContentEditable) return;
+
+      if (e.key === 'c' || e.key === 'C') {
         e.preventDefault();
         soundFx.playBlip();
         setIsCasesOpen((prev) => !prev);

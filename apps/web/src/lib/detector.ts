@@ -31,10 +31,15 @@ export function detectInputType(raw: string): InputType {
     return 'phone';
   }
 
-  // 5. Domain name / URL detection
+  // 5. Domain name / URL detection (ensure binary extensions like .exe / .apk are not treated as domain TLDs)
+  const isBinaryFile = /\.(exe|apk|dll|bin|so|dmg|iso|msi|sys|jar|class|zip|tar|gz|7z)(\?.*)?$/i.test(input);
   const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(:\d+)?(\/.*)?$/i;
-  if (domainRegex.test(input) && (input.includes('.') || input.startsWith('http'))) {
-    return 'domain';
+  if (!isBinaryFile && domainRegex.test(input) && (input.includes('.') || input.startsWith('http'))) {
+    const tld = input.replace(/^https?:\/\//, '').split(/[\/?#:]/)[0].split('.').pop()?.toLowerCase();
+    const nonDomainExtensions = ['exe', 'apk', 'dll', 'bin', 'so', 'dmg', 'iso', 'msi', 'sys', 'jar', 'class', 'zip', 'tar', 'gz', '7z'];
+    if (tld && !nonDomainExtensions.includes(tld)) {
+      return 'domain';
+    }
   }
 
   // 6. Default to username

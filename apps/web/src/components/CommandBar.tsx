@@ -12,6 +12,7 @@ import {
   Network,
 } from 'lucide-react';
 import { soundFx } from '@/lib/soundFx';
+import { detectInputType } from '@/lib/detector';
 
 interface CommandBarProps {
   onRun: (inputValue: string, inputType: InputType, deepRecon?: boolean, maxHops?: number) => void;
@@ -27,29 +28,9 @@ export function CommandBar({ onRun, loading, selectedToolCount }: CommandBarProp
   const [maxHops, setMaxHops] = useState(2);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Auto-detect input type as user types
+  // Auto-detect input type as user types using centralized detector
   useEffect(() => {
-    const trimmed = inputVal.trim();
-    if (!trimmed) {
-      setDetectedType('username');
-      return;
-    }
-
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setDetectedType('email');
-    } else if (/^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(trimmed)) {
-      setDetectedType('ip');
-    } else if (/^\+?[0-9\s\-()]{7,20}$/.test(trimmed) && trimmed.replace(/\D/g, '').length >= 7) {
-      setDetectedType('phone');
-    } else if (
-      /^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(
-        trimmed.replace(/^https?:\/\//, '').replace(/\/.*$/, ''),
-      )
-    ) {
-      setDetectedType('domain');
-    } else {
-      setDetectedType('username');
-    }
+    setDetectedType(detectInputType(inputVal));
   }, [inputVal]);
 
   const handleSubmit = (e: React.FormEvent) => {
