@@ -38,6 +38,11 @@ loadEnv();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Increase JSON and URL-encoded body limit to 25MB for large text/binary dump ingestion
+  const express = require('express');
+  app.use(express.json({ limit: '25mb' }));
+  app.use(express.urlencoded({ limit: '25mb', extended: true }));
+
   // Security response headers middleware
   app.use((req: any, res: any, next: () => void) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -52,6 +57,7 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.enableShutdownHooks();
 
   const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({

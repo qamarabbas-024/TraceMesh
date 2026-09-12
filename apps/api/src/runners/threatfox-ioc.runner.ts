@@ -24,15 +24,17 @@ export class ThreatFoxIocRunner implements ToolRunner {
 
     const entities: DiscoveredEntity[] = [];
 
+    const isHash = /^[a-fA-F0-9]{32,64}$/.test(cleanTarget);
+    const queryPayload = isHash
+      ? { query: 'search_hash', hash: cleanTarget.toLowerCase() }
+      : { query: 'search_ioc', search_term: cleanTarget };
+
     try {
       // Query abuse.ch ThreatFox public search API
       const res = await fetch('https://threatfox-api.abuse.ch/api/v1/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'User-Agent': 'TraceMesh-OSINT/1.0' },
-        body: JSON.stringify({
-          query: 'search_ioc',
-          search_term: cleanTarget,
-        }),
+        body: JSON.stringify(queryPayload),
         signal: AbortSignal.timeout(4000),
       });
 
