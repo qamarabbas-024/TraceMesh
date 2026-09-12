@@ -4,10 +4,12 @@ import {
   Post,
   Body,
   Param,
+  Req,
   Sse,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { CollaborationService, CollabEvent } from './collaboration.service';
 
@@ -24,8 +26,17 @@ export class CollaborationController {
   constructor(private readonly collaborationService: CollaborationService) {}
 
   @Sse('stream/:runId')
-  streamEvents(@Param('runId') runId: string): Observable<{ data: CollabEvent }> {
-    return this.collaborationService.getEventStreamForRoom(runId);
+  streamEvents(
+    @Param('runId') runId: string,
+    @Req() req: Request,
+  ): Observable<{ data: CollabEvent }> {
+    const stream = this.collaborationService.getEventStreamForRoom(runId);
+    req.on('close', () => {
+      // Clean up on client disconnect
+      const analystId = (req.headers['x-analyst-id'] as string) || 'sse-client';
+      this.collaborationService.removePresence(runId, analystId, 'Analyst');
+    });
+    return stream;
   }
 
   @Post('event')
