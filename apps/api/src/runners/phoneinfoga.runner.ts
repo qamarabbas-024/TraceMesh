@@ -34,12 +34,19 @@ export class PhoneInfogaRunner implements ToolRunner {
 
   async execute(phone: string, inputType: InputType): Promise<NormalizedResult> {
     const startTime = Date.now();
-    const cleanPhone = phone.trim().replace(/[^\d+]/g, '');
+    let cleanPhone = phone.trim().replace(/[^\d+]/g, '');
 
-    if (inputType !== 'phone' || cleanPhone.length < 7) {
+    // If national 10-digit number without leading '+' is provided, default to US/CA (+1) or international prefix
+    if (!cleanPhone.startsWith('+') && cleanPhone.length === 10) {
+      cleanPhone = `+1${cleanPhone}`;
+    } else if (!cleanPhone.startsWith('+') && cleanPhone.length > 6) {
+      cleanPhone = `+${cleanPhone}`;
+    }
+
+    if (inputType !== 'phone' || cleanPhone.length < 8) {
       return {
         status: 'error',
-        summary: 'Valid international E.164 phone number required',
+        summary: 'Valid international E.164 phone number required (e.g. +14155552671)',
         entities: [],
         error: 'Phone number format invalid',
         durationMs: Date.now() - startTime,
