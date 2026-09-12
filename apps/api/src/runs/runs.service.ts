@@ -233,6 +233,24 @@ export class RunsService {
     }
   }
 
+  private getToolTimeout(toolName: string): number {
+    const deepTools = [
+      'sherlock',
+      'maigret',
+      'blackbird',
+      'crtsh',
+      'subfinder',
+      'theharvester',
+      'spiderfoot',
+      'darkweb_scraper',
+    ];
+    const normalized = toolName.toLowerCase().replace(/[-_]/g, '');
+    if (deepTools.some((t) => t.replace(/[-_]/g, '') === normalized)) {
+      return 25000; // 25s for multi-endpoint scraping tools
+    }
+    return 8000; // 8s default
+  }
+
   private async executeSingleTool(
     toolName: string,
     val: string,
@@ -270,10 +288,11 @@ export class RunsService {
     }
 
     try {
+      const toolTimeout = this.getToolTimeout(toolName);
       const timeoutPromise = new Promise<NormalizedResult>((_, reject) =>
         setTimeout(
-          () => reject(new Error(`Tool ${toolName} timed out after 8s`)),
-          this.TOOL_TIMEOUT_MS,
+          () => reject(new Error(`Tool ${toolName} timed out after ${toolTimeout / 1000}s`)),
+          toolTimeout,
         ),
       );
 

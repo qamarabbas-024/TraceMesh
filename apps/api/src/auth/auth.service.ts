@@ -41,6 +41,15 @@ export class AuthService {
     return `${header}.${payload}.${signature}`;
   }
 
+  private safeCompare(a: string, b: string): boolean {
+    const bufA = Buffer.from(a);
+    const bufB = Buffer.from(b);
+    if (bufA.length !== bufB.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(bufA, bufB);
+  }
+
   verifyToken(token: string): UserPayload | null {
     try {
       const parts = token.split('.');
@@ -51,7 +60,7 @@ export class AuthService {
         .update(`${header}.${payload}`)
         .digest('base64url');
 
-      if (signature !== expectedSig) return null;
+      if (!this.safeCompare(signature, expectedSig)) return null;
 
       const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
       if (data.exp && data.exp < Math.floor(Date.now() / 1000)) return null;
@@ -136,7 +145,7 @@ export class AuthService {
 
     try {
       const user = await this.prisma.user.findUnique({ where: { email: cleanEmail } });
-      if (!user || user.password !== passwordHash) {
+      if (!user || !this.safeCompare(user.password, passwordHash)) {
         throw new UnauthorizedException('Invalid email or password');
       }
 
@@ -157,7 +166,7 @@ export class AuthService {
     }
 
     const fallbackUser = this.fallbackUsers.find(
-      (u) => u.email === cleanEmail && u.passwordHash === passwordHash,
+      (u) => u.email === cleanEmail && this.safeCompare(u.passwordHash, passwordHash),
     );
 
     if (!fallbackUser) {
