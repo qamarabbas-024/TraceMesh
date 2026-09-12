@@ -43,8 +43,12 @@ async function bootstrap() {
   app.use(express.json({ limit: '25mb' }));
   app.use(express.urlencoded({ limit: '25mb', extended: true }));
 
-  // Security response headers middleware
+  // Request Correlation ID and Security response headers middleware
+  const { randomUUID } = require('crypto');
   app.use((req: any, res: any, next: () => void) => {
+    const requestId = req.headers['x-request-id'] || randomUUID();
+    req.id = requestId;
+    res.setHeader('X-Request-Id', requestId);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');

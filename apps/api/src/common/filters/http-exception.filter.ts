@@ -43,12 +43,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     }
 
+    const isProduction = process.env.NODE_ENV === 'production';
+
     if (status >= 500) {
       this.logger.error(
         `[${request.method}] ${request.url} 500 Error: ${
           exception instanceof Error ? exception.stack : JSON.stringify(exception)
         }`,
       );
+      if (isProduction) {
+        message = 'An unexpected internal error occurred. Please contact system administrator.';
+      }
     }
 
     response.status(status).json({
