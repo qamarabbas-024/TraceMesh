@@ -7,13 +7,14 @@ export class ImporterController {
 
   @Post('text')
   @HttpCode(HttpStatus.OK)
-  importText(@Body() body: { text: string }): ExtractedEntityReport {
-    return this.importerService.extractEntitiesFromText(body.text, 'text');
+  importText(@Body() body: any): ExtractedEntityReport {
+    const rawText = typeof body === 'string' ? body : (body?.text ?? body?.content ?? '');
+    return this.importerService.extractEntitiesFromText(String(rawText), 'text');
   }
 
   @Post('chat')
   @HttpCode(HttpStatus.OK)
   importChat(@Body() body: any): ExtractedEntityReport {
-    return this.importerService.parseChatExport(body);
+    return this.importerService.parseChatExport(body || {});
   }
 }

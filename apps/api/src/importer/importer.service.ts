@@ -22,6 +22,12 @@ export class ImporterService {
   private readonly DOMAIN_REGEX = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?)/g;
   // IPv4 regex
   private readonly IP_REGEX = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/g;
+  // Cryptographic Hashes (SHA-256: 64 hex, SHA-1: 40 hex, MD5: 32 hex)
+  private readonly SHA256_REGEX = /\b[a-fA-F0-9]{64}\b/g;
+  private readonly SHA1_REGEX = /\b[a-fA-F0-9]{40}\b/g;
+  private readonly MD5_REGEX = /\b[a-fA-F0-9]{32}\b/g;
+  // Binary executable filename regex (.exe, .apk, .dll, .so, .bin, .msi, .dmg)
+  private readonly BINARY_FILE_REGEX = /\b[a-zA-Z0-9_\-.]+\.(?:exe|apk|dll|so|bin|msi|dmg|app)\b/gi;
 
   /**
    * Extract intelligence entities from raw text or transcripts
@@ -33,7 +39,79 @@ export class ImporterService {
 
     const entityMap = new Map<string, DiscoveredEntity>();
 
-    // 1. Extract Emails
+    // 1. Extract Cryptographic Hashes (SHA-256, SHA-1, MD5)
+    const sha256Matches = text.match(this.SHA256_REGEX) || [];
+    for (const h of sha256Matches) {
+      const clean = h.toLowerCase().trim();
+      const key = `hash:sha256:${clean}`;
+      if (!entityMap.has(key)) {
+        entityMap.set(key, {
+          type: 'record',
+          value: clean,
+          label: `Extracted SHA-256 Hash (${clean.substring(0, 10)}...)`,
+          sourceTool: 'importer_nlp',
+          confidence: 0.99,
+          metadata: { hashType: 'SHA-256' },
+        });
+      }
+    }
+
+    const sha1Matches = text.match(this.SHA1_REGEX) || [];
+    for (const h of sha1Matches) {
+      const clean = h.toLowerCase().trim();
+      const key = `hash:sha1:${clean}`;
+      // Prevent colliding if substring of sha256
+      if (!entityMap.has(key) && !sha256Matches.some((s) => s.toLowerCase().includes(clean))) {
+        entityMap.set(key, {
+          type: 'record',
+          value: clean,
+          label: `Extracted SHA-1 Hash (${clean.substring(0, 8)}...)`,
+          sourceTool: 'importer_nlp',
+          confidence: 0.95,
+          metadata: { hashType: 'SHA-1' },
+        });
+      }
+    }
+
+    const md5Matches = text.match(this.MD5_REGEX) || [];
+    for (const h of md5Matches) {
+      const clean = h.toLowerCase().trim();
+      const key = `hash:md5:${clean}`;
+      // Prevent colliding if substring of sha256 or sha1
+      if (
+        !entityMap.has(key) &&
+        !sha256Matches.some((s) => s.toLowerCase().includes(clean)) &&
+        !sha1Matches.some((s) => s.toLowerCase().includes(clean))
+      ) {
+        entityMap.set(key, {
+          type: 'record',
+          value: clean,
+          label: `Extracted MD5 Hash (${clean.substring(0, 8)}...)`,
+          sourceTool: 'importer_nlp',
+          confidence: 0.95,
+          metadata: { hashType: 'MD5' },
+        });
+      }
+    }
+
+    // 2. Extract Binary & Executable Artifact Names
+    const binaryMatches = text.match(this.BINARY_FILE_REGEX) || [];
+    for (const bin of binaryMatches) {
+      const clean = bin.trim();
+      const key = `binary:${clean.toLowerCase()}`;
+      if (!entityMap.has(key)) {
+        entityMap.set(key, {
+          type: 'metadata',
+          value: clean,
+          label: `Extracted Executable/Binary Artifact (${clean})`,
+          sourceTool: 'importer_nlp',
+          confidence: 0.93,
+          metadata: { fileArtifact: true },
+        });
+      }
+    }
+
+    // 3. Extract Emails
     const emails = text.match(this.EMAIL_REGEX) || [];
     for (const email of emails) {
       const clean = email.toLowerCase().trim();
@@ -49,7 +127,7 @@ export class ImporterService {
       }
     }
 
-    // 2. Extract Usernames
+    // 4. Extract Usernames
     let match: RegExpExecArray | null;
     const userRegex = new RegExp(this.USERNAME_REGEX);
     while ((match = userRegex.exec(text)) !== null) {
@@ -68,7 +146,7 @@ export class ImporterService {
       }
     }
 
-    // 3. Extract IPv4
+    // 5. Extract IPv4
     const ips = text.match(this.IP_REGEX) || [];
     for (const ip of ips) {
       const clean = ip.trim();
@@ -86,11 +164,13 @@ export class ImporterService {
       }
     }
 
-    // 4. Extract Domains
+    // 6. Extract Domains
     const domainRegex = new RegExp(this.DOMAIN_REGEX);
     while ((match = domainRegex.exec(text)) !== null) {
       const domain = match[1]?.toLowerCase().trim();
-      if (domain && !domain.endsWith('.png') && !domain.endsWith('.jpg') && !domain.endsWith('.js')) {
+      const binaryExtensions = ['.exe', '.apk', '.dll', '.so', '.bin', '.msi', '.dmg', '.png', '.jpg', '.jpeg', '.gif', '.js', '.css'];
+      const isBinaryExt = binaryExtensions.some((ext) => domain?.endsWith(ext));
+      if (domain && !isBinaryExt) {
         const key = `domain:${domain}`;
         if (!entityMap.has(key) && !domain.includes('@')) {
           entityMap.set(key, {
@@ -104,7 +184,7 @@ export class ImporterService {
       }
     }
 
-    // 5. Extract Phone Numbers
+    // 7. Extract Phone Numbers
     const phones = text.match(this.PHONE_REGEX) || [];
     for (const phone of phones) {
       const clean = phone.replace(/[^0-9+]/g, '');
