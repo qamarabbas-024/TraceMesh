@@ -18,14 +18,29 @@ export function getCases(): CaseFile[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(raw);
-  } catch {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Sanitize and ensure proper CaseFile shape
+    return parsed.filter(
+      (c) => c && typeof c === 'object' && typeof c.id === 'string' && typeof c.name === 'string',
+    ).map((c) => ({
+      id: c.id,
+      name: String(c.name || 'Untitled Case'),
+      codename: String(c.codename || 'OP-0000'),
+      createdAt: typeof c.createdAt === 'string' ? c.createdAt : new Date().toISOString(),
+      notes: typeof c.notes === 'string' ? c.notes : '',
+      tags: Array.isArray(c.tags) ? c.tags.map(String) : ['active-investigation'],
+      pinnedEntities: Array.isArray(c.pinnedEntities) ? c.pinnedEntities : [],
+      runs: Array.isArray(c.runs) ? c.runs : [],
+    }));
+  } catch (err) {
+    console.warn('Failed to parse cases from storage:', err);
     return [];
   }
 }
 
 export function saveCase(caseFile: CaseFile): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !caseFile || !caseFile.id) return;
   try {
     const cases = getCases();
     const idx = cases.findIndex((c) => c.id === caseFile.id);

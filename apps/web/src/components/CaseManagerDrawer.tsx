@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Briefcase,
   Plus,
@@ -39,6 +39,7 @@ export function CaseManagerDrawer({
   const [newCaseName, setNewCaseName] = useState('');
   const [newCaseCodename, setNewCaseCodename] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const drawerRef = useRef<HTMLDivElement>(null);
 
   const loadAllCases = () => {
     const list = getCases();
@@ -51,8 +52,53 @@ export function CaseManagerDrawer({
   useEffect(() => {
     if (isOpen) {
       loadAllCases();
+      // Focus drawer when opened
+      setTimeout(() => {
+        drawerRef.current?.focus();
+      }, 50);
     }
   }, [isOpen]);
+
+  // Focus trap and escape handler
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && drawerRef.current) {
+        const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        const focusable = Array.from(focusableElements).filter(
+          (el) => !el.hasAttribute('disabled') && el.offsetParent !== null,
+        );
+
+        if (focusable.length === 0) return;
+
+        const firstElement = focusable[0];
+        const lastElement = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -88,7 +134,14 @@ export function CaseManagerDrawer({
     <div className="fixed inset-0 z-50 flex justify-end bg-bg-base/70 backdrop-blur-sm animate-fade-in font-mono">
       <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
 
-      <div className="relative w-full max-w-xl h-full bg-bg-surface/95 border-l border-accent-cyan/60 p-6 flex flex-col justify-between shadow-cyan-glow-heavy z-10 overflow-y-auto">
+      <div
+        ref={drawerRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tactical Case Dossier Manager"
+        className="relative w-full max-w-xl h-full bg-bg-surface/95 border-l border-accent-cyan/60 p-6 flex flex-col justify-between shadow-cyan-glow-heavy z-10 overflow-y-auto outline-none"
+      >
         {/* Header */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-accent-cyan-dim/30 pb-3">
