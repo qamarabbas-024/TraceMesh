@@ -34,13 +34,34 @@ export class AlienVaultOTXRunner implements ToolRunner {
         headers['X-OTX-API-KEY'] = apiKey;
       }
 
-      const section = inputType === 'ip' ? 'IPv4' : 'domain';
-      const url = `https://otx.alienvault.com/api/v1/indicators/${section}/${encodeURIComponent(cleanTarget)}/passive_dns`;
+      const isHash = /^[a-fA-F0-9]{32,64}$/.test(cleanTarget);
+      let url: string;
+      if (isHash) {
+        url = `https://otx.alienvault.com/api/v1/indicators/file/${encodeURIComponent(cleanTarget)}/general`;
+      } else {
+        const section = inputType === 'ip' ? 'IPv4' : 'domain';
+        url = `https://otx.alienvault.com/api/v1/indicators/${section}/${encodeURIComponent(cleanTarget)}/passive_dns`;
+      }
       const res = await fetch(url, { headers, signal: AbortSignal.timeout(6000) });
 
       if (res.ok) {
         const data = await res.json();
-        if (data.passive_dns && Array.isArray(data.passive_dns)) {
+        if (isHash) {
+          if (data.pulse_info) {
+            entities.push({
+              type: 'record',
+              value: `AlienVault Pulse Matches: ${data.pulse_info.count || 0} Pulses`,
+              label: `OTX Threat Pulses: ${data.pulse_info.count || 0} communities flagged this hash`,
+              sourceTool: 'alienvault_otx',
+              confidence: 0.98,
+              metadata: {
+                hash: cleanTarget,
+                pulseCount: data.pulse_info.count,
+                tags: data.pulse_info.pulses?.flatMap((p: any) => p.tags || []).slice(0, 8),
+              },
+            });
+          }
+        } else if (data.passive_dns && Array.isArray(data.passive_dns)) {
           for (const record of data.passive_dns.slice(0, 5)) {
             const val = record.address || record.hostname;
             if (val) {
