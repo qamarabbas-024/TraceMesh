@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ToolsService } from '../tools/tools.service';
 import { AggregationService } from './aggregation.service';
@@ -237,7 +237,21 @@ export class RunsService {
     hopLevel: number = 1,
     parentVal: string = val,
   ) {
-    const runner = this.runnerMap.get(toolName);
+    const normalizedName = toolName.toLowerCase().replace(/[-_]/g, '');
+    let runner =
+      this.runnerMap.get(toolName) ||
+      this.runnerMap.get(toolName.replace(/-/g, '_')) ||
+      this.runnerMap.get(toolName.replace(/_/g, '-'));
+
+    if (!runner) {
+      for (const [k, r] of this.runnerMap.entries()) {
+        if (k.toLowerCase().replace(/[-_]/g, '') === normalizedName) {
+          runner = r;
+          break;
+        }
+      }
+    }
+
     if (!runner) {
       return {
         toolId: toolName,
@@ -299,9 +313,17 @@ export class RunsService {
   }
 
   async runBatch(req: BatchRunRequest, userId?: string): Promise<AggregatedReport> {
-    const { inputValue, inputType, toolIds, bypassCache, deepRecon, maxHops = 2 } = req;
+    const rawVal = req.inputValue || (req as any).input || '';
+    if (!rawVal || typeof rawVal !== 'string' || !rawVal.trim()) {
+      throw new BadRequestException('Valid target input value is required for batch investigation');
+    }
+
+    const inputValue = rawVal.trim();
+    const inputType = req.inputType || 'username';
+    const toolIds = Array.isArray(req.toolIds) ? req.toolIds : [];
+    const { bypassCache, deepRecon, maxHops = 2 } = req;
     const targetHops = deepRecon ? Math.min(3, Math.max(1, maxHops)) : 1;
-    const cacheKey = `${inputType}:${inputValue.toLowerCase().trim()}:${toolIds.sort().join(',')}:${deepRecon ? `deep_${targetHops}` : 'flat'}`;
+    const cacheKey = `${inputType}:${inputValue.toLowerCase()}:${[...toolIds].sort().join(',')}:${deepRecon ? `deep_${targetHops}` : 'flat'}`;
 
     // Check cache
     if (!bypassCache) {
