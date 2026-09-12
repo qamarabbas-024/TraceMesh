@@ -74,6 +74,9 @@ export class RunsService {
   private readonly logger = new Logger(RunsService.name);
   private readonly runnerMap = new Map<string, ToolRunner>();
   private readonly cache = new Map<string, { report: AggregatedReport; expiresAt: number }>();
+  private readonly memoryHistory: any[] = [];
+  private readonly MAX_CACHE_SIZE = 100;
+  private readonly MAX_MEMORY_HISTORY = 50;
   private readonly CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
   private readonly TOOL_TIMEOUT_MS = 8000; // 8 seconds per tool timeout
 
@@ -434,11 +437,32 @@ export class RunsService {
     // Aggregate into unified multi-hop entity graph & compute OPSEC score
     const report = this.aggregationService.aggregate(runId, inputValue, inputType, allExecutions, false);
 
-    // Save to Cache
+    // Save to Cache with LRU-style eviction if max size reached
+    if (this.cache.size >= this.MAX_CACHE_SIZE) {
+      const oldestKey = this.cache.keys().next().value;
+      if (oldestKey) {
+        this.cache.delete(oldestKey);
+      }
+    }
     this.cache.set(cacheKey, {
       report,
       expiresAt: Date.now() + this.CACHE_TTL_MS,
     });
+
+    const runRecord = {
+      id: runId,
+      userId: userId || null,
+      inputValue,
+      inputType,
+      status: 'COMPLETED',
+      createdAt: new Date(),
+    };
+
+    // Store in local memory history ring buffer
+    this.memoryHistory.unshift(runRecord);
+    if (this.memoryHistory.length > this.MAX_MEMORY_HISTORY) {
+      this.memoryHistory.pop();
+    }
 
     // Persist to DB if database is connected
     try {
@@ -454,7 +478,7 @@ export class RunsService {
         });
       }
     } catch {
-      // Graceful fallback if Postgres is in local memory mode
+      // Graceful fallback: recorded in memoryHistory
     }
 
     return report;
@@ -462,25 +486,34 @@ export class RunsService {
 
   async getHistory(userId?: string): Promise<any[]> {
     try {
-      if (!this.prisma.run) return [];
-      return await this.prisma.run.findMany({
-        where: userId ? { userId } : {},
-        orderBy: { createdAt: 'desc' },
-        take: 30,
-      });
+      if (this.prisma.run) {
+        return await this.prisma.run.findMany({
+          where: userId ? { userId } : {},
+          orderBy: { createdAt: 'desc' },
+          take: 30,
+        });
+      }
     } catch {
-      return [];
+      // Database unavailable, fall through to in-memory history
     }
+
+    return userId
+      ? this.memoryHistory.filter((r) => r.userId === userId).slice(0, 30)
+      : this.memoryHistory.slice(0, 30);
   }
 
   async getRunById(id: string): Promise<any | null> {
     try {
-      if (!this.prisma.run) return null;
-      return await this.prisma.run.findUnique({
-        where: { id },
-      });
+      if (this.prisma.run) {
+        const dbRun = await this.prisma.run.findUnique({
+          where: { id },
+        });
+        if (dbRun) return dbRun;
+      }
     } catch {
-      return null;
+      // Database unavailable, check memory
     }
+
+    return this.memoryHistory.find((r) => r.id === id) || null;
   }
 }
