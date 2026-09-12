@@ -38,12 +38,33 @@ loadEnv();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Security response headers middleware
+  app.use((req: any, res: any, next: () => void) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self' 'unsafe-inline';",
+    );
+    next();
+  });
+
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({
-    origin: '*',
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server) or matching allowed origin
+      if (!origin || origin === allowedOrigin || origin === 'http://localhost:3000' || origin === 'http://127.0.0.1:3000') {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: false,
+    credentials: true,
   });
 
   const port = Number(process.env.PORT) || 3001;
