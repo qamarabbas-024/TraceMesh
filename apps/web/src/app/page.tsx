@@ -212,7 +212,7 @@ export default function Home() {
         onToggleMotion={() => setReduceMotion(!reduceMotion)}
         redactMode={redactMode}
         onToggleRedact={() => setRedactMode(!redactMode)}
-        activeWorkerCount={22}
+        activeWorkerCount={60}
       />
 
       {/* Main Viewport Container */}
@@ -286,7 +286,7 @@ export default function Home() {
         <CommandBar
           onRun={(val, type, deep, hops) => handleRun(val, type, [], deep, hops)}
           loading={loading}
-          selectedToolCount={18}
+          selectedToolCount={60}
         />
       </div>
 

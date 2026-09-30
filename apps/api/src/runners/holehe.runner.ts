@@ -80,13 +80,37 @@ export class HoleheRunner implements ToolRunner {
       });
     }
 
-    // 4. Real Live DNS MX Records Resolution
+    // 4. Real Live DNS MX Records Resolution with DoH Fallback
     try {
-      const mxRecords = await dns.resolveMx(domainPart);
-      if (Array.isArray(mxRecords) && mxRecords.length > 0) {
-        mxRecords.sort((a, b) => a.priority - b.priority);
-        const primaryMx = mxRecords[0].exchange.toLowerCase();
+      let primaryMx = '';
+      let priority = 10;
+      let totalMx = 0;
 
+      try {
+        const mxRecords = await dns.resolveMx(domainPart);
+        if (Array.isArray(mxRecords) && mxRecords.length > 0) {
+          mxRecords.sort((a, b) => a.priority - b.priority);
+          primaryMx = mxRecords[0].exchange.toLowerCase().replace(/\.$/, '');
+          priority = mxRecords[0].priority;
+          totalMx = mxRecords.length;
+        }
+      } catch {
+        // Fallback to Cloudflare DoH
+        const dohRes = await fetch(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domainPart)}&type=MX`, {
+          headers: { accept: 'application/dns-json', 'User-Agent': 'TraceMesh-OSINT/1.0' },
+          signal: AbortSignal.timeout(3000),
+        });
+        if (dohRes.ok) {
+          const dohData = await dohRes.json();
+          if (Array.isArray(dohData.Answer) && dohData.Answer.length > 0) {
+            const parts = String(dohData.Answer[0].data || '').split(/\s+/);
+            primaryMx = (parts.length > 1 ? parts[1] : parts[0]).toLowerCase().replace(/\.$/, '');
+            totalMx = dohData.Answer.length;
+          }
+        }
+      }
+
+      if (primaryMx) {
         // Classify Mail Provider Infrastructure
         let providerName = 'Custom Mail Server';
         if (primaryMx.includes('google') || primaryMx.includes('googlemail') || primaryMx.includes('aspmx')) {
@@ -105,7 +129,7 @@ export class HoleheRunner implements ToolRunner {
 
         entities.push({
           type: 'record',
-          value: `MX: ${primaryMx} (Priority ${mxRecords[0].priority})`,
+          value: `MX: ${primaryMx} (Priority ${priority})`,
           label: `Mail Exchange Routing: ${providerName}`,
           sourceTool: 'holehe',
           confidence: 1.0,
@@ -113,8 +137,7 @@ export class HoleheRunner implements ToolRunner {
             category: 'Mail Server Routing',
             primaryMx,
             provider: providerName,
-            totalMxRecords: mxRecords.length,
-            records: mxRecords,
+            totalMxRecords: totalMx,
           },
         });
       }

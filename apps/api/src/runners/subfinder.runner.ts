@@ -53,7 +53,7 @@ export class SubfinderRunner implements ToolRunner {
     try {
       const crtRes = await fetch(`https://crt.sh/?q=%.${encodeURIComponent(cleanDomain)}&output=json`, {
         headers: { 'User-Agent': 'TraceMesh-OSINT/1.0' },
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(4500),
       });
 
       if (crtRes.status === 200) {
@@ -88,7 +88,54 @@ export class SubfinderRunner implements ToolRunner {
       this.logger.debug(`crt.sh query failed in subfinder: ${e.message}`);
     }
 
-    // 2. Active DNS Brute Verification on Common Subdomain Prefixes
+    // 2. Live HackerTarget Host Search (Fast, Zero-Key)
+    try {
+      const htRes = await fetch(`https://api.hackertarget.com/hostsearch/?q=${encodeURIComponent(cleanDomain)}`, {
+        headers: { 'User-Agent': 'TraceMesh-OSINT/1.0' },
+        signal: AbortSignal.timeout(3500),
+      });
+
+      if (htRes.ok) {
+        const text = await htRes.text();
+        if (text && !text.includes('error') && !text.includes('API count')) {
+          const lines = text.trim().split('\n');
+          for (const line of lines.slice(0, 25)) {
+            const [sub, ip] = line.split(',').map((s) => s.trim().toLowerCase());
+            if (sub && sub.endsWith(cleanDomain) && !discovered.has(sub)) {
+              discovered.add(sub);
+              entities.push({
+                type: 'domain',
+                value: sub,
+                label: `Subdomain (HackerTarget): ${sub}${ip ? ` [${ip}]` : ''}`,
+                sourceTool: 'subfinder',
+                confidence: 0.98,
+                metadata: {
+                  source: 'HackerTarget HostSearch',
+                  resolvedIp: ip || undefined,
+                },
+              });
+
+              if (ip && !discovered.has(ip) && /^(\d{1,3}\.){3}\d{1,3}$/.test(ip)) {
+                discovered.add(ip);
+                entities.push({
+                  type: 'ip',
+                  value: ip,
+                  label: `Host IP (from ${sub}): ${ip}`,
+                  sourceTool: 'subfinder',
+                  confidence: 0.95,
+                  parentValue: sub,
+                  metadata: { host: sub },
+                });
+              }
+            }
+          }
+        }
+      }
+    } catch (e: any) {
+      this.logger.debug(`HackerTarget query failed in subfinder: ${e.message}`);
+    }
+
+    // 3. Active DNS Brute Verification on Common Subdomain Prefixes
     await Promise.allSettled(
       COMMON_SUBDOMAINS.map(async (prefix) => {
         const candidate = `${prefix}.${cleanDomain}`;

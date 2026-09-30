@@ -177,6 +177,35 @@ export class AsnPeeringRunner implements ToolRunner {
       }
     }
 
+    // 4. Co-Hosted Domain Discovery via Reverse IP
+    try {
+      const revRes = await fetch(`https://api.hackertarget.com/reverseiplookup/?q=${encodeURIComponent(targetIp)}`, {
+        headers: { 'User-Agent': 'TraceMesh-OSINT/1.0' },
+        signal: AbortSignal.timeout(3500),
+      });
+      if (revRes.ok) {
+        const revText = await revRes.text();
+        if (revText && !revText.includes('error') && !revText.includes('API count')) {
+          const hosts = revText.trim().split('\n').map((h) => h.trim().toLowerCase()).filter(Boolean);
+          for (const host of hosts.slice(0, 10)) {
+            entities.push({
+              type: 'domain',
+              value: host,
+              label: `Co-Hosted Domain: ${host}`,
+              sourceTool: 'asn_peering',
+              confidence: 0.95,
+              metadata: {
+                sharedHostIp: targetIp,
+                category: 'Virtual Host Co-Location',
+              },
+            });
+          }
+        }
+      }
+    } catch (e: any) {
+      this.logger.debug(`Reverse IP query failed in asn_peering: ${e.message}`);
+    }
+
     const durationMs = Date.now() - startTime;
     return {
       status: 'success',

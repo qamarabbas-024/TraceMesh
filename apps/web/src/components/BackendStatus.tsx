@@ -103,7 +103,7 @@ export function BackendStatus() {
                   : 'bg-accent-amber/15 border-accent-amber/60 text-accent-amber'
               }`}
             >
-              {health.status === 'ok' ? 'Online' : health.status}
+              {health.status === 'ok' ? 'Online' : health.status === 'degraded' ? 'In-Memory Resilient Mode' : health.status}
             </div>
           </div>
 
@@ -119,10 +119,10 @@ export function BackendStatus() {
                   className={
                     health.database.status === 'connected'
                       ? 'text-status-success font-medium'
-                      : 'text-text-muted'
+                      : 'text-accent-amber font-mono text-[10px]'
                   }
                 >
-                  {health.database.status}
+                  {health.database.status === 'connected' ? 'Connected' : 'Offline (In-Memory Ring Buffer)'}
                 </span>
                 {health.database.latencyMs !== undefined && (
                   <span className="text-[10px] text-text-secondary">

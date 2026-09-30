@@ -30,6 +30,9 @@ export class ToolsService {
     updatedAt: new Date().toISOString(),
   }));
 
+  private lastDbFailureTime = 0;
+  private readonly DB_RETRY_INTERVAL_MS = 60000; // 60s cooldown
+
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query?: {
@@ -37,6 +40,11 @@ export class ToolsService {
     category?: string;
     tier?: string;
   }): Promise<ToolDTO[]> {
+    // Fast path: if DB was recently unreachable, skip connection attempt
+    if (Date.now() - this.lastDbFailureTime < this.DB_RETRY_INTERVAL_MS) {
+      return this.filterFallbackTools(query);
+    }
+
     try {
       const where: any = { isEnabled: true };
 
@@ -71,10 +79,14 @@ export class ToolsService {
         }));
       }
     } catch (e) {
-      this.logger.warn(`Could not query tools from Prisma DB, using resilient fallback catalog: ${e}`);
+      this.lastDbFailureTime = Date.now();
+      this.logger.warn(`Database unreachable, using resilient in-memory tool catalog (retry in 60s)`);
     }
 
-    // Resilient fallback filtering
+    return this.filterFallbackTools(query);
+  }
+
+  private filterFallbackTools(query?: { inputType?: string; category?: string; tier?: string }): ToolDTO[] {
     return this.fallbackTools.filter((tool) => {
       if (!tool.isEnabled) return false;
       if (query?.category && tool.category !== query.category) return false;
