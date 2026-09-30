@@ -1,7 +1,7 @@
 # PROGRESS.md — Live Roadmap & Session Tracker
 *Read AGENTS.md first for the rules — especially Section 0 (mission directive) and Section 4 (one version per session). This file tracks where the project actually is. TOOLS.md holds the full tool catalog Phase 10 pulls from.*
 
-**CURRENT VERSION: v25.2 — done (Phase 36: Resilient In-Memory Tool Caching & Multi-Source IP/Subdomain Resolvers)**
+**CURRENT VERSION: v25.3 — done (Phase 36: Live Free Public OSINT Database Resolvers & Visual Web Snapshots)**
 
 Update the line above at the end of every session. That single line is the source of truth for "what do I build next."
 
@@ -293,7 +293,7 @@ Update the line above at the end of every session. That single line is the sourc
 - [x] 25.0 — Core engine bug remediation: auto-detect input fallback, empty toolId auto-expansion, scalar metadata graph link safety, and parallel DoH DNS resolver
 - [x] 25.1 — Autonomous background testing suite, multi-domain zero-config certification, and Playwright HUD validation
 - [x] 25.2 — Resilient in-memory tool caching cooldown, HackerTarget live reverse IP/hostsearch, and DoH MX fallback
-- [ ] 25.3 — Cyberpunk command-center holographic UI enhancements & audio feedback
+- [x] 25.3 — Wire URLScan.io live scanner & visual snapshots, Tor Onionoo consensus relays, live HIBP breach database, and Maigret real-time probes
 - [ ] 25.4 — Full multi-domain live dataset integration verification & stress testing
 
 

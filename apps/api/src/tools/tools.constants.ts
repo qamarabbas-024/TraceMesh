@@ -856,4 +856,18 @@ export const INITIAL_TOOLS = [
     maintenanceStatus: 'active',
     isEnabled: true,
   },
+  {
+    name: 'urlscan',
+    displayName: 'URLScan.io Live Scanner',
+    description: 'Free public web intelligence scanner: live webpage screenshots, server banners, IP/ASN routing, and page title extraction.',
+    category: 'domain',
+    inputTypes: ['domain', 'ip'],
+    tier: 'tier1',
+    executionType: 'edge',
+    sourceUrl: 'https://urlscan.io/about/',
+    trackedVersion: '1.0.0',
+    license: 'Open API',
+    maintenanceStatus: 'active',
+    isEnabled: true,
+  },
 ];

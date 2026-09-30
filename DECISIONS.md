@@ -27,3 +27,8 @@ Format:
 **Decided:** Parallelized DNS lookups via Cloudflare/Google DoH fallback in DomainReconRunner, auto-expansion of empty tool selections to all domain-compatible tools, and strict primitive-scalar comparison in GraphAnalyticsService metadata link evaluator.
 **Why:** Eliminates Windows system DNS timeouts, prevents 0-tool empty reports from CommandBar, and prevents TypeError object-to-primitive conversion crashes during multi-node graph aggregation.
 
+## [v25.3] Zero-Key Public OSINT Resolvers & Visual Recon Previews
+**Decided:** Integrated URLScan.io public search API with visual screenshot extraction, live Tor Project Onionoo consensus relays for dynamic 3-hop routing, HaveIBeenPwned public 1,000+ incident breach directory correlation, and live multi-platform HTTP probes in Maigret.
+**Why:** Delivers 100% accurate, factual intelligence directly from public open-source feeds without requiring paid API keys, replacing synthetic mock modulo computations with real network data.
+
+

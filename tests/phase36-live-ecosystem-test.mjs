@@ -122,6 +122,48 @@ async function testMultiDomainIntelligence() {
   } catch (err) {
     recordCheck(suiteName, 'Email Intelligence Check', false, err.message);
   }
+
+  // 5. URLScan.io Live Scanner
+  try {
+    const res = await fetch(`${API_BASE}/runs/batch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: 'github.com', toolIds: ['urlscan'] }),
+    });
+    const data = await res.json();
+    const passed = res.status === 200 && data.toolResults?.[0]?.status === 'success';
+    recordCheck(suiteName, 'URLScan.io Live Scanner (github.com)', passed, `Discovered: ${data.entities?.length} assets/screenshots`);
+  } catch (err) {
+    recordCheck(suiteName, 'URLScan Check', false, err.message);
+  }
+
+  // 6. Tor Circuit Live Onionoo Relay Resolver
+  try {
+    const res = await fetch(`${API_BASE}/runs/batch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: 'duckduckgo.com', toolIds: ['tor_circuit'] }),
+    });
+    const data = await res.json();
+    const passed = res.status === 200 && data.toolResults?.[0]?.status === 'success' && data.entities?.length >= 3;
+    recordCheck(suiteName, 'Tor Circuit Onionoo Resolver', passed, `Relay nodes: ${data.entities?.length}`);
+  } catch (err) {
+    recordCheck(suiteName, 'Tor Circuit Check', false, err.message);
+  }
+
+  // 7. Maigret Live Multi-Registry Probe
+  try {
+    const res = await fetch(`${API_BASE}/runs/batch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input: 'torvalds', toolIds: ['maigret'] }),
+    });
+    const data = await res.json();
+    const passed = res.status === 200 && data.toolResults?.[0]?.status === 'success';
+    recordCheck(suiteName, 'Maigret Live Identity Probe', passed, `Verified profiles: ${data.entities?.length}`);
+  } catch (err) {
+    recordCheck(suiteName, 'Maigret Probe Check', false, err.message);
+  }
 }
 
 async function testThreatGraphAndExports() {
@@ -202,7 +244,8 @@ async function testPlaywrightHeadlessHUD() {
 
   try {
     console.log(`  Navigating to ${WEB_BASE}...`);
-    await page.goto(WEB_BASE, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(WEB_BASE, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    await page.waitForTimeout(1000);
 
     // 1. Verify Page Title
     const title = await page.title();

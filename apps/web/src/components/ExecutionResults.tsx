@@ -109,6 +109,16 @@ const TOOL_COLORS: Record<string, { badge: string; border: string; text: string 
     border: 'border-[#22d3ee]/40',
     text: 'text-[#22d3ee]',
   },
+  urlscan: {
+    badge: 'bg-[#06b6d4]/15 border-[#06b6d4]/60 text-[#06b6d4]',
+    border: 'border-[#06b6d4]/40',
+    text: 'text-[#06b6d4]',
+  },
+  tor_circuit: {
+    badge: 'bg-[#c084fc]/15 border-[#c084fc]/60 text-[#c084fc]',
+    border: 'border-[#c084fc]/40',
+    text: 'text-[#c084fc]',
+  },
 };
 
 export function ExecutionResults({
@@ -578,6 +588,21 @@ export function ExecutionResults({
                     <p className="text-[11px] text-text-secondary leading-relaxed line-clamp-2 font-mono">
                       {entity.label}
                     </p>
+
+                    {entity.metadata?.screenshot && (
+                      <div className="relative mt-2 rounded overflow-hidden border border-accent-cyan/40 bg-black/70 group/shot">
+                        <div className="absolute top-1.5 left-2 px-1.5 py-0.5 rounded bg-black/85 border border-accent-cyan/60 text-[8px] font-mono text-accent-cyan uppercase tracking-wider z-10 flex items-center gap-1 shadow-cyan-glow">
+                          <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
+                          Visual Recon Snapshot
+                        </div>
+                        <img
+                          src={entity.metadata.screenshot}
+                          alt={`Capture of ${entity.value}`}
+                          className="w-full h-32 object-cover object-top opacity-85 group-hover/shot:opacity-100 transition-opacity"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Fan-out / Secondary Search Button & GeoIP Telemetry */}

@@ -60,6 +60,7 @@ import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runne
 import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
 import { SteganographyExtractorRunner } from '../runners/steganography-extractor.runner';
 import { DiamondModelRunner } from '../runners/diamond-model.runner';
+import { UrlScanRunner } from '../runners/urlscan.runner';
 import { ToolRunner } from '../runners/runner.interface';
 import {
   BatchRunRequest,
@@ -142,7 +143,9 @@ export class RunsService {
     private readonly darkwebScraperRunner: DarkwebScraperRunner,
     private readonly steganographyExtractorRunner: SteganographyExtractorRunner,
     private readonly diamondModelRunner: DiamondModelRunner,
+    private readonly urlScanRunner: UrlScanRunner,
   ) {
+    this.runnerMap.set('urlscan', this.urlScanRunner);
     this.runnerMap.set('holehe', this.holeheRunner);
     this.runnerMap.set('sherlock', this.sherlockRunner);
     this.runnerMap.set('exiftool', this.exifToolRunner);
@@ -264,9 +267,9 @@ export class RunsService {
       case 'username':
         return ['sherlock', 'blackbird', 'maigret', 'github_recon', 'gravatar_unmasker', 'onionland'];
       case 'domain':
-        return ['domainrecon', 'rdap_whois', 'crtsh', 'ssl_inspector', 'subfinder', 'security_headers', 'favicon_hash', 'alienvault_otx', 'threatfox_ioc', 'onionland'];
+        return ['domainrecon', 'urlscan', 'rdap_whois', 'crtsh', 'ssl_inspector', 'subfinder', 'security_headers', 'favicon_hash', 'alienvault_otx', 'threatfox_ioc', 'onionland'];
       case 'ip':
-        return ['ipinfo', 'abuseipdb', 'shodan_api', 'asn_peering', 'geoip_infrastructure', 'threatfox_ioc', 'rdap_whois'];
+        return ['ipinfo', 'urlscan', 'abuseipdb', 'shodan_api', 'asn_peering', 'geoip_infrastructure', 'threatfox_ioc', 'rdap_whois'];
       case 'phone':
         return ['phoneinfoga', 'ignorant_phone'];
       case 'image':

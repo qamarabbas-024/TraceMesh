@@ -70,6 +70,7 @@ import { GeoIpInfrastructureRunner } from '../runners/geoip-infrastructure.runne
 import { DarkwebScraperRunner } from '../runners/darkweb-scraper.runner';
 import { SteganographyExtractorRunner } from '../runners/steganography-extractor.runner';
 import { DiamondModelRunner } from '../runners/diamond-model.runner';
+import { UrlScanRunner } from '../runners/urlscan.runner';
 
 @Module({
   imports: [ToolsModule],
@@ -144,7 +145,8 @@ import { DiamondModelRunner } from '../runners/diamond-model.runner';
     DarkwebScraperRunner,
     SteganographyExtractorRunner,
     DiamondModelRunner,
+    UrlScanRunner,
   ],
-  exports: [RunsService, AggregationService, KillChainService],
+  exports: [RunsService, AggregationService, KillChainService, UrlScanRunner],
 })
 export class RunsModule {}
