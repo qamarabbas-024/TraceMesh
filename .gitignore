@@ -47,3 +47,4 @@ osint-expansion/.db/
 
 # AI workspace configuration
 .project-ai/
+.agents/

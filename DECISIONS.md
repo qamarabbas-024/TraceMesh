@@ -18,3 +18,8 @@ Format:
 ## [v1.22] Parallel Multi-Domain Runner & Aggregation Architecture
 **Decided:** NormalizedResult contract mapping all tool outputs into standardized DiscoveredEntity array with deduplication and source-tool confidence weighting in AggregationService.
 **Why:** Enables arbitrary tool additions across email, username, and image domains to feed directly into the unified entity graph without UI modification.
+
+## [v24.5] Resilient In-Memory Report Graph Preservation & Headless Verification
+**Decided:** Full AggregatedReport tree attached directly to in-memory history ring buffer records with cache fallback in getRunById(), coupled with dual-engine Playwright headless verification.
+**Why:** Ensures 100% operational resilience for STIX 2.1, MISP, and PDF export gateways even during complete database offline/unreachable conditions.
+

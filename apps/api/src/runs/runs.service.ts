@@ -475,6 +475,7 @@ export class RunsService {
       inputType,
       status: 'COMPLETED',
       createdAt: new Date(),
+      report,
     };
 
     // Store in local memory history ring buffer
@@ -527,12 +528,23 @@ export class RunsService {
         const dbRun = await this.prisma.run.findUnique({
           where: { id },
         });
-        if (dbRun) return dbRun;
+        if (dbRun) return (dbRun as any).report || dbRun;
       }
     } catch {
       // Database unavailable, check memory
     }
 
-    return this.memoryHistory.find((r) => r.id === id) || null;
+    const memRun = this.memoryHistory.find((r) => r.id === id);
+    if (memRun) {
+      return memRun.report || memRun;
+    }
+
+    for (const entry of this.cache.values()) {
+      if (entry.report && entry.report.runId === id) {
+        return entry.report;
+      }
+    }
+
+    return null;
   }
 }

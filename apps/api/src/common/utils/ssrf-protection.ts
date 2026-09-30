@@ -18,15 +18,25 @@ const BLOCKED_HOSTS = new Set([
 
 export function isInternalOrBlockedTarget(target: string): boolean {
   if (!target) return true;
-  const clean = target
+  let clean = target
     .trim()
     .toLowerCase()
     .replace(/^https?:\/\//, '')
-    .replace(/\/.*$/, '')
-    .replace(/:\d+$/, '')
-    .replace(/^\[|\]$/g, '');
+    .replace(/\/.*$/, '');
 
-  if (BLOCKED_HOSTS.has(clean)) {
+  // Handle bracketed IPv6 with optional port: [::1]:8080 -> ::1
+  const bracketMatch = clean.match(/^\[([a-f0-9:]+)\](?::\d+)?$/);
+  if (bracketMatch) {
+    clean = bracketMatch[1];
+  } else {
+    // Only strip port if there is exactly one colon (e.g. host:8080, 127.0.0.1:3000)
+    const colonCount = (clean.match(/:/g) || []).length;
+    if (colonCount === 1) {
+      clean = clean.replace(/:\d+$/, '');
+    }
+  }
+
+  if (BLOCKED_HOSTS.has(clean) || clean === '::' || clean === '::1') {
     return true;
   }
 
