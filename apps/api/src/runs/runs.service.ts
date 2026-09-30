@@ -202,32 +202,75 @@ export class RunsService {
     this.runnerMap.set('darkweb_scraper', this.darkwebScraperRunner);
     this.runnerMap.set('steganography_extractor', this.steganographyExtractorRunner);
     this.runnerMap.set('diamond_model', this.diamondModelRunner);
+
+    // Aliases & fallback resolution
+    this.runnerMap.set('shodan', this.shodanRunner);
+    this.runnerMap.set('dns_records', this.domainReconRunner);
+    this.runnerMap.set('domain_recon', this.domainReconRunner);
+    this.runnerMap.set('whois', this.rdapWhoisRunner);
+    this.runnerMap.set('crt_sh', this.crtShRunner);
+    this.threatFoxIocRunner && this.runnerMap.set('threatfox', this.threatFoxIocRunner);
+    this.runnerMap.set('darkweb', this.darkwebScraperRunner);
+    this.runnerMap.set('paste_dump', this.pasteDumpRunner);
+    this.runnerMap.set('github', this.gitHubReconRunner);
+    this.runnerMap.set('ssl_cert_inspector', this.sslCertInspectorRunner);
   }
 
   private detectType(val: string): InputType {
-    const trimmed = val.trim();
-    if (trimmed.includes('@')) return 'email';
-    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(trimmed)) return 'ip';
-    if (/^https?:\/\//.test(trimmed)) return 'domain';
-    if (/^[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(trimmed)) return 'domain';
-    if (/^\+?\d{7,15}$/.test(trimmed)) return 'phone';
+    const input = val.trim();
+    if (!input) return 'username';
+
+    // 1. Email detection
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (emailRegex.test(input)) return 'email';
+
+    // 2. IPv4 detection
+    const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if (ipv4Regex.test(input)) return 'ip';
+
+    // 3. Image URL or data URI
+    if (
+      input.startsWith('data:image/') ||
+      /\.(jpg|jpeg|png|gif|webp|bmp|tiff|heic)(\?.*)?$/i.test(input)
+    ) {
+      return 'image';
+    }
+
+    // 4. Phone number detection
+    const phoneRegex = /^(\+?\d{1,4}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
+    const digitsOnly = input.replace(/\D/g, '');
+    if ((input.startsWith('+') || (digitsOnly.length >= 8 && digitsOnly.length <= 15 && /^[0-9+\-()\s]+$/.test(input))) && phoneRegex.test(input)) {
+      return 'phone';
+    }
+
+    // 5. Domain name / URL detection
+    const isBinaryFile = /\.(exe|apk|dll|bin|so|dmg|iso|msi|sys|jar|class|zip|tar|gz|7z)(\?.*)?$/i.test(input);
+    const domainRegex = /^(https?:\/\/)?([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(:\d+)?(\/.*)?$/i;
+    if (!isBinaryFile && domainRegex.test(input) && (input.includes('.') || input.startsWith('http'))) {
+      const tld = input.replace(/^https?:\/\//, '').split(/[\/?#:]/)[0].split('.').pop()?.toLowerCase();
+      const nonDomainExtensions = ['exe', 'apk', 'dll', 'bin', 'so', 'dmg', 'iso', 'msi', 'sys', 'jar', 'class', 'zip', 'tar', 'gz', '7z'];
+      if (tld && !nonDomainExtensions.includes(tld)) {
+        return 'domain';
+      }
+    }
+
     return 'username';
   }
 
   private getMatchingToolsForType(type: InputType): string[] {
     switch (type) {
       case 'email':
-        return ['holehe', 'h8mail', 'theharvester', 'onionland'];
+        return ['holehe', 'h8mail', 'theharvester', 'gravatar_unmasker', 'onionland'];
       case 'username':
-        return ['sherlock', 'blackbird', 'maigret', 'github_recon', 'onionland'];
+        return ['sherlock', 'blackbird', 'maigret', 'github_recon', 'gravatar_unmasker', 'onionland'];
       case 'domain':
-        return ['rdap_whois', 'ssl_inspector', 'subfinder', 'crtsh', 'alienvault_otx', 'threatfox_ioc', 'domainrecon', 'onionland'];
+        return ['domainrecon', 'rdap_whois', 'crtsh', 'ssl_inspector', 'subfinder', 'security_headers', 'favicon_hash', 'alienvault_otx', 'threatfox_ioc', 'onionland'];
       case 'ip':
-        return ['shodan_api', 'abuseipdb', 'ipinfo', 'threatfox_ioc', 'rdap_whois'];
+        return ['ipinfo', 'abuseipdb', 'shodan_api', 'asn_peering', 'geoip_infrastructure', 'threatfox_ioc', 'rdap_whois'];
       case 'phone':
         return ['phoneinfoga', 'ignorant_phone'];
       case 'image':
-        return ['exiftool'];
+        return ['exiftool', 'steganography_extractor'];
       default:
         return ['sherlock', 'blackbird'];
     }
@@ -341,8 +384,11 @@ export class RunsService {
     }
 
     const inputValue = rawVal.trim();
-    const inputType = req.inputType || 'username';
-    const toolIds = Array.isArray(req.toolIds) ? req.toolIds : [];
+    const inputType = req.inputType || this.detectType(inputValue);
+    let toolIds = Array.isArray(req.toolIds) ? req.toolIds.filter(Boolean) : [];
+    if (toolIds.length === 0) {
+      toolIds = this.getMatchingToolsForType(inputType);
+    }
     const { bypassCache, deepRecon, maxHops = 2 } = req;
     const targetHops = deepRecon ? Math.min(3, Math.max(1, maxHops)) : 1;
     const cacheKey = `${inputType}:${inputValue.toLowerCase()}:${[...toolIds].sort().join(',')}:${deepRecon ? `deep_${targetHops}` : 'flat'}`;

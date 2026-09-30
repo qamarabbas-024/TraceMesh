@@ -234,13 +234,19 @@ export class GraphAnalyticsService {
   }
 
   private hasMetadataLink(e1: DiscoveredEntity, e2: DiscoveredEntity): boolean {
-    if (!e1.metadata || !e2.metadata) return false;
-    // Check if e1 and e2 reference the same IP, host, or domain
+    if (!e1.metadata || !e2.metadata || typeof e1.metadata !== 'object' || typeof e2.metadata !== 'object') return false;
+    // Check if e1 and e2 reference the same IP, host, or domain primitive scalar
     for (const k1 of Object.keys(e1.metadata)) {
-      const v1 = String(e1.metadata[k1]);
+      const val1 = e1.metadata[k1];
+      if (val1 === null || val1 === undefined || typeof val1 === 'object') continue;
+      const v1 = typeof val1 === 'string' ? val1.trim() : typeof val1 === 'number' || typeof val1 === 'boolean' ? String(val1) : '';
+      if (!v1 || v1.length <= 3) continue;
+
       for (const k2 of Object.keys(e2.metadata)) {
-        const v2 = String(e2.metadata[k2]);
-        if (v1 && v2 && v1.length > 3 && v1 === v2) {
+        const val2 = e2.metadata[k2];
+        if (val2 === null || val2 === undefined || typeof val2 === 'object') continue;
+        const v2 = typeof val2 === 'string' ? val2.trim() : typeof val2 === 'number' || typeof val2 === 'boolean' ? String(val2) : '';
+        if (v2 && v1.toLowerCase() === v2.toLowerCase()) {
           return true;
         }
       }

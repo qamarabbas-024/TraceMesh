@@ -23,3 +23,7 @@ Format:
 **Decided:** Full AggregatedReport tree attached directly to in-memory history ring buffer records with cache fallback in getRunById(), coupled with dual-engine Playwright headless verification.
 **Why:** Ensures 100% operational resilience for STIX 2.1, MISP, and PDF export gateways even during complete database offline/unreachable conditions.
 
+## [v25.0] Dual-Engine DoH Fallback, Empty ToolId Auto-Expansion, & Scalar Metadata Link Safety
+**Decided:** Parallelized DNS lookups via Cloudflare/Google DoH fallback in DomainReconRunner, auto-expansion of empty tool selections to all domain-compatible tools, and strict primitive-scalar comparison in GraphAnalyticsService metadata link evaluator.
+**Why:** Eliminates Windows system DNS timeouts, prevents 0-tool empty reports from CommandBar, and prevents TypeError object-to-primitive conversion crashes during multi-node graph aggregation.
+
